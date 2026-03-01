@@ -1,0 +1,14 @@
+[Unit]
+Description=Kenneth Spectrum FFT WebSocket Server
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/sysop/projects/kenneth/kenneth-dashboard
+ExecStart=/usr/bin/env python3 /home/sysop/projects/kenneth/kenneth-dashboard/spectrum_ws.py
+Restart=always
+RestartSec=3
+User=sysop
+
+[Install]
+WantedBy=multi-user.target

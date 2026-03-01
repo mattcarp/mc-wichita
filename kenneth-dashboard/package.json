@@ -1,0 +1,19 @@
+{
+  "name": "kenneth-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite dev --host --port 4000",
+    "build": "vite build",
+    "preview": "vite preview --host --port 4000"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-auto": "^7.0.1",
+    "@sveltejs/kit": "^2.52.0",
+    "@sveltejs/vite-plugin-svelte": "^4.0.4",
+    "svelte": "^5.51.2",
+    "typescript": "^5.9.3",
+    "vite": "^5.4.0"
+  },
+  "type": "module"
+}
