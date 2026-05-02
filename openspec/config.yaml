@@ -1,0 +1,19 @@
+schema: spec-driven
+
+context: |
+  mc-kenneth — RF Forensics Platform with Speech-to-Speech Emotional Intelligence.
+  Monitors maritime + aviation frequencies (AIS, ADS-B, Maritime VHF) in Malta.
+  Multilingual: Maltese / English / Italian / Arabic.
+  Stack: Python primary (capture pipelines, API, stress scoring), HTML/JS dashboards.
+  Hardware: RTL-SDR, RSPdx, rooftop antenna. SDR++ for desktop inspection.
+  Privacy posture: data minimisation; do not expand capture scope without an issue.
+
+rules:
+  proposal:
+    - State the threat-detection or distress-signal scenario this enables.
+    - List explicit Non-goals.
+    - For changes that affect captures: identify which decoder/pipeline is impacted and whether real-fixture tests still pass.
+    - For multilingual surfaces: identify which language(s) are affected; never silently drop language support.
+  tasks:
+    - Each task should map to a capture, decode, scoring, or surfacing slice.
+    - Verification: real audio fixtures from audio_samples/ or rf_captures/, never mocks for hardware-touching code.
