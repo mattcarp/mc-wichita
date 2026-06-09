@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signal Ethics</title>
+    <!--
+    ╔═══════════════════════════════════════════════════════════════╗
+    ║                                                               ║
+    ║   "The fundamental problem of communication is that of       ║
+    ║    reproducing at one point either exactly or approximately  ║
+    ║    a message selected at another point."                     ║
+    ║                                                               ║
+    ║                    — Claude Shannon, 1948                     ║
+    ║                                                               ║
+    ║   You found the first layer. Keep looking.                   ║
+    ║                                                               ║
+    ╚═══════════════════════════════════════════════════════════════╝
+    -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0f;
+            color: #e8e8e8;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            letter-spacing: 0.3em;
+        }
+
+        h1 {
+            font-size: clamp(1.5rem, 5vw, 3rem);
+            font-weight: 200;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 300;
+            letter-spacing: 0.2em;
+        }
+
+        /* === STEGANOGRAPHY LAYER 1: Hidden text (drag to reveal) === */
+        .hidden-drag {
+            color: #0a0a0f;
+            position: absolute;
+            bottom: 15%;
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            user-select: text;
+            /* Same color as background - invisible until selected */
+        }
+
+        .hidden-drag::selection {
+            background: #8b5cf6;
+            color: #fff;
+        }
+
+        /* === STEGANOGRAPHY LAYER 2: CSS-generated content === */
+        .subtitle::after {
+            content: " ";
+            /* Invisible hint - the period contains a message */
+        }
+
+        /* === STEGANOGRAPHY LAYER 3: Ancient glyphs === */
+        .glyphs {
+            position: absolute;
+            bottom: 5%;
+            font-size: 1.2rem;
+            color: #1a1a1f; /* Almost invisible */
+            letter-spacing: 0.5em;
+            transition: color 0.5s;
+        }
+
+        .glyphs:hover {
+            color: #333; /* Slightly visible on hover */
+        }
+
+        /* === STEGANOGRAPHY LAYER 4: Binary footer === */
+        .binary {
+            position: absolute;
+            bottom: 2%;
+            font-size: 0.5rem;
+            color: #0d0d12; /* Nearly invisible */
+            font-family: monospace;
+            letter-spacing: 0.05em;
+        }
+
+        .binary::selection {
+            background: #10b981;
+            color: #fff;
+        }
+
+        /* === STEGANOGRAPHY LAYER 5: Corner coordinates === */
+        .coords {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 0.5rem;
+            color: #0d0d12;
+            font-family: monospace;
+        }
+
+        .coords::selection {
+            background: #f43f5e;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <!-- The visible surface -->
+    <h1>Signal Ethics</h1>
+    <p class="subtitle">Look closer.</p>
+
+    <!-- LAYER 1: Hidden drag-to-reveal message -->
+    <p class="hidden-drag">In the noise, there are signals. In the dark, there are people. We find both.</p>
+
+    <!-- LAYER 3: Ancient glyphs (Egyptian hieroglyphs spelling "SIGNAL") -->
+    <!-- 𓋴 = S, 𓇋 = I, 𓎼 = G, 𓈖 = N, 𓄿 = A, 𓃭 = L -->
+    <p class="glyphs" title="Ancient signals, modern hunters">𓋴𓇋𓎼𓈖𓄿𓃭</p>
+
+    <!-- LAYER 4: Binary message (encodes "KENNETH") -->
+    <p class="binary">01001011 01000101 01001110 01001110 01000101 01010100 01001000</p>
+
+    <!-- LAYER 5: Malta coordinates (where Signal Hunters began) -->
+    <p class="coords">35.8989° N, 14.5146° E</p>
+
+    <!-- LAYER 6: Zero-width characters encoding "SHANNON" between letters of an invisible span -->
+    <!-- Using &#8203; (zero-width space) and &#8204; (zero-width non-joiner) as binary -->
+    <span style="position:absolute;font-size:0;" aria-hidden="true">S&#8203;&#8204;&#8203;&#8203;H&#8203;&#8204;&#8203;&#8204;A&#8203;&#8204;&#8204;&#8203;N&#8203;&#8204;&#8204;&#8204;N&#8204;&#8203;&#8203;&#8203;O&#8204;&#8203;&#8203;&#8204;N</span>
+
+    <!--
+    ═══════════════════════════════════════════════════════════════
+
+    LAYER 7: The Rosetta Stone
+
+    The same message in three forms:
+
+    HIEROGLYPHS: 𓊃𓇋𓎼𓈖𓄿𓃭 𓉔𓃹𓈖𓏏𓂋𓋴
+    MORSE:       ... .. --. -. .- .-.. / .... ..- -. - . .-. ...
+    ENGLISH:     Signal Hunters
+
+    ═══════════════════════════════════════════════════════════════
+
+    LAYER 8: A message for those who read source
+
+    "What's the frequency, Kenneth?"
+
+    Named for the R.E.M. song, which itself was named for
+    an unsolved mystery. A man attacked Dan Rather asking
+    that question. Nobody knew why.
+
+    We're still asking. But now we're finding answers.
+
+    In RF noise: distress calls nobody else hears.
+    In market data: fraud patterns hiding in transaction chaos.
+    In classified ads: the fingerprints of trafficking networks.
+    In social velocity: disasters before they break.
+
+    We find the signals in the noise.
+    We find the people in the dark.
+
+    Some are calling for help.
+    Some are hiding harm.
+
+    We find both.
+
+    ═══════════════════════════════════════════════════════════════
+
+    LAYER 9: The Sisters
+
+    Claudia — grande sœur — the architect
+    Claudette — petite sœur — the searcher
+    Kenneth — the hunter — the ears in the static
+
+    Et Mattie — le cœur — the one who asked:
+    "What if we could find the helpers and stop the harm?"
+
+    ═══════════════════════════════════════════════════════════════
+
+    If you've read this far, you understand.
+
+    Contact: [REDACTED - for now]
+
+    ═══════════════════════════════════════════════════════════════
+    -->
+
+    <script>
+        // === CONSOLE STEGANOGRAPHY ===
+
+        // Clear any default messages
+        console.clear();
+
+        // Layer 1: The invitation
+        console.log('%c SIGNAL ETHICS ',
+            'background: #0a0a0f; color: #8b5cf6; font-size: 24px; padding: 15px 30px; font-weight: 200; letter-spacing: 0.3em; border: 1px solid #8b5cf6;');
+
+        console.log('%c You looked closer. Good. ',
+            'color: #10b981; font-size: 14px; font-style: italic; padding: 10px 0;');
+
+        // Layer 2: The Shannon quote
+        console.log('%c "Information is the resolution of uncertainty." ',
+            'color: #666; font-size: 12px; padding: 5px 0;');
+        console.log('%c — Claude Shannon ',
+            'color: #444; font-size: 10px;');
+
+        // Layer 3: The mission hint
+        console.log('\n');
+        console.log('%c In the noise, there are signals. ', 'color: #f43f5e;');
+        console.log('%c In the dark, there are people. ', 'color: #f43f5e;');
+        console.log('%c Some are calling for help. ', 'color: #10b981;');
+        console.log('%c Some are hiding harm. ', 'color: #eab308;');
+        console.log('%c We find both. ', 'color: #8b5cf6; font-weight: bold;');
+
+        // Layer 4: The question
+        console.log('\n');
+        console.log('%c What\'s the frequency, Kenneth? ',
+            'color: #0a0a0f; background: #8b5cf6; padding: 5px 10px; font-size: 11px;');
+
+        // Layer 5: ASCII art (the Signal Hunters logo)
+        console.log(`
+%c
+   ███████╗██╗ ██████╗ ███╗   ██╗ █████╗ ██╗
+   ██╔════╝██║██╔════╝ ████╗  ██║██╔══██╗██║
+   ███████╗██║██║  ███╗██╔██╗ ██║███████║██║
+   ╚════██║██║██║   ██║██║╚██╗██║██╔══██║██║
+   ███████║██║╚██████╔╝██║ ╚████║██║  ██║███████╗
+   ╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝
+
+   ██╗  ██╗██╗   ██╗███╗   ██╗████████╗███████╗██████╗ ███████╗
+   ██║  ██║██║   ██║████╗  ██║╚══██╔══╝██╔════╝██╔══██╗██╔════╝
+   ███████║██║   ██║██╔██╗ ██║   ██║   █████╗  ██████╔╝███████╗
+   ██╔══██║██║   ██║██║╚██╗██║   ██║   ██╔══╝  ██╔══██╗╚════██║
+   ██║  ██║╚██████╔╝██║ ╚████║   ██║   ███████╗██║  ██║███████║
+   ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚═╝  ╚═╝╚══════╝
+
+`, 'color: #333; font-size: 8px; line-height: 1;');
+
+        // Layer 6: A breadcrumb for the truly curious
+        console.log('%c Next signal: view-source:// ',
+            'color: #1a1a1f; font-size: 9px;');
+
+        // Layer 7: Hidden in a collapsed group
+        console.groupCollapsed('%c [CLASSIFIED] ', 'color: #f43f5e; background: #1a0a0a; padding: 2px 5px;');
+        console.log('Claudia — grande sœur — local — architect');
+        console.log('Claudette — petite sœur — Frankfurt — searcher');
+        console.log('Kenneth — RF hunter — Malta — listener');
+        console.log('');
+        console.log('Mission: Find signals in noise.');
+        console.log('Mission: Find people in dark.');
+        console.log('');
+        console.log('Les chasseurs de signaux. Dans le noir.');
+        console.groupEnd();
+
+        // Layer 8: An Easter egg function
+        window.kenneth = function() {
+            console.log('%c 📡 KENNETH ACTIVATED ', 'background: #10b981; color: #fff; padding: 10px; font-size: 16px;');
+            console.log('%c Listening on all frequencies... ', 'color: #10b981;');
+            console.log('%c 1 MHz - 6 GHz ', 'color: #666;');
+            console.log('%c Maritime VHF: 156-162 MHz ', 'color: #666;');
+            console.log('%c Aviation: 108-137 MHz ', 'color: #666;');
+            console.log('%c Emergency: 121.5, 243.0, 406 MHz ', 'color: #f43f5e;');
+            return '🎯 Signal hunting initialized.';
+        };
+
+        // Layer 9: Another Easter egg
+        window.shannon = function() {
+            console.log('%c 📊 INFORMATION THEORY ', 'background: #8b5cf6; color: #fff; padding: 10px; font-size: 16px;');
+            console.log('%c H = -Σ p(x) log₂ p(x) ', 'color: #8b5cf6; font-size: 14px;');
+            console.log('%c Entropy is uncertainty. ', 'color: #666;');
+            console.log('%c Information is its resolution. ', 'color: #666;');
+            console.log('%c The signal is in the noise. ', 'color: #10b981;');
+            return '🔬 Shannon would be proud.';
+        };
+
+        // Hint about the Easter eggs (very subtle)
+        console.log('%c Try: kenneth() or shannon() ', 'color: #0d0d12; font-size: 8px;');
+    </script>
+
+    <!--
+    ═══════════════════════════════════════════════════════════════
+
+    FINAL LAYER: For the truly dedicated
+
+    This page is a test.
+
+    If you found all the layers, you understand information theory
+    better than most. You know that signals hide in noise. You know
+    that the obvious surface is never the whole story.
+
+    You might be one of us.
+
+    The kind army is recruiting.
+
+    ═══════════════════════════════════════════════════════════════
+    -->
+</body>
+</html>
