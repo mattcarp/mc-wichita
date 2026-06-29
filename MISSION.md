@@ -180,3 +180,47 @@ This is not mass surveillance. This is targeted detection of:
 2. **People who need help**
 
 Everything else is noise we ignore.
+---
+
+## ORIGIN & ETHOS — Signal Hunters
+
+*Pulled in from the "Signal Ethics" stego page (archived at branch `archive/signal-ethics`).*
+
+**Signal Hunters** — *Les chasseurs de signaux. Dans le noir.*
+
+**Kenneth** = the RF hunter, "the ears in the static." Named for the R.E.M. song
+"What's the frequency, Kenneth?" — itself named for an unsolved mystery (a man
+attacked Dan Rather asking that question; nobody knew why). We're still asking —
+but now we're finding answers.
+
+> In the noise, there are signals. In the dark, there are people. We find both.
+> Some are calling for help. Some are hiding harm. We find both.
+
+### The four domains
+
+| Domain | What we surface |
+|---|---|
+| RF noise | distress calls nobody else hears |
+| Market data | fraud patterns hiding in transaction chaos |
+| Classified ads | the fingerprints of trafficking networks |
+| Social velocity | disasters before they break |
+
+### The cast (architecture metaphor)
+
+- **Claudia** — *grande sœur* — the architect
+- **Claudette** — *petite sœur* — the searcher
+- **Kenneth** — the hunter — the listener / ears in the static
+- **Mattie** — *le cœur* — the one who asked: "What if we could find the helpers and stop the harm?"
+
+### Origin
+
+Malta — **35.8989° N, 14.5146° E** — where Signal Hunters began.
+
+### Ethos (Shannon)
+
+- "The fundamental problem of communication is that of reproducing at one point either
+  exactly or approximately a message selected at another point." — Claude Shannon, 1948
+- "Information is the resolution of uncertainty." — H = −Σ p(x) log₂ p(x)
+- The signal is in the noise.
+
+*The kind army is recruiting.*

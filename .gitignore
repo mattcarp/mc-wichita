@@ -32,3 +32,12 @@ rf_captures/
 *.mp3
 *.flac
 processing_report_*.json
+
+# Binaries that never belonged in git (added during cleanup)
+*.raw
+*.pkg
+*.pdf
+*.dylib
+*.app/
+SDR++.app/
+fake_audio_backup/
