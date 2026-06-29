@@ -67,8 +67,8 @@ SDR++.app/                         macOS SDR++ application
 KENNETH_PRD.md                     Canonical product spec
 MISSION.md                         Mission statement
 ARCHITECTURE.md                    System architecture
-RF_FORENSICS_PIPELINE_COMPLETE.md  Pipeline status report
 KENNETH_*.md                       Decision + progress records (background, not specs)
+archive/docs/                      Archived status/handoff/todo reports (historical, not specs)
 symphony/                          Linear→Claude harness (port 4753)
 openspec/                          OpenSpec proposals + locked specs
 ```
