@@ -223,4 +223,22 @@ Malta — **35.8989° N, 14.5146° E** — where Signal Hunters began.
 - "Information is the resolution of uncertainty." — H = −Σ p(x) log₂ p(x)
 - The signal is in the noise.
 
+### Provenance — the wire, the frequency, the year
+
+Three transmissions, one lineage:
+
+- **1948** — Shannon, Bell Labs: every noisy channel has a capacity, and beneath
+  it, any message can be recovered. Noise doesn't doom the signal; it taxes it.
+- **1968** — Jimmy Webb writes "Wichita Lineman" for Glen Campbell: a man on a
+  wire who hears more than the line is carrying. *I can hear you through the
+  whine.* The public face of this project — **Wichita** on sottosound.com —
+  carries his name.
+- **Now** — Kenneth listens from a rooftop in Malta for the second signal inside
+  the first: the distress encoded in a voice that says "I'm fine." More
+  information in the channel than the sender meant to transmit. Shannon proved
+  it could be recovered. The lineman heard it. We decode it.
+
+The song asks *what's the frequency*; the theory answers *what's the capacity*;
+the mission is everything the channel carries below the words. Sotto voce.
+
 *The kind army is recruiting.*

@@ -186,6 +186,10 @@ def extract_stress_features(audio_file_path: str | Path) -> StressFeatures:
 def score_stress(audio_features: StressFeatures | Dict[str, float]) -> int:
     """
     Convert stress-related audio features into a 0-100 score.
+
+    The second signal: what the channel carries below the words.
+    Shannon (1948) says it can be recovered; the lineman heard it
+    through the whine. This is where we listen.
     """
     if isinstance(audio_features, StressFeatures):
         features = audio_features
