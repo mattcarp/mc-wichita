@@ -225,8 +225,16 @@ Malta — **35.8989° N, 14.5146° E** — where Signal Hunters began.
 
 ### Provenance — the wire, the frequency, the year
 
-Three transmissions, one lineage:
+Five transmissions, one lineage:
 
+- **1522** — Pigafetta's journal circumnavigates; Magellan does not. The sender
+  doesn't always survive the transmission. The log came home without the captain —
+  the message reproduced at another point, exactly or approximately, 426 years
+  before Shannon wrote the sentence.
+- **1912** — the Marconi room teaches the world SOS discipline, and the law that
+  followed wrote listening into statute: twice an hour on 500 kHz, three minutes
+  of mandatory silence so weak distress calls could be heard. Kenneth is a
+  silence period that never ends.
 - **1948** — Shannon, Bell Labs: every noisy channel has a capacity, and beneath
   it, any message can be recovered. Noise doesn't doom the signal; it taxes it.
 - **1968** — Jimmy Webb writes "Wichita Lineman" for Glen Campbell: a man on a
@@ -240,5 +248,8 @@ Three transmissions, one lineage:
 
 The song asks *what's the frequency*; the theory answers *what's the capacity*;
 the mission is everything the channel carries below the words. Sotto voce.
+
+The chip log measured the ship; the logbook remembered the voyage; Kenneth logs
+the boats that file nothing.
 
 *The kind army is recruiting.*
