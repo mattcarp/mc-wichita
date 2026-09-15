@@ -9,7 +9,7 @@ import numpy as np
 import soundfile as sf
 import time
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Load SDRplay API library
 try:
@@ -39,7 +39,7 @@ try:
     import os
     
     # Create output filename
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     raw_file = f"/tmp/real_maritime_{timestamp}.raw"
     wav_file = f"REAL_MARITIME_CH16_{timestamp}.wav"
     

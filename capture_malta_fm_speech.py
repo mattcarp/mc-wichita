@@ -7,7 +7,7 @@ Target: Intelligible Maltese/English speech for processing demo
 import subprocess
 import time
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Malta FM stations likely to have SPEECH content (news/talk)
 SPEECH_STATIONS = {
@@ -31,7 +31,7 @@ def capture_fm_station(station_name, freq_mhz, duration=10):
     print(f"🎯 Goal: Find SPEECH content (news, talk, announcements)")
     
     freq_hz = int(freq_mhz * 1e6)
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     
     # File paths
     iq_file = f"/tmp/{station_name}_{freq_mhz}MHz_{timestamp}.iq"

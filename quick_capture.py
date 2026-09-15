@@ -5,12 +5,12 @@ Simple RTL-SDR capture and immediate playback
 
 import subprocess
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 
 freq = "88.5"
 print(f"📡 Capturing FM Radio at {freq} MHz for 5 seconds...")
 
-timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
 output_file = f"capture_{freq}MHz_{timestamp}.wav"
 
 # Direct rtl_fm capture to WAV

@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 
 class RFForensicsDemo:
     def __init__(self):
@@ -170,7 +170,7 @@ class RFForensicsDemo:
         plt.tight_layout()
         
         # Save visualization
-        viz_file = self.output_dir / f"rf_forensics_analysis_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+        viz_file = self.output_dir / f"rf_forensics_analysis_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.png"
         plt.savefig(viz_file, dpi=300, bbox_inches='tight')
         print(f"📊 Analysis visualization saved: {viz_file}")
         
@@ -218,7 +218,7 @@ class RFForensicsDemo:
         
         # Create comprehensive report
         report = {
-            'timestamp': datetime.now().isoformat(),
+            'timestamp': datetime.now(timezone.utc).isoformat(),
             'total_samples_analyzed': len(analysis_results),
             'successful_analyses': len([r for r in analysis_results if 'error' not in r]),
             'average_quality_score': np.mean([r['quality_score'] for r in analysis_results if 'error' not in r]),
@@ -226,7 +226,7 @@ class RFForensicsDemo:
         }
         
         # Save detailed report
-        report_file = self.output_dir / f"forensics_analysis_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        report_file = self.output_dir / f"forensics_analysis_report_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.json"
         with open(report_file, 'w') as f:
             json.dump(report, f, indent=2)
         

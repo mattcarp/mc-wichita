@@ -11,7 +11,7 @@ from __future__ import annotations
 import json
 import subprocess
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -59,7 +59,7 @@ class MaritimeAviationCapture:
         Returns the IQ filepath on success, else None.
         """
         duration = int(duration or self.default_duration)
-        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
         safe_desc = self._slug(description)
         iq_path = self.output_dir / f"{safe_desc}_{frequency_mhz:.3f}MHz_{ts}.iq"
 
@@ -140,7 +140,7 @@ class MaritimeAviationCapture:
 
     def generate_demo_data(self, maritime_results: List[dict], aviation_results: List[dict]) -> str:
         payload = {
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "maritime": maritime_results,
             "aviation": aviation_results,
             "total": len(maritime_results) + len(aviation_results),
@@ -170,7 +170,7 @@ class MaritimeAviationCapture:
                     "description": desc,
                     "raw_audio": str(wav),
                     "cleaned_audio": cleaned,
-                    "timestamp": datetime.now().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
             )
             time.sleep(0.05)

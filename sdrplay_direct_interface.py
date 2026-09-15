@@ -10,7 +10,7 @@ import os
 import numpy as np
 import time
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 import threading
 import queue
 
@@ -174,7 +174,7 @@ class DirectSDRCapture:
             return None
             
         freq_mhz = frequency / 1e6
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
         output_file = f"maritime_aviation_{freq_mhz:.3f}MHz_{timestamp}.wav"
         
         print(f"📡 Capturing {freq_mhz:.3f} MHz...")

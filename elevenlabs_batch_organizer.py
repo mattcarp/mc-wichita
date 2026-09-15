@@ -8,7 +8,7 @@ import pandas as pd
 from pathlib import Path
 import soundfile as sf
 import numpy as np
-from datetime import datetime
+from datetime import datetime, timezone
 
 class ElevenLabsBatchOrganizer:
     """Organize voice files for optimal ElevenLabs processing"""
@@ -142,12 +142,12 @@ class ElevenLabsBatchOrganizer:
     def generate_processing_report(self, df, excellent, good, fair, batches):
         """Generate comprehensive processing report"""
         
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
         report_file = f"elevenlabs_processing_plan_{timestamp}.txt"
         
         report = f"""
 🎙️ ELEVENLABS PROCESSING PLAN
-Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+Generated: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}
 =====================================
 
 📊 SUMMARY:
@@ -226,7 +226,7 @@ Batch {batch['batch_number']}:
             
             with open(batch_file, 'w') as f:
                 f.write(f"# ElevenLabs Processing Batch {batch['batch_number']}\n")
-                f.write(f"# Generated: {datetime.now()}\n")
+                f.write(f"# Generated: {datetime.now(timezone.utc)}\n")
                 f.write(f"# Files: {len(batch['files'])}\n")
                 f.write(f"# Avg Score: {batch['avg_score']:.3f}\n")
                 f.write(f"# Est Cost: ${batch['estimated_cost']:.2f}\n\n")

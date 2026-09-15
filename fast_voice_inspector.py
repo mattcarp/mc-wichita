@@ -8,7 +8,7 @@ import numpy as np
 import soundfile as sf
 from pathlib import Path
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from scipy import signal
 import random
 
@@ -210,7 +210,7 @@ class FastVoiceInspector:
         # Save results
         with open(output_file, 'w') as f:
             f.write(f"# Voice Files Filtered List\n")
-            f.write(f"# Generated: {datetime.now()}\n")
+            f.write(f"# Generated: {datetime.now(timezone.utc)}\n")
             f.write(f"# Total Files: {len(wav_files):,}\n")
             f.write(f"# Voice Files: {len(voice_files):,}\n")
             f.write(f"# Threshold: {threshold}\n\n")

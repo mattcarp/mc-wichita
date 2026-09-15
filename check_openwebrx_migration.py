@@ -7,7 +7,7 @@ Monitors and guides the migration process
 import subprocess
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 
 class OpenWebRXMigration:
     def __init__(self):
@@ -33,7 +33,7 @@ class OpenWebRXMigration:
         print("="*60)
         print("🎯 KENNETH OPENWEBRX+ MIGRATION STATUS")
         print("="*60)
-        print(f"📅 {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"📅 {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}")
         print()
         
         # Phase 1: Prerequisites

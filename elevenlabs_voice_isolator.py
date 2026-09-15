@@ -11,7 +11,7 @@ import numpy as np
 from pathlib import Path
 import json
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 
 class VoiceIsolator:
     def __init__(self, api_key=None):
@@ -85,7 +85,7 @@ class VoiceIsolator:
                         'sample_rate': sample_rate,
                         'cost': file_cost,
                         'success': True,
-                        'timestamp': datetime.now().isoformat()
+                        'timestamp': datetime.now(timezone.utc).isoformat()
                     }
                     
                     self.processed_files.append(result)
@@ -156,11 +156,11 @@ class VoiceIsolator:
             'total_files': len(lines),
             'processed_files': processed_count,
             'total_cost': self.total_cost,
-            'timestamp': datetime.now().isoformat(),
+            'timestamp': datetime.now(timezone.utc).isoformat(),
             'files': self.processed_files
         }
         
-        report_file = self.output_dir / f"processing_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        report_file = self.output_dir / f"processing_report_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.json"
         with open(report_file, 'w') as f:
             json.dump(report, f, indent=2)
         

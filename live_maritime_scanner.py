@@ -9,7 +9,7 @@ import time
 import numpy as np
 import soundfile as sf
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 import threading
 import sys
 
@@ -34,7 +34,7 @@ class LiveMaritimeScanner:
         """Capture live audio from maritime frequency"""
         
         freq_mhz = frequency_hz / 1e6
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
         
         print(f"\n🌊 LIVE Maritime Scanner")
         print(f"📡 Frequency: {frequency_name}")

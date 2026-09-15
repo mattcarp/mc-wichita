@@ -9,7 +9,7 @@ import numpy as np
 import soundfile as sf
 from pathlib import Path
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 import logging
 from scipy import signal
 from scipy.fft import fft
@@ -367,7 +367,7 @@ class VoiceQualityInspector:
         
         report = f"""
 🎙️ VOICE QUALITY ANALYSIS REPORT
-Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+Generated: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}
 ================================
 
 📊 SUMMARY STATISTICS:

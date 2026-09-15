@@ -1,7 +1,7 @@
 import sys
 import types
 import wave
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
@@ -219,7 +219,7 @@ def test_extended_capture_discards_noise_only_samples_before_write(
     )
 
     capture_path, capture_duration = hunter.extended_voice_capture(
-        "CH16", 156_800_000.0, datetime.now()
+        "CH16", 156_800_000.0, datetime.now(timezone.utc)
     )
 
     assert hunter.noise_gate_db == -20.0

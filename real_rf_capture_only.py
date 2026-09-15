@@ -9,7 +9,7 @@ import numpy as np
 import soundfile as sf
 import time
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 import sys
 
 class RealRFCapture:
@@ -256,7 +256,7 @@ def test_real_rf_capture():
         audio = capture.real_rf_capture(freq_mhz, duration_seconds=5)
         
         if audio is not None:
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
             filename = f"REAL_CAPTURE_{name}_{freq_mhz}MHz_{timestamp}.wav"
             
             sf.write(filename, audio, 48000)

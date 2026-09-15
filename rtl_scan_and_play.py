@@ -7,7 +7,7 @@ Captures audio from each frequency and plays it for evaluation
 import subprocess
 import time
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 
 print("🎯 Real RTL-SDR Voice Frequency Scanner")
 print("=" * 60)
@@ -35,7 +35,7 @@ for i, freq_info in enumerate(frequencies):
     
     print(f"\n[{i+1}/{len(frequencies)}] Capturing {freq_mhz} MHz - {name}")
     
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     output_file = capture_dir / f"RTL_CAPTURE_{freq_mhz}MHz_{timestamp}.wav"
     
     # Use rtl_fm to capture and sox to convert to WAV

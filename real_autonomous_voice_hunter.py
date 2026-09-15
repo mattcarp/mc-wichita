@@ -10,7 +10,7 @@ import time
 import numpy as np
 import soundfile as sf
 from pathlib import Path
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import threading
 import sys
 import json
@@ -32,7 +32,7 @@ class RealAutonomousVoiceHunter:
     def __init__(self, session_name=None):
         # Session management
         if session_name is None:
-            session_name = f"real_rf_hunt_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            session_name = f"real_rf_hunt_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}"
         self.session_name = session_name
         self.session_dir = Path(f"rf_captures/{session_name}")
         self.session_dir.mkdir(parents=True, exist_ok=True)
@@ -128,7 +128,7 @@ class RealAutonomousVoiceHunter:
         merged["sample_rate_hz"] = int(sample_rate)
         merged["samples"] = int(len(audio_data))
         merged["duration_sec"] = float(len(audio_data) / sample_rate) if sample_rate > 0 else 0.0
-        merged["saved_at_utc"] = datetime.utcnow().isoformat(timespec="seconds") + "Z"
+        merged["saved_at_utc"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
         self._capture_metadata_path(audio_file).write_text(
             json.dumps(merged, indent=2),
             encoding="utf-8",
@@ -233,7 +233,7 @@ class RealAutonomousVoiceHunter:
         try:
             self.logger.info(f"📡 REAL RF CAPTURE: {frequency_name} ({frequency_hz/1e6:.3f} MHz)")
             
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
             iq_file = f"/tmp/real_rf_{timestamp}.iq"
             
             # RTL-SDR capture command
@@ -557,7 +557,7 @@ class RealAutonomousVoiceHunter:
             detected_sample_rate = self.audio_sample_rate
             
             # Save fallback audio
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
             audio_file = self.session_dir / f"SIM_{frequency_name.replace(' ', '_')}_{timestamp}.wav"
             self._write_wav_with_metadata(
                 audio_file,
@@ -644,7 +644,7 @@ class RealAutonomousVoiceHunter:
     def autonomous_hunt(self, max_runtime_hours=12):
         """Run autonomous voice hunting for specified hours"""
         
-        start_time = datetime.now()
+        start_time = datetime.now(timezone.utc)
         end_time = start_time + timedelta(hours=max_runtime_hours)
         
         self.logger.info(f"\n🎯 Starting Real Autonomous RF Voice Hunt")
@@ -657,7 +657,7 @@ class RealAutonomousVoiceHunter:
         
         scan_count = 0
         
-        while datetime.now() < end_time:
+        while datetime.now(timezone.utc) < end_time:
             try:
                 # Select frequency (random with priority weighting)
                 frequency_name, frequency_hz = random.choice(self.all_frequencies)
@@ -683,7 +683,7 @@ class RealAutonomousVoiceHunter:
                 
                 # Status update every 50 scans
                 if scan_count % 50 == 0:
-                    runtime = datetime.now() - start_time
+                    runtime = datetime.now(timezone.utc) - start_time
                     self.logger.info(f"\n📊 Status Update (Runtime: {runtime})")
                     self.logger.info(f"   Total Scans: {self.total_scans}")
                     self.logger.info(f"   Voice Detections: {self.voice_detections}")
@@ -698,7 +698,7 @@ class RealAutonomousVoiceHunter:
                 time.sleep(5)  # Brief pause on error
         
         # Final statistics
-        runtime = datetime.now() - start_time
+        runtime = datetime.now(timezone.utc) - start_time
         self.logger.info(f"\n🏁 Real Autonomous Hunt Complete")
         self.logger.info(f"   Total Runtime: {runtime}")
         self.logger.info(f"   Total Scans: {self.total_scans}")
@@ -714,12 +714,12 @@ def main():
     print("=" * 50)
     
     # Initialize hunter
-    hunter = RealAutonomousVoiceHunter(session_name=f"autonomous_hunt_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
+    hunter = RealAutonomousVoiceHunter(session_name=f"autonomous_hunt_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}")
     
     print(f"📁 Session: {hunter.session_name}")
     print(f"📊 Monitoring {len(hunter.maritime_frequencies)} maritime + {len(hunter.aviation_frequencies)} aviation frequencies")
     print(f"🎯 Priority focus: CH16 Emergency, Coast Guard, Bridge-to-Bridge, ATC")
-    print(f"⏰ Will run for up to 12 hours (until ~{(datetime.now() + timedelta(hours=12)).strftime('%H:%M')})")
+    print(f"⏰ Will run for up to 12 hours (until ~{(datetime.now(timezone.utc) + timedelta(hours=12)).strftime('%H:%M')})")
     print("")
     
     # Run autonomous hunt

@@ -9,7 +9,7 @@ import numpy as np
 import soundfile as sf
 import time
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 import os
 from scan_config import demod_mode_by_frequency_hz
 
@@ -270,7 +270,7 @@ def test_rtl_real_capture():
         
         if audio is not None:
             # Save the real capture
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
             filename = f"REAL_RTL_CAPTURE_{name}_{freq_mhz}MHz_{timestamp}.wav"
             
             # Ensure we have the right length for 48kHz

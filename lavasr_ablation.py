@@ -18,7 +18,7 @@ LAVASR_INPUT_SR = 16000
 TARGET_SR = 48000
 
 print(f"LavaSR v2 Ablation Test — mc-kenneth #28")
-print(f"Device: {DEVICE} | {datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}")
+print(f"Device: {DEVICE} | {datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}")
 print()
 
 print("Loading LavaSR model...")
@@ -154,7 +154,7 @@ print(f"RECOMMENDATION: {recommendation}\n")
 
 md = f"""# LavaSR v2 Ablation Results
 
-Generated: {datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}  
+Generated: {datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}  
 Device: {DEVICE} | LavaSR 0.0.2
 
 ## Verdict: {verdict}
@@ -193,6 +193,6 @@ md += """## Methodology
 
 with open("ablation_results.md","w") as f: f.write(md)
 with open("ablation_results.json","w") as f:
-    json.dump({"generated": datetime.datetime.utcnow().isoformat(), "verdict": verdict,
+    json.dump({"generated": datetime.datetime.now(datetime.timezone.utc).isoformat(), "verdict": verdict,
                "recommendation": recommendation, "results": results}, f, indent=2)
 print("Written: ablation_results.md + ablation_results.json")

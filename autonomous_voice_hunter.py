@@ -10,7 +10,7 @@ import time
 import numpy as np
 import soundfile as sf
 from pathlib import Path
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import threading
 import sys
 import json
@@ -31,7 +31,7 @@ class AutonomousVoiceHunter:
     def __init__(self, session_name=None):
         # Session management
         if session_name is None:
-            session_name = f"rf_hunt_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            session_name = f"rf_hunt_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}"
         self.session_name = session_name
         self.session_dir = Path(f"rf_captures/{session_name}")
         self.session_dir.mkdir(parents=True, exist_ok=True)
@@ -187,7 +187,7 @@ class AutonomousVoiceHunter:
         
         # Statistics tracking
         self.stats = {
-            'session_start': datetime.now(),
+            'session_start': datetime.now(timezone.utc),
             'frequencies_scanned': 0,
             'voice_detections': 0,
             'total_voice_time': 0,
@@ -237,7 +237,7 @@ class AutonomousVoiceHunter:
         merged["sample_rate_hz"] = int(sample_rate)
         merged["samples"] = int(len(audio_data))
         merged["duration_sec"] = float(len(audio_data) / sample_rate) if sample_rate > 0 else 0.0
-        merged["saved_at_utc"] = datetime.utcnow().isoformat(timespec="seconds") + "Z"
+        merged["saved_at_utc"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
         self._capture_metadata_path(audio_file).write_text(
             json.dumps(merged, indent=2),
             encoding="utf-8",
@@ -506,7 +506,7 @@ class AutonomousVoiceHunter:
         """Scan single frequency for voice activity"""
         
         freq_mhz = frequency_hz / 1e6
-        timestamp = datetime.now()
+        timestamp = datetime.now(timezone.utc)
         
         self.logger.info(f"\n📡 Scanning: {freq_name} ({freq_mhz:.3f} MHz)")
         
@@ -651,7 +651,7 @@ class AutonomousVoiceHunter:
                     additional_time += 10
 
                     # Save additional capture
-                    timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    timestamp_str = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
                     additional_filename = f"VOICE_CONTINUED_{freq_name}_{frequency_hz/1e6:.3f}MHz_{timestamp_str}.wav"
                     additional_filepath = self.session_dir / additional_filename
                     demod_mode = self.demod_modes.get(int(round(frequency_hz)), "nfm")
@@ -698,7 +698,7 @@ class AutonomousVoiceHunter:
         self.logger.info(f"   Output Directory: {self.session_dir}")
         self.logger.info("=" * 80)
         
-        start_time = datetime.now()
+        start_time = datetime.now(timezone.utc)
         next_summary = start_time + timedelta(minutes=self.summary_interval)
         
         # Combine frequencies with priority weighting
@@ -733,14 +733,14 @@ class AutonomousVoiceHunter:
         try:
             while True:
                 # Check runtime limit
-                elapsed = datetime.now() - start_time
+                elapsed = datetime.now(timezone.utc) - start_time
                 if elapsed.total_seconds() > self.max_runtime_hours * 3600:
                     self.logger.info(f"⏰ Maximum runtime reached ({self.max_runtime_hours} hours)")
                     break
                 
                 # Scan through all frequencies
                 for comm_type, freq_name, frequency in all_frequencies:
-                    current_time = datetime.now()
+                    current_time = datetime.now(timezone.utc)
                     
                     # Progress summary
                     if current_time >= next_summary:
@@ -758,7 +758,7 @@ class AutonomousVoiceHunter:
                         time.sleep(self.pause_between_freqs)
                     
                     # Check runtime again
-                    elapsed = datetime.now() - start_time
+                    elapsed = datetime.now(timezone.utc) - start_time
                     if elapsed.total_seconds() > self.max_runtime_hours * 3600:
                         break
                 
@@ -793,7 +793,7 @@ class AutonomousVoiceHunter:
     def final_summary(self):
         """Print final hunt summary"""
         
-        elapsed = datetime.now() - self.stats['session_start']
+        elapsed = datetime.now(timezone.utc) - self.stats['session_start']
         
         self.logger.info(f"\n🏁 AUTONOMOUS HUNT COMPLETE")
         self.logger.info("=" * 60)
@@ -815,7 +815,7 @@ class AutonomousVoiceHunter:
         with open(summary_file, 'w') as f:
             summary_data = self.stats.copy()
             summary_data['session_start'] = self.stats['session_start'].isoformat()
-            summary_data['session_end'] = datetime.now().isoformat()
+            summary_data['session_end'] = datetime.now(timezone.utc).isoformat()
             summary_data['captures'] = [
                 {
                     'file': str(cap['file']),
@@ -891,7 +891,7 @@ def main():
     print("=" * 80)
     
     # Create session
-    session_name = f"autonomous_hunt_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    session_name = f"autonomous_hunt_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}"
     hunter = AutonomousVoiceHunter(session_name)
     
     print(f"📡 Ready to begin autonomous hunt")

@@ -11,7 +11,7 @@ from typing import Optional, List, Dict
 import subprocess
 import json
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 from maritime_aviation_capture import MaritimeAviationCapture
 
 # API Models
@@ -100,7 +100,7 @@ def add_maritime_aviation_routes(app: FastAPI):
                 description=desc,
                 raw_audio=wav_file,
                 cleaned_audio=cleaned_file,
-                timestamp=datetime.now().isoformat()
+                timestamp=datetime.now(timezone.utc).isoformat()
             )
             
         except Exception as e:
@@ -116,7 +116,7 @@ def add_maritime_aviation_routes(app: FastAPI):
                 raise HTTPException(status_code=503, detail="HackRF not connected")
             
             # Start background capture
-            task_id = datetime.now().strftime("%Y%m%d_%H%M%S")
+            task_id = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
             
             def run_batch_capture():
                 results = []
@@ -211,7 +211,7 @@ def add_maritime_aviation_routes(app: FastAPI):
                 "power_dbfs": power,
                 "signal_strength": signal_strength,
                 "status": status,
-                "timestamp": datetime.now().isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat()
             }
             
         except Exception as e:

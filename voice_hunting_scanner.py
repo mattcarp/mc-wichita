@@ -9,7 +9,7 @@ import time
 import numpy as np
 import soundfile as sf
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 import threading
 import sys
 from scipy import signal
@@ -184,7 +184,7 @@ class VoiceHuntingScanner:
         """Quick scan of a frequency to detect voice activity"""
         
         freq_mhz = frequency_hz / 1e6
-        timestamp = datetime.now().strftime("%H%M%S")
+        timestamp = datetime.now(timezone.utc).strftime("%H%M%S")
         
         print(f"\n📡 Scanning: {freq_name}")
         print(f"   Frequency: {freq_mhz:.3f} MHz")
@@ -225,7 +225,7 @@ class VoiceHuntingScanner:
         """Capture longer sample when voice is detected"""
         
         freq_mhz = frequency_hz / 1e6
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
         
         print(f"\n🎯 VOICE DETECTED - Capturing long sample...")
         print(f"   Frequency: {freq_name} ({freq_mhz:.3f} MHz)")

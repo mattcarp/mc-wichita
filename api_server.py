@@ -24,7 +24,7 @@ from typing import Optional, List, Dict, Any, Tuple
 from enum import Enum
 import asyncio
 import numpy as np
-from datetime import datetime
+from datetime import datetime, timezone
 import subprocess
 import os
 import json
@@ -38,6 +38,7 @@ from pathlib import Path
 from api_maritime_aviation import add_maritime_aviation_routes
 from alert_dispatcher import send_stress_alert
 from discord_alerts import send_alert as send_discord_alert
+from evidence_context import delivery_health, evidence_context, answer_question
 from whisper_transcription import WhisperConfig, transcribe_audio_file
 from ai_analysis_pipeline import analyze_audio_file, extract_stress_features, score_stress
 
@@ -892,7 +893,7 @@ async def capture_signal(request: CaptureRequest, background_tasks: BackgroundTa
 
     Returns path to captured IQ file and basic statistics.
     """
-    output_file = f"/tmp/capture_{int(request.frequency)}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.iq"
+    output_file = f"/tmp/capture_{int(request.frequency)}_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.iq"
 
     cmd = [
         "hackrf_transfer",
@@ -940,7 +941,7 @@ async def capture_signal(request: CaptureRequest, background_tasks: BackgroundTa
         CAPTURES.append(
             CaptureRecord(
                 id=str(uuid.uuid4()),
-                created_at=datetime.now(),
+                created_at=datetime.now(timezone.utc),
                 **capture_result,
             )
         )
@@ -1001,7 +1002,7 @@ async def spectrum_scan(request: SpectrumScanRequest):
             "peak_power_dbm": max(powers) if powers else None,
             "scan_range_mhz": [request.start_freq / 1e6, request.stop_freq / 1e6],
             "bin_width_khz": request.bin_width / 1e3,
-            "timestamp": datetime.now(),
+            "timestamp": datetime.now(timezone.utc),
         }
 
     except Exception as e:
@@ -1118,7 +1119,7 @@ async def maritime_vhf_status():
         "channels": channels,
         "emergency_status": "clear",
         "port": "Valletta Grand Harbour",
-        "timestamp": datetime.now(),
+        "timestamp": datetime.now(timezone.utc),
     }
 
 
@@ -1144,7 +1145,7 @@ async def track_aircraft():
             "position": {"lat": 35.95, "lon": 14.40},
             "route": "MXP-MLA",
             "distance_km": 15.2,
-            "timestamp": datetime.now(),
+            "timestamp": datetime.now(timezone.utc),
         }
     ]
 
@@ -1217,7 +1218,7 @@ async def assess_threat(frequency: float, signal_type: SignalType):
         description=description,
         frequency=frequency,
         recommendations=recommendations,
-        evidence={"signal_type": signal_type, "analysis_time": datetime.now()},
+        evidence={"signal_type": signal_type, "analysis_time": datetime.now(timezone.utc)},
     )
 
 
@@ -1234,7 +1235,7 @@ async def active_threats():
         "jamming_detected": False,
         "rogue_transmitters": [],
         "monitoring_status": "active",
-        "last_scan": datetime.now(),
+        "last_scan": datetime.now(timezone.utc),
     }
 
 
@@ -1382,7 +1383,7 @@ async def create_alert(
 
     record = AlertRecord(
         id=str(uuid.uuid4()),
-        created_at=datetime.now(),
+        created_at=datetime.now(timezone.utc),
         title=payload.title.strip(),
         description=payload.description,
         signal_type=payload.signal_type or SignalType.UNKNOWN,
@@ -1438,6 +1439,25 @@ async def get_alert(alert_id: str):
         if alert.id == alert_id:
             return alert
     raise HTTPException(status_code=404, detail="Alert not found")
+
+
+@app.get("/alerts/{alert_id}/evidence", tags=["alerts"])
+async def get_alert_evidence(alert_id: str):
+    return evidence_context(await get_alert(alert_id))
+
+
+@app.get("/alerts/{alert_id}/question", tags=["alerts"])
+async def get_alert_question(alert_id: str, question: str = Query(...)):
+    alert = await get_alert(alert_id)
+    try:
+        return answer_question(alert, question)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.get("/delivery-health", tags=["system"])
+async def get_delivery_health():
+    return delivery_health(CAPTURES, ALERTS)
 
 
 @app.get("/captures", tags=["capture"], response_model=List[CaptureRecord])
@@ -1509,7 +1529,7 @@ async def identify_speaker(
         centroid_delta = abs(profile_centroid - features["spectral_centroid_hz"])
         matched_existing = pitch_delta <= 22.0 and centroid_delta <= 650.0
 
-    now = datetime.now()
+    now = datetime.now(timezone.utc)
     if matched_existing:
         profile = SPEAKER_PROFILES[match["speaker_id"]]
         existing = np.array(profile.embedding, dtype=np.float32)
@@ -1674,7 +1694,7 @@ async def create_fingerprint(iq_file: UploadFile = File(...)):
         }
 
     return {
-        "fingerprint_id": f"fp_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
+        "fingerprint_id": f"fp_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}",
         "features": fingerprint,
         "classification_ready": True,
     }
@@ -1697,7 +1717,7 @@ async def waterfall_stream(websocket: WebSocket):
             # This would stream actual FFT data from HackRF
             # For demo, send random data
             fft_data = {
-                "timestamp": datetime.now().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "center_freq_mhz": 100.0,
                 "bandwidth_mhz": 20.0,
                 "fft_size": 1024,
@@ -1745,7 +1765,7 @@ async def system_status():
         "hackrf_info": hackrf_info,
         "location": "Valletta, Malta",
         "coverage": "1 MHz - 6 GHz",
-        "timestamp": datetime.now(),
+        "timestamp": datetime.now(timezone.utc),
         "api_version": "2.0.0",
     }
 
@@ -1757,7 +1777,7 @@ async def health():
     return {
         "status": "ok",
         "api_version": "2.0.0",
-        "timestamp": datetime.now(),
+        "timestamp": datetime.now(timezone.utc),
         "hackrf_status": status.get("hackrf_status", "unknown"),
         "alerts_count": len(ALERTS),
         "stress_alerts_count": len([alert for alert in ALERTS if _is_stress_alert(alert)]),
@@ -1766,6 +1786,18 @@ async def health():
 
 
 # ==================== ROOT REDIRECT ====================
+
+
+@app.get("/dashboard/{filename:path}", include_in_schema=False)
+async def dashboard_asset(filename: str):
+    allowed = {"dashboard.css", "dashboard.js", "evidence-model.mjs", "vendor/leaflet.js", "vendor/leaflet.css"}
+    if filename not in allowed:
+        raise HTTPException(status_code=404, detail="Dashboard asset not found")
+    asset = Path(__file__).resolve().parent / "dashboard" / filename
+    if not asset.is_file():
+        raise HTTPException(status_code=404, detail="Dashboard asset not found")
+    media_type = "text/css" if filename.endswith(".css") else "text/javascript"
+    return FileResponse(str(asset), media_type=media_type)
 
 
 @app.get("/", include_in_schema=False)

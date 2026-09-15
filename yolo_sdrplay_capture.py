@@ -10,7 +10,7 @@ import soundfile as sf
 import time
 import os
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 
 def capture_real_rf():
     """YOLO - Just capture real RF from the SDRplay!"""
@@ -23,7 +23,7 @@ def capture_real_rf():
     sample_rate = 2_000_000  # 2 MSPS
     duration = 30
     
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     
     # Try multiple approaches - YOLO style!
     

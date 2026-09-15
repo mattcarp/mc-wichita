@@ -6,7 +6,7 @@ Scan common voice frequencies for better examples
 import subprocess
 import time
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 
 print("🎯 RF Voice Frequency Scanner")
 print("=" * 60)
@@ -43,7 +43,7 @@ for i, freq_info in enumerate(frequencies[:5]):  # Start with first 5
     print(f"\n[{i+1}/{len(frequencies[:5])}] Scanning {freq} - {name}")
     print(f"   Duration: {duration} seconds")
     
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     output_file = capture_dir / f"SCAN_{freq.replace('.', '_')}_{timestamp}.wav"
     
     # Using rtl_fm to capture FM frequencies
