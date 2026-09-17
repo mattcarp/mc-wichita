@@ -25,8 +25,8 @@ RF-Digital-Forensics-Toolkit/
 ├── 📋 Documentation
 │   ├── README.md                 # This file
 │   ├── tests/README.md          # Test suite documentation
-│   ├── MISSION.md               # Kenneth maritime intelligence mission
-│   ├── KENNETH_PRD.md          # Product requirements document
+│   ├── MISSION.md               # Wichita maritime intelligence mission
+│   ├── WICHITA_PRD.md          # Product requirements document
 │   └── ARCHITECTURE.md         # System architecture
 │
 ├── 🧪 Testing Infrastructure
@@ -40,7 +40,7 @@ RF-Digital-Forensics-Toolkit/
 │   │   ├── performance/      # Performance benchmarks
 │   │   ├── e2e/             # End-to-end workflows
 │   │   └── utils/           # Test utilities
-│   └── kenneth-websdr/       # Kenneth WebSDR application
+│   └── wichita-websdr/       # Wichita WebSDR application
 │       └── testsprite_tests/ # AI-generated business tests
 │
 ├── 🛠️ SDR Software
@@ -177,7 +177,7 @@ python3 -m http.server 8000
 ```
 Open `dashboard/sdr_capture_status.html` while the server is running to view status and recent captures.
 
-## 🚢 Kenneth Maritime Intelligence
+## 🚢 Wichita Maritime Intelligence
 
 ### Mission
 Real-time maritime RF monitoring with AI-powered emotional analysis for detecting distress situations in Malta waters.

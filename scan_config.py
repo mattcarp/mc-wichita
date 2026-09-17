@@ -1,4 +1,4 @@
-"""Shared scan frequency configuration for Kenneth scanners."""
+"""Shared scan frequency configuration for Wichita scanners."""
 
 from __future__ import annotations
 

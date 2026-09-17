@@ -1,9 +1,9 @@
-# Kenneth - RF Forensics Configuration for Malta
+# Wichita - RF Forensics Configuration for Malta
 # OpenWebRX+ Configuration
 # Mission: Catching Bad Guys | Saving Lives
 
 receivers = {
-    "Kenneth_Malta_HackRF": {
+    "Wichita_Malta_HackRF": {
         "type": "hackrf",
         "ppm": 0,
         "device": "0",  # First HackRF device
@@ -87,12 +87,12 @@ receivers = {
 
 # General settings
 general_settings = {
-    "receiver_name": "Kenneth RF Forensics - Malta",
+    "receiver_name": "Wichita RF Forensics - Malta",
     "receiver_location": "Victoria, Gozo, Malta",
     "receiver_coordinates": [36.0444, 14.2401],  # Gozo coordinates
-    "receiver_admin": "Kenneth Project",
+    "receiver_admin": "Wichita Project",
     "receiver_description": "Mission-Critical RF Monitoring - Mediterranean",
-    "photo_title": "Kenneth - Catching Bad Guys | Saving Lives",
+    "photo_title": "Wichita - Catching Bad Guys | Saving Lives",
     "photo_description": "RF Digital Forensics Platform"
 }
 

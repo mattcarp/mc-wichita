@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Kenneth + Qwen3-ASR Integration
-Integrates Qwen3-ASR for maritime voice recognition in Kenneth project
+Wichita + Qwen3-ASR Integration
+Integrates Qwen3-ASR for maritime voice recognition in Wichita project
 """
 
 import requests
@@ -11,7 +11,7 @@ import os
 from pathlib import Path
 import time
 
-class KennethQwen3ASRIntegrator:
+class WichitaQwen3ASRIntegrator:
     def __init__(self):
         self.api_base = "https://bailian.console.alibabacloud.com"
         self.model = "qwen3-asr-flash"
@@ -20,7 +20,7 @@ class KennethQwen3ASRIntegrator:
     def _load_maritime_context(self):
         """Maritime and aviation context for enhanced recognition"""
         return """
-        KENNETH RF FORENSICS - Maritime/Aviation Context
+        WICHITA RF FORENSICS - Maritime/Aviation Context
         
         EMERGENCY FREQUENCIES:
         - Channel 16 (156.800 MHz): International Distress and Calling
@@ -145,8 +145,8 @@ class KennethQwen3ASRIntegrator:
                 "channels": "unknown"
             }
     
-    def process_kenneth_samples(self):
-        """Process all Kenneth maritime voice samples"""
+    def process_wichita_samples(self):
+        """Process all Wichita maritime voice samples"""
         samples = [
             "VOICE_CAPTURE_CH16_Emergency_156.800MHz_20250911_201907.wav",
             "VOICE_CAPTURE_CH09_Calling_156.450MHz_20250911_202004.wav", 
@@ -155,7 +155,7 @@ class KennethQwen3ASRIntegrator:
         
         results = []
         
-        print("🌊 KENNETH + QWEN3-ASR INTEGRATION TEST")
+        print("🌊 WICHITA + QWEN3-ASR INTEGRATION TEST")
         print("=" * 60)
         
         for sample in samples:
@@ -183,7 +183,7 @@ class KennethQwen3ASRIntegrator:
     def create_api_integration_guide(self):
         """Create guide for actual API integration"""
         guide = """
-# Kenneth + Qwen3-ASR API Integration Guide
+# Wichita + Qwen3-ASR API Integration Guide
 
 ## Step 1: API Setup
 ```python
@@ -227,7 +227,7 @@ def transcribe_maritime_audio(audio_file, context):
 - Add geographic context (Malta, Mediterranean)
 - Specify frequency/channel information
 
-## Step 4: Integration with Kenneth
+## Step 4: Integration with Wichita
 - Real-time processing of SDRplay captures
 - Automatic threat detection
 - Emergency alert system
@@ -239,22 +239,22 @@ def transcribe_maritime_audio(audio_file, context):
 - Perfect for continuous monitoring
 """
         
-        with open("kenneth_qwen3_integration_guide.md", "w") as f:
+        with open("wichita_qwen3_integration_guide.md", "w") as f:
             f.write(guide)
         
-        print("📋 Created: kenneth_qwen3_integration_guide.md")
+        print("📋 Created: wichita_qwen3_integration_guide.md")
         return guide
 
 def main():
-    integrator = KennethQwen3ASRIntegrator()
+    integrator = WichitaQwen3ASRIntegrator()
     
     # Process existing samples
-    results = integrator.process_kenneth_samples()
+    results = integrator.process_wichita_samples()
     
     # Create integration guide
     integrator.create_api_integration_guide()
     
-    print(f"\n✅ KENNETH + QWEN3-ASR INTEGRATION COMPLETE")
+    print(f"\n✅ WICHITA + QWEN3-ASR INTEGRATION COMPLETE")
     print(f"   Processed: {len(results)} audio samples")
     print(f"   Ready for: Live API integration")
     print(f"   Next step: Get Qwen3-ASR API credentials")

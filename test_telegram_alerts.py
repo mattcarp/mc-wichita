@@ -39,5 +39,5 @@ def test_send_test_message_uses_send_alert(monkeypatch) -> None:
     success = telegram_alerts.send_test_message()
 
     assert success is True
-    assert captured["message"] == "Kenneth Telegram integration test"
+    assert captured["message"] == "Wichita Telegram integration test"
     assert captured["stress_score"] == 71.0

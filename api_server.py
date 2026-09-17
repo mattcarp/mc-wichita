@@ -275,7 +275,7 @@ class AlertCreate(BaseModel):
     audio_url: Optional[str] = None
     tags: List[str] = Field(default_factory=list)
     metadata: Dict[str, Any] = Field(default_factory=dict)
-    source: str = Field(default="kenneth-sdr")
+    source: str = Field(default="wichita-sdr")
 
     @validator("title")
     def title_required(cls, v):
@@ -333,8 +333,8 @@ DISTRESS_KEYWORDS = {
     "emergency",
 }
 HIGH_PRIORITY_AUDIO_TERMS = {
-    "kenneth",
-    "kenneth signal",
+    "wichita",
+    "wichita signal",
     "ferry",
     "ferry terminal",
     "mayday",
@@ -354,7 +354,7 @@ class SpeakerCaptureRequest(BaseModel):
     capture_id: Optional[str] = Field(default=None, description="External capture id")
     frequency_hz: Optional[float] = Field(default=None, ge=1e6, le=6e9)
     transcript: Optional[str] = Field(default=None, description="Optional ASR transcript")
-    source: str = Field(default="kenneth-sdr")
+    source: str = Field(default="wichita-sdr")
 
 
 class SpeakerProfile(BaseModel):
@@ -846,7 +846,7 @@ def _dispatch_alert_to_mission_control(alert: AlertRecord) -> None:
         headers["Authorization"] = f"Bearer {token}"
 
     base_payload = {
-        "source": "kenneth-sdr",
+        "source": "wichita-sdr",
         "alert": alert.dict(),
     }
 
@@ -1497,7 +1497,7 @@ async def identify_speaker(
     capture_id: Optional[str] = Form(default=None),
     frequency_hz: Optional[float] = Form(default=None),
     transcript: Optional[str] = Form(default=None),
-    source: str = Form(default="kenneth-sdr"),
+    source: str = Form(default="wichita-sdr"),
 ):
     """
     Identify and track speakers across captures using lightweight voice fingerprints.
@@ -1802,7 +1802,7 @@ async def dashboard_asset(filename: str):
 
 @app.get("/", include_in_schema=False)
 async def root():
-    """Serve Kenneth dashboard."""
+    """Serve Wichita dashboard."""
     dashboard_path = Path(__file__).resolve().parent / "dashboard" / "index.html"
     if dashboard_path.exists():
         return FileResponse(str(dashboard_path), media_type="text/html")

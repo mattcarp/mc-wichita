@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""LavaSR v2 Ablation Test — mc-kenneth issue #28"""
+"""LavaSR v2 Ablation Test — mc-wichita issue #28"""
 
 import sys, os, time, json, datetime
 import numpy as np
@@ -17,7 +17,7 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 LAVASR_INPUT_SR = 16000
 TARGET_SR = 48000
 
-print(f"LavaSR v2 Ablation Test — mc-kenneth #28")
+print(f"LavaSR v2 Ablation Test — mc-wichita #28")
 print(f"Device: {DEVICE} | {datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}")
 print()
 
@@ -176,7 +176,7 @@ for r in ran[:4]:
 
 md += """## Methodology
 
-- Audio source: Kenneth/audio_samples (real radio MP3s — post-processed ElevenLabs denoise tests)
+- Audio source: Wichita/audio_samples (real radio MP3s — post-processed ElevenLabs denoise tests)
 - Before: librosa load at 16kHz → resample to 48kHz (naive baseline)
 - After: same 16kHz input → LavaSR enhance (denoise=True, enhance=True) → 48kHz
 - LSD: Log-Spectral Distance between naive and LavaSR output

@@ -1,7 +1,7 @@
 schema: spec-driven
 
 context: |
-  mc-kenneth — RF Forensics Platform with Speech-to-Speech Emotional Intelligence.
+  mc-wichita — RF Forensics Platform with Speech-to-Speech Emotional Intelligence.
   Monitors maritime + aviation frequencies (AIS, ADS-B, Maritime VHF) in Malta.
   Multilingual: Maltese / English / Italian / Arabic.
   Stack: Python primary (capture pipelines, API, stress scoring), HTML/JS dashboards.

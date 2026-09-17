@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Kenneth OpenWebRX+ Migration Tracker
+Wichita OpenWebRX+ Migration Tracker
 Monitors and guides the migration process
 """
 
@@ -31,7 +31,7 @@ class OpenWebRXMigration:
     
     def run_checks(self):
         print("="*60)
-        print("🎯 KENNETH OPENWEBRX+ MIGRATION STATUS")
+        print("🎯 WICHITA OPENWEBRX+ MIGRATION STATUS")
         print("="*60)
         print(f"📅 {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}")
         print()

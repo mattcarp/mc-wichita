@@ -26,14 +26,14 @@ def test_distress_alert_is_promoted_to_critical() -> None:
             "title": "Urgent marine call",
             "description": "Possible emergency traffic",
             "transcript": "MAYDAY, engine fire onboard",
-            "source": "kenneth-sdr",
+            "source": "wichita-sdr",
         },
     )
 
     assert response.status_code == 200
     payload = response.json()
     assert payload["severity"] == "critical"
-    assert payload["source"] == "kenneth-sdr"
+    assert payload["source"] == "wichita-sdr"
 
 
 def test_non_distress_alert_defaults_to_warning() -> None:
@@ -43,7 +43,7 @@ def test_non_distress_alert_defaults_to_warning() -> None:
             "title": "Routine channel activity",
             "description": "Regular VHF chatter",
             "signal_type": "marine_vhf",
-            "source": "kenneth-sdr",
+            "source": "wichita-sdr",
         },
     )
 
@@ -59,7 +59,7 @@ def test_alert_stores_detected_language_from_payload_or_metadata() -> None:
             "title": "Voice capture",
             "signal_type": "marine_vhf",
             "language": "IT",
-            "source": "kenneth-sdr",
+            "source": "wichita-sdr",
         },
     )
     assert explicit.status_code == 200
@@ -71,7 +71,7 @@ def test_alert_stores_detected_language_from_payload_or_metadata() -> None:
             "title": "Voice capture metadata fallback",
             "signal_type": "marine_vhf",
             "metadata": {"transcript_language": "AR"},
-            "source": "kenneth-sdr",
+            "source": "wichita-sdr",
         },
     )
     assert fallback.status_code == 200
@@ -102,7 +102,7 @@ def test_dispatch_to_mission_control_conversation_and_kanban(monkeypatch) -> Non
         json={
             "title": "Signal detected",
             "description": "Test Mission Control routing",
-            "source": "kenneth-sdr",
+            "source": "wichita-sdr",
         },
     )
 
@@ -146,7 +146,7 @@ def test_high_stress_alert_triggers_telegram_notification(monkeypatch) -> None:
             "transcript": "Breathing heavy and speaking rapidly; requesting help.",
             "metadata": {"stress_score": 83, "trigger": "rapid speech"},
             "frequency_hz": 156800000,
-            "source": "kenneth-sdr",
+            "source": "wichita-sdr",
         },
     )
 
@@ -179,7 +179,7 @@ def test_high_stress_alert_triggers_discord_notification(monkeypatch) -> None:
             "title": "Voice stress event",
             "transcript": "Caller is panicking and breathing heavily near harbor.",
             "metadata": {"stress_score": 84},
-            "source": "kenneth-sdr",
+            "source": "wichita-sdr",
         },
     )
 
@@ -203,16 +203,16 @@ def test_high_priority_event_triggers_spotify_audio_alert(monkeypatch) -> None:
     response = client.post(
         "/alerts",
         json={
-            "title": "Kenneth signal reported near ferry terminal",
+            "title": "Wichita signal reported near ferry terminal",
             "description": "Priority interception requested.",
             "signal_type": "marine_vhf",
-            "source": "kenneth-sdr",
+            "source": "wichita-sdr",
         },
     )
 
     assert response.status_code == 200
     assert len(sent) == 1
-    assert "Kenneth signal" in sent[0]["title"]
+    assert "Wichita signal" in sent[0]["title"]
     assert sent[0]["stress_score"] is None
 
 
@@ -233,7 +233,7 @@ def test_routine_alert_does_not_trigger_spotify_audio_alert(monkeypatch) -> None
             "title": "Routine harbor traffic",
             "description": "Normal channel checks.",
             "signal_type": "marine_vhf",
-            "source": "kenneth-sdr",
+            "source": "wichita-sdr",
         },
     )
 

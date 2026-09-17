@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Test Qwen3-ASR with Maritime Voice Samples
-Using the actual voice captures from Kenneth RF project
+Using the actual voice captures from Wichita RF project
 """
 
 import requests
@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 
 def test_qwen3_asr():
-    print("🎯 Testing Qwen3-ASR with Kenneth Maritime Samples")
+    print("🎯 Testing Qwen3-ASR with Wichita Maritime Samples")
     print("=" * 60)
     
     # Maritime voice samples

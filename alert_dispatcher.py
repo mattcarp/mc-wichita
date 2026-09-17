@@ -85,7 +85,7 @@ def _format_alert_text(
 ) -> str:
     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
     return (
-        "KENNETH HIGH-STRESS ALERT\n"
+        "WICHITA HIGH-STRESS ALERT\n"
         f"Stress score: {_normalize_stress_score(stress_score):.1f}%\n"
         f"Frequency: {_format_frequency(frequency)}\n"
         f"Indicators: {_format_indicators(indicators)}\n"

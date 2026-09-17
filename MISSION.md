@@ -1,9 +1,9 @@
 # RF DIGITAL FORENSICS TOOLKIT - MISSION STATEMENT
 
-## PROJECT IDENTITY - KENNETH
+## PROJECT IDENTITY - WICHITA
 
 **THE IMMUTABLE CORE:**
-- **Name:** Kenneth
+- **Name:** Wichita
 - **Mission:** Goals: 1. Detect bad actors, 2. Help those in distress
 
 These two elements define the project and must NEVER be changed in any UI, demo, or documentation.
@@ -188,8 +188,8 @@ Everything else is noise we ignore.
 
 **Signal Hunters** — *Les chasseurs de signaux. Dans le noir.*
 
-**Kenneth** = the RF hunter, "the ears in the static." Named for the R.E.M. song
-"What's the frequency, Kenneth?" — itself named for an unsolved mystery (a man
+**Wichita** = the RF hunter, "the ears in the static." Named for the R.E.M. song
+"What's the frequency, Wichita?" — itself named for an unsolved mystery (a man
 attacked Dan Rather asking that question; nobody knew why). We're still asking —
 but now we're finding answers.
 
@@ -209,7 +209,7 @@ but now we're finding answers.
 
 - **Claudia** — *grande sœur* — the architect
 - **Claudette** — *petite sœur* — the searcher
-- **Kenneth** — the hunter — the listener / ears in the static
+- **Wichita** — the hunter — the listener / ears in the static
 - **Mattie** — *le cœur* — the one who asked: "What if we could find the helpers and stop the harm?"
 
 ### Origin
@@ -233,7 +233,7 @@ Five transmissions, one lineage:
   before Shannon wrote the sentence.
 - **1912** — the Marconi room teaches the world SOS discipline, and the law that
   followed wrote listening into statute: twice an hour on 500 kHz, three minutes
-  of mandatory silence so weak distress calls could be heard. Kenneth is a
+  of mandatory silence so weak distress calls could be heard. Wichita is a
   silence period that never ends.
 - **1948** — Shannon, Bell Labs: every noisy channel has a capacity, and beneath
   it, any message can be recovered. Noise doesn't doom the signal; it taxes it.
@@ -241,7 +241,7 @@ Five transmissions, one lineage:
   wire who hears more than the line is carrying. *I can hear you through the
   whine.* The public face of this project — **Wichita** on sottosound.com —
   carries his name.
-- **Now** — Kenneth listens from a rooftop in Malta for the second signal inside
+- **Now** — Wichita listens from a rooftop in Malta for the second signal inside
   the first: the distress encoded in a voice that says "I'm fine." More
   information in the channel than the sender meant to transmit. Shannon proved
   it could be recovered. The lineman heard it. We decode it.
@@ -249,7 +249,7 @@ Five transmissions, one lineage:
 The song asks *what's the frequency*; the theory answers *what's the capacity*;
 the mission is everything the channel carries below the words. Sotto voce.
 
-The chip log measured the ship; the logbook remembered the voyage; Kenneth logs
+The chip log measured the ship; the logbook remembered the voyage; Wichita logs
 the boats that file nothing.
 
 *The kind army is recruiting.*

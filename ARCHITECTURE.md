@@ -1,8 +1,8 @@
-# 🏗️ KENNETH ARCHITECTURE v2.0 - WITH S2S EMOTIONAL INTELLIGENCE
+# 🏗️ WICHITA ARCHITECTURE v2.0 - WITH S2S EMOTIONAL INTELLIGENCE
 
 ## 🎯 SYSTEM OVERVIEW
 
-Kenneth is an emotionally-intelligent RF forensics platform that uses OpenAI's Speech-to-Speech (S2S) technology to detect both threats and distress in radio communications around Malta.
+Wichita is an emotionally-intelligent RF forensics platform that uses OpenAI's Speech-to-Speech (S2S) technology to detect both threats and distress in radio communications around Malta.
 
 ## 📡 CORE ARCHITECTURE
 
@@ -26,7 +26,7 @@ graph TB
         S2S --> CONTEXT[Context<br/>Understanding]
     end
     
-    subgraph "Kenneth Decision Engine"
+    subgraph "Wichita Decision Engine"
         EMOTION --> THREAT[Threat<br/>Detector]
         STRESS --> DISTRESS[Distress<br/>Classifier]
         ACCENT --> LANG[Language<br/>Router]
@@ -66,14 +66,14 @@ Scanner band coverage is now centralized in `scan_config.py` and consumed by
 ### Multi-Agent System with Handoffs
 
 ```typescript
-// Main Kenneth Controller Agent
-class KennethMainAgent extends VoiceAgent {
+// Main Wichita Controller Agent
+class WichitaMainAgent extends VoiceAgent {
     constructor() {
         super({
-            name: "Kenneth-Main",
+            name: "Wichita-Main",
             role: "Primary RF Monitor",
             temperature: 0.9,
-            prompt: KENNETH_MAIN_PROMPT
+            prompt: WICHITA_MAIN_PROMPT
         });
     }
     
@@ -98,7 +98,7 @@ class KennethMainAgent extends VoiceAgent {
 class ThreatAnalysisAgent extends VoiceAgent {
     constructor() {
         super({
-            name: "Kenneth-Threat",
+            name: "Wichita-Threat",
             role: "Threat Assessment Specialist",
             temperature: 0.8,  // Lower for more consistent threat detection
             tools: ['keyword_matcher', 'pattern_analyzer', 'voice_comparator']
@@ -110,7 +110,7 @@ class ThreatAnalysisAgent extends VoiceAgent {
 class DistressAnalysisAgent extends VoiceAgent {
     constructor() {
         super({
-            name: "Kenneth-Distress",
+            name: "Wichita-Distress",
             role: "Emergency Response Specialist",
             temperature: 0.85,
             tools: ['medical_analyzer', 'maritime_emergency_detector']
@@ -124,7 +124,7 @@ class DistressAnalysisAgent extends VoiceAgent {
 ### Real-time Emotional Dashboard
 
 ```html
-<!-- kenneth_s2s_dashboard.html -->
+<!-- wichita_s2s_dashboard.html -->
 <div class="emotion-panel">
     <!-- Live Emotion Meters -->
     <div class="emotion-meter" id="stress-meter">
@@ -182,7 +182,7 @@ class DistressAnalysisAgent extends VoiceAgent {
 
 ### 1. Audio Capture Pipeline
 ```python
-# kenneth_s2s_pipeline.py
+# wichita_s2s_pipeline.py
 
 import numpy as np
 from openai import RealtimeClient
@@ -199,7 +199,7 @@ class EmotionalContext:
     language: str
     accent: str
 
-class KennethS2SPipeline:
+class WichitaS2SPipeline:
     def __init__(self):
         self.s2s_client = RealtimeClient(api_key=OPENAI_API_KEY)
         self.audio_buffer = RingBuffer(seconds=30)
@@ -240,9 +240,9 @@ class KennethS2SPipeline:
 
 ### 2. WebSocket Real-time Updates
 ```javascript
-// kenneth_s2s_websocket.js
+// wichita_s2s_websocket.js
 
-class KennethS2SClient {
+class WichitaS2SClient {
     constructor() {
         this.ws = new WebSocket('ws://localhost:8080/s2s-stream');
         this.emotionChart = new EmotionChart('#emotion-display');
@@ -294,7 +294,7 @@ class KennethS2SClient {
 
 ### S2S Voice Agent Configuration
 ```yaml
-# kenneth_s2s_config.yaml
+# wichita_s2s_config.yaml
 
 voice_agents:
   main:
@@ -339,29 +339,29 @@ languages:
 version: '3.8'
 
 services:
-  kenneth-sdr:
-    image: kenneth/sdr-capture:latest
+  wichita-sdr:
+    image: wichita/sdr-capture:latest
     devices:
       - /dev/bus/usb  # For RSPdx-R2
     volumes:
       - ./audio_buffer:/data/audio
       
-  kenneth-s2s:
-    image: kenneth/s2s-processor:latest
+  wichita-s2s:
+    image: wichita/s2s-processor:latest
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
     ports:
       - "8081:8081"
       
-  kenneth-web:
-    image: kenneth/dashboard:latest
+  wichita-web:
+    image: wichita/dashboard:latest
     ports:
       - "8080:80"
     depends_on:
-      - kenneth-s2s
+      - wichita-s2s
       
-  kenneth-alerts:
-    image: kenneth/alert-system:latest
+  wichita-alerts:
+    image: wichita/alert-system:latest
     environment:
       - TWILIO_SID=${TWILIO_SID}
       - EMERGENCY_CONTACTS=${EMERGENCY_CONTACTS}
@@ -378,9 +378,9 @@ services:
 
 ### Monitoring Dashboard
 ```python
-# kenneth_metrics.py
+# wichita_metrics.py
 
-class KennethMetrics:
+class WichitaMetrics:
     def __init__(self):
         self.emotions_detected = Counter()
         self.alerts_triggered = []
@@ -413,9 +413,9 @@ class KennethMetrics:
 
 ### Access Control
 ```python
-# kenneth_security.py
+# wichita_security.py
 
-class KennethSecurity:
+class WichitaSecurity:
     def __init__(self):
         self.authorized_users = []
         self.audit_log = []
@@ -441,4 +441,4 @@ class KennethSecurity:
 4. **Sub-second alert generation for critical events**
 5. **Multi-language support with accent preservation**
 
-This architecture integrates S2S as the emotional intelligence brain of Kenneth!
+This architecture integrates S2S as the emotional intelligence brain of Wichita!

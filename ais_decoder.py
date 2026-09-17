@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-AIS Decoder — pyais-based NMEA sentence parser for Kenneth.
+AIS Decoder — pyais-based NMEA sentence parser for Wichita.
 Decodes AIS messages (types 1/2/3 position reports, type 5 voyage data,
 type 18/21 class-B/aid-to-nav) and returns structured vessel dicts.
 

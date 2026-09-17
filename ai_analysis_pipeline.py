@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Kenneth AI analysis pipeline for local audio files.
+Wichita AI analysis pipeline for local audio files.
 """
 
 from __future__ import annotations

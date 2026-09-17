@@ -1,22 +1,22 @@
-# AGENTS.md — mc-kenneth
+# AGENTS.md — mc-wichita
 
 Project context for AI coding agents (Claude Code, Cursor, Codex, Symphony workers).
 This is the cross-tool standard file ([agents.md](https://agents.md/)). `CLAUDE.md` symlinks here.
 
 ## What this project is
 
-**Kenneth — RF Forensics Platform with Speech-to-Speech Emotional Intelligence.** Monitors maritime and aviation frequencies in Malta to:
+**Wichita — RF Forensics Platform with Speech-to-Speech Emotional Intelligence.** Monitors maritime and aviation frequencies in Malta to:
 1. Detect threats through voice stress and behavioral analysis.
 2. Save lives by identifying both explicit and implicit distress signals (e.g. "I'm fine" said while crying).
 
 Multilingual environment (Maltese / English / Italian / Arabic). Runs against live SDR hardware (RTL-SDR, RSPdx, SDR++). Continuous capture from rooftop antenna, voice-stress scoring on captured audio, threat detection over keywords and behavioral cues.
 
-Read [`KENNETH_PRD.md`](KENNETH_PRD.md) and [`MISSION.md`](MISSION.md) for the canonical product context. The other `KENNETH_*.md` docs are decision records and progress reports — useful background, not active specs.
+Read [`WICHITA_PRD.md`](WICHITA_PRD.md) and [`MISSION.md`](MISSION.md) for the canonical product context. The other `WICHITA_*.md` docs are decision records and progress reports — useful background, not active specs.
 
 ## Stack
 
 - **Python** primary — capture pipelines (`adsb_decoder_live.py`, `ais_decoder_live.py`), API server (`api_server.py`), stress scoring, transcription evaluation (LAVASR ablation).
-- **HTML / JS** for dashboards (`dashboard/`, `kenneth-websdr/`).
+- **HTML / JS** for dashboards (`dashboard/`, `wichita-websdr/`).
 - **Shell** for setup and capture orchestration.
 - **SDR hardware:** RTL-SDR, RSPdx; **SDR++.app** present for desktop-side inspection.
 - **STT / S2S:** OpenAI Realtime + Whisper variants explored; LAVASR evaluation work.
@@ -59,15 +59,15 @@ audio_samples/                     Real audio captures (test fixtures)
 rf_captures/                       Real RF captures
 config/                            Configuration files
 dashboard/                         Web dashboard
-kenneth-websdr/                    Web SDR client
+wichita-websdr/                    Web SDR client
 ablation_output/                   LAVASR ablation results
 lavasr_eval_output/                LAVASR evaluation runs
 fake_audio_backup/                 Synthetic test data (label clearly)
 SDR++.app/                         macOS SDR++ application
-KENNETH_PRD.md                     Canonical product spec
+WICHITA_PRD.md                     Canonical product spec
 MISSION.md                         Mission statement
 ARCHITECTURE.md                    System architecture
-KENNETH_*.md                       Decision + progress records (background, not specs)
+WICHITA_*.md                       Decision + progress records (background, not specs)
 archive/docs/                      Archived status/handoff/todo reports (historical, not specs)
 symphony/                          Linear→Claude harness (port 4753)
 openspec/                          OpenSpec proposals + locked specs
@@ -80,11 +80,11 @@ openspec/                          OpenSpec proposals + locked specs
 - Tests live alongside the module (`test_<module>.py`), not in a separate `tests/` tree.
 - Log through `logging` with structured fields; capture-pipeline runs produce timestamped output to disk.
 - Frequencies are constants at module top; do not magic-number them inside loops.
-- The README currently has placeholder content (junk paste from elsewhere). The real entry point is `KENNETH_PRD.md` until the README is rewritten.
+- The README currently has placeholder content (junk paste from elsewhere). The real entry point is `WICHITA_PRD.md` until the README is rewritten.
 
 ## Symphony / agent runs (this is important if you're invoked from Symphony)
 
-Inside a fresh clone at `~/symphony_workspaces/<ISSUE-ID>/` on workshop, on branch `symphony/<ISSUE-ID>`. Read this file + `KENNETH_PRD.md` + `MISSION.md` + the relevant module's source before making changes.
+Inside a fresh clone at `~/symphony_workspaces/<ISSUE-ID>/` on workshop, on branch `symphony/<ISSUE-ID>`. Read this file + `WICHITA_PRD.md` + `MISSION.md` + the relevant module's source before making changes.
 
 Capture-pipeline-affecting changes need explicit acknowledgement of impact in the commit body — which decoder is affected, whether existing fixtures still pass, whether the antenna setup needs to be re-validated. Don't silently change capture parameters.
 
@@ -99,4 +99,4 @@ For TypeScript inside `symphony/`: `cd symphony && npx tsc --noEmit`.
 - Don't expand capture scope or retention without an explicit issue.
 - Don't write tests against mocks for hardware-touching code.
 - Don't introduce a new SDR backend or transcription model without surfacing the choice in the issue.
-- Don't use emojis in code or commits. KENNETH_PRD.md has emojis (it's a record); don't propagate them into new code.
+- Don't use emojis in code or commits. WICHITA_PRD.md has emojis (it's a record); don't propagate them into new code.

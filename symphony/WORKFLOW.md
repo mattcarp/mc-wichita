@@ -2,7 +2,7 @@
 tracker:
   kind: linear
   api_key: $LINEAR_API_KEY
-  # Hardcoded for mc-kenneth so a single Infisical workspace
+  # Hardcoded for mc-wichita so a single Infisical workspace
   # (shared with mc-briefings, mc-siam, claudette-*) doesn't collide on
   # the LINEAR_TEAM_KEY env var.
   team_key: KEN
@@ -25,14 +25,14 @@ hooks:
   after_create: |
     set -euo pipefail
     unset GITHUB_TOKEN
-    git clone https://github.com/mattcarp/mc-kenneth.git .
+    git clone https://github.com/mattcarp/mc-wichita.git .
     git checkout -b symphony/$SYMPHONY_ISSUE_IDENTIFIER
 
   before_run: |
     set -euo pipefail
     unset GITHUB_TOKEN
     if [ -z "$(ls -A . 2>/dev/null)" ]; then
-      git clone https://github.com/mattcarp/mc-kenneth.git .
+      git clone https://github.com/mattcarp/mc-wichita.git .
       git checkout -b symphony/$SYMPHONY_ISSUE_IDENTIFIER 2>/dev/null || git checkout symphony/$SYMPHONY_ISSUE_IDENTIFIER
     fi
     git fetch origin main --quiet || true
@@ -80,13 +80,13 @@ You are working on Linear issue **{{ issue.identifier }}**: {{ issue.title }}
 
 ## Working agreement
 
-- You are inside a fresh git worktree of `mc-kenneth`. The branch `symphony/{{ issue.identifier }}` is checked out.
-- Read [CLAUDE.md](CLAUDE.md) / [AGENTS.md](AGENTS.md) and `KENNETH_PRD.md` and `MISSION.md` before making changes.
+- You are inside a fresh git worktree of `mc-wichita`. The branch `symphony/{{ issue.identifier }}` is checked out.
+- Read [CLAUDE.md](CLAUDE.md) / [AGENTS.md](AGENTS.md) and `WICHITA_PRD.md` and `MISSION.md` before making changes.
 - This is an **RF forensics platform** — many subsystems run against live SDR hardware (RTL-SDR, RSPdx). If your issue affects a capture pipeline, document the impact on the existing capture chain in the commit body.
 - Make focused, minimal changes that map directly to the issue.
 - For Python changes: run `python3 -m pytest <module>/` for any module you touched. Don't add tests against mocks — capture pipelines and decoders should hit real hardware fixtures or fail honestly.
 - Commit with a message that references `{{ issue.identifier }}`. Do not push unless the issue's labels include `auto-push`.
-- The repo has many docs (`KENNETH_*.md`). They're a record of decisions, not active specs — read them as background, but the canonical specification of behaviour for an issue is the issue itself + `KENNETH_PRD.md`.
+- The repo has many docs (`WICHITA_*.md`). They're a record of decisions, not active specs — read them as background, but the canonical specification of behaviour for an issue is the issue itself + `WICHITA_PRD.md`.
 
 ## Closing the issue (REQUIRED)
 

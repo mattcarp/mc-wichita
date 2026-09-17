@@ -59,8 +59,8 @@ privileged: true  # Allows hardware access
 ```
 
 ### 3. **Easy Configuration**
-- Edit: `~/kenneth-openwebrx-config/config_webrx.py`
-- Restart: `docker restart kenneth-websdr`
+- Edit: `~/wichita-openwebrx-config/config_webrx.py`
+- Restart: `docker restart wichita-websdr`
 - No recompilation needed!
 
 ### 4. **Professional Deployment**
@@ -80,7 +80,7 @@ docker pull jketterl/openwebrx:latest
 
 # Run with HackRF support
 docker run -d \
-  --name kenneth-websdr \
+  --name wichita-websdr \
   -p 8073:8073 \
   --privileged \
   --device /dev/bus/usb \
@@ -90,7 +90,7 @@ docker run -d \
 docker ps
 
 # View logs
-docker logs -f kenneth-websdr
+docker logs -f wichita-websdr
 
 # Open browser
 open http://localhost:8073
@@ -130,17 +130,17 @@ docker run -p 8074:8073 ...
 ### Container won't start:
 ```bash
 # Check logs
-docker logs kenneth-websdr
+docker logs wichita-websdr
 
 # Remove and recreate
-docker rm kenneth-websdr
+docker rm wichita-websdr
 docker run ...
 ```
 
 ### HackRF not found:
 ```bash
 # Check USB in container
-docker exec kenneth-websdr ls /dev/bus/usb
+docker exec wichita-websdr ls /dev/bus/usb
 
 # Restart with more permissions
 docker run --privileged -v /dev/bus/usb:/dev/bus/usb ...

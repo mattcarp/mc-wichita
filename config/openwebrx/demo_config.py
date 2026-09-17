@@ -1,9 +1,9 @@
-# Minimal Kenneth Demo Configuration
+# Minimal Wichita Demo Configuration
 # For testing without HackRF hardware
 
-receiver_name = "Kenneth RF Forensics - Demo Mode"
+receiver_name = "Wichita RF Forensics - Demo Mode"
 receiver_location = "Victoria, Gozo, Malta"
-receiver_admin = "Kenneth System"
+receiver_admin = "Wichita System"
 receiver_gps = (35.8997, 14.5136)
 
 web_port = 8073

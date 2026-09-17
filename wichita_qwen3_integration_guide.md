@@ -1,5 +1,5 @@
 
-# Kenneth + Qwen3-ASR API Integration Guide
+# Wichita + Qwen3-ASR API Integration Guide
 
 ## Step 1: API Setup
 ```python
@@ -43,7 +43,7 @@ def transcribe_maritime_audio(audio_file, context):
 - Add geographic context (Malta, Mediterranean)
 - Specify frequency/channel information
 
-## Step 4: Integration with Kenneth
+## Step 4: Integration with Wichita
 - Real-time processing of SDRplay captures
 - Automatic threat detection
 - Emergency alert system

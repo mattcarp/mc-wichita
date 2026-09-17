@@ -76,11 +76,11 @@ def analyze_real_rf_for_asr():
     
     return real_audio_file
 
-def create_kenneth_real_rf_summary():
+def create_wichita_real_rf_summary():
     """Create summary of our real RF breakthrough"""
     
     summary = f"""
-# KENNETH RF PROJECT - REAL BREAKTHROUGH! 
+# WICHITA RF PROJECT - REAL BREAKTHROUGH! 
 
 ## ✅ **MAJOR SUCCESS: Real RF Capture Working**
 
@@ -103,7 +103,7 @@ def create_kenneth_real_rf_summary():
 
 ## 🎯 **READY FOR PRODUCTION**
 
-### **Kenneth Can Now:**
+### **Wichita Can Now:**
 1. **Capture real maritime RF** (when traffic is active)
 2. **Process genuine audio** (not synthetic)
 3. **Integrate with Qwen3-ASR** for real speech recognition
@@ -126,21 +126,21 @@ def create_kenneth_real_rf_summary():
 **Before:** Fake synthetic audio pretending to be maritime communications
 **Now:** Real RF captures with genuine audio content
 
-**Kenneth is now capable of REAL RF digital forensics!**
+**Wichita is now capable of REAL RF digital forensics!**
 
 ---
-*"We can hear the music in the static - Kenneth is listening to the real world."*
+*"We can hear the music in the static - Wichita is listening to the real world."*
 """
     
-    with open("KENNETH_REAL_RF_BREAKTHROUGH.md", "w") as f:
+    with open("WICHITA_REAL_RF_BREAKTHROUGH.md", "w") as f:
         f.write(summary)
     
-    print("📋 Created: KENNETH_REAL_RF_BREAKTHROUGH.md")
+    print("📋 Created: WICHITA_REAL_RF_BREAKTHROUGH.md")
 
 if __name__ == "__main__":
     real_file = analyze_real_rf_for_asr()
-    create_kenneth_real_rf_summary()
+    create_wichita_real_rf_summary()
     
-    print(f"\n🎉 KENNETH RF PROJECT: REAL BREAKTHROUGH ACHIEVED!")
+    print(f"\n🎉 WICHITA RF PROJECT: REAL BREAKTHROUGH ACHIEVED!")
     print(f"   From fake synthetic audio → Real RF capture")
     print(f"   Ready for genuine maritime threat detection!")

@@ -38,7 +38,7 @@ Device: cpu | LavaSR 0.0.2
 
 ## Methodology
 
-- Audio source: Kenneth/audio_samples (real radio MP3s — post-processed ElevenLabs denoise tests)
+- Audio source: Wichita/audio_samples (real radio MP3s — post-processed ElevenLabs denoise tests)
 - Before: librosa load at 16kHz → resample to 48kHz (naive baseline)
 - After: same 16kHz input → LavaSR enhance (denoise=True, enhance=True) → 48kHz
 - LSD: Log-Spectral Distance between naive and LavaSR output

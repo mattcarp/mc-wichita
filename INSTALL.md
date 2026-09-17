@@ -29,9 +29,9 @@ brew install gnuradio
 brew install sox  # For audio processing
 ```
 
-## 3. Frontend Setup (Kenneth WebSDR)
+## 3. Frontend Setup (Wichita WebSDR)
 ```bash
-cd kenneth-websdr
+cd wichita-websdr
 npm install
 npm run dev  # Runs on port 4000
 ```
@@ -76,7 +76,7 @@ python tests/test_hardware.py
 ./start_api.sh
 
 # Frontend Development (ALWAYS use port 4000, not 3000)
-cd kenneth-websdr
+cd wichita-websdr
 npm run dev
 
 # Run tests

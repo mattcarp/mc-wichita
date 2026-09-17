@@ -101,7 +101,7 @@ class RealAutonomousVoiceHunter:
         self.captures_saved = 0
         self.transcripts_dir = self.session_dir / "transcripts"
         self.transcripts_dir.mkdir(parents=True, exist_ok=True)
-        self.whisper_model_size = os.getenv("KENNETH_WHISPER_MODEL", "large-v3")
+        self.whisper_model_size = os.getenv("WICHITA_WHISPER_MODEL", "large-v3")
         
     def setup_logging(self):
         """Setup logging for autonomous operation"""

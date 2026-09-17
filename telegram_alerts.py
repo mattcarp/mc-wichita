@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Telegram alert integration for Kenneth.
+Telegram alert integration for Wichita.
 """
 
 from __future__ import annotations
@@ -40,7 +40,7 @@ def _format_alert_text(
     score = _normalize_stress_score(stress_score)
     preview = _preview_text(transcription_preview)
     return (
-        "KENNETH HIGH-STRESS ALERT\n"
+        "WICHITA HIGH-STRESS ALERT\n"
         f"Message: {message.strip() or 'High-stress voice event'}\n"
         f"Stress score: {score:.1f}%\n"
         f"Transcription preview: {preview}\n"
@@ -82,9 +82,9 @@ def send_alert(
 
 def send_test_message() -> bool:
     return send_alert(
-        message="Kenneth Telegram integration test",
+        message="Wichita Telegram integration test",
         stress_score=71.0,
-        transcription_preview="Test message from Kenneth high-stress alert pipeline.",
+        transcription_preview="Test message from Wichita high-stress alert pipeline.",
     )
 
 

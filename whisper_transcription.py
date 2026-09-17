@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Whisper transcription helpers for Kenneth RF captures.
+Whisper transcription helpers for Wichita RF captures.
 """
 
 from __future__ import annotations

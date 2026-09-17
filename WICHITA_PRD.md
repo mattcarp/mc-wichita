@@ -1,4 +1,4 @@
-# 📋 KENNETH PRODUCT REQUIREMENTS DOCUMENT (PRD)
+# 📋 WICHITA PRODUCT REQUIREMENTS DOCUMENT (PRD)
 ## RF Forensics Platform with S2S Emotional Intelligence
 
 **Version:** 2.0  
@@ -10,11 +10,11 @@
 
 ## 1. EXECUTIVE SUMMARY
 
-Kenneth is an emotionally-intelligent RF forensics platform that monitors maritime and aviation frequencies to:
+Wichita is an emotionally-intelligent RF forensics platform that monitors maritime and aviation frequencies to:
 1. **Detect threats** through voice stress and behavioral analysis
 2. **Save lives** by identifying both explicit and implicit distress signals
 
-The integration of OpenAI's Speech-to-Speech (S2S) technology transforms Kenneth from a passive listening system into an active emotional intelligence platform capable of detecting panic, exhaustion, and fear that traditional transcription misses.
+The integration of OpenAI's Speech-to-Speech (S2S) technology transforms Wichita from a passive listening system into an active emotional intelligence platform capable of detecting panic, exhaustion, and fear that traditional transcription misses.
 
 ---
 
@@ -38,7 +38,7 @@ The integration of OpenAI's Speech-to-Speech (S2S) technology transforms Kenneth
 
 ## 3. SOLUTION OVERVIEW
 
-### Kenneth S2S Architecture:
+### Wichita S2S Architecture:
 ```
 RF Signal → SDR++ → Audio → S2S Analysis → Emotional Intelligence → Alert
 ```
@@ -59,22 +59,22 @@ RF Signal → SDR++ → Audio → S2S Analysis → Emotional Intelligence → Al
 #### 1. Coast Guard Operator
 - **Needs**: Immediate alerts for vessels in distress
 - **Pain Points**: Can't monitor all channels simultaneously
-- **Kenneth Solution**: Automated monitoring with emotion-based prioritization
+- **Wichita Solution**: Automated monitoring with emotion-based prioritization
 
 #### 2. Air Traffic Controller
 - **Needs**: Detect pilot incapacitation or confusion
 - **Pain Points**: Subtle signs of hypoxia or disorientation
-- **Kenneth Solution**: Voice quality degradation detection
+- **Wichita Solution**: Voice quality degradation detection
 
 #### 3. Emergency Coordinator
 - **Needs**: Triage multiple simultaneous incidents
 - **Pain Points**: Limited resources, priority decisions
-- **Kenneth Solution**: Emotion-based severity scoring
+- **Wichita Solution**: Emotion-based severity scoring
 
 #### 4. Security Analyst
 - **Needs**: Detect criminal activity and threats
 - **Pain Points**: Coded language, normal words with bad intent
-- **Kenneth Solution**: Tone and stress analysis beyond words
+- **Wichita Solution**: Tone and stress analysis beyond words
 
 ---
 
@@ -309,7 +309,7 @@ Backend:
 ## APPROVAL
 
 **Product Owner**: Matt Carp  
-**Technical Lead**: Kenneth System  
+**Technical Lead**: Wichita System  
 **Date**: September 2025  
 **Status**: Approved for Development
 

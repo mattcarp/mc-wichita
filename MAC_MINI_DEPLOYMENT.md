@@ -16,7 +16,7 @@
 3. **Install Node.js dependencies:**
    ```bash
    npm install
-   cd kenneth-websdr && npm install
+   cd wichita-websdr && npm install
    ```
 
 4. **Hardware Setup (SDRplay):**
@@ -39,7 +39,7 @@ python3 api_server.py
 
 ### Frontend (Port 4000)
 ```bash
-cd kenneth-websdr
+cd wichita-websdr
 npm run build
 npm start
 ```
@@ -55,7 +55,7 @@ npm start
 ## Access Points
 - API Documentation: http://localhost:8000/docs
 - Frontend Dashboard: http://localhost:4000
-- Kenneth WebSDR: http://localhost:4000
+- Wichita WebSDR: http://localhost:4000
 
 ## Hardware Support
 - SDRplay RSPdx/RSPduo (primary)

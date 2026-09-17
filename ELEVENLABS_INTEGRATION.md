@@ -49,7 +49,7 @@ clean_audio = preprocessor.process_file(Path("noisy_rf.wav"))
 ✅ **ElevenLabsClient** - Retry logic, timeout handling, error management  
 ✅ **Audio Preprocessing** - Format conversion, normalization, pre-filtering  
 ✅ **Buffering System** - Thread-safe streaming buffers for continuous processing  
-✅ **RF Pipeline Integration** - Kenneth pipeline → Preprocessor → ElevenLabs → Clean audio  
+✅ **RF Pipeline Integration** - Wichita pipeline → Preprocessor → ElevenLabs → Clean audio  
 ✅ **Streaming Support** - Real-time chunk processing for live RF streams  
 
 ## Current Status

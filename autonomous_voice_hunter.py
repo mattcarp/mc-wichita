@@ -202,7 +202,7 @@ class AutonomousVoiceHunter:
         self.transcripts_dir = self.session_dir / "transcripts"
         self.transcripts_dir.mkdir(parents=True, exist_ok=True)
         self.transcriptions = []
-        self.whisper_model_size = os.getenv("KENNETH_WHISPER_MODEL", "large-v3")
+        self.whisper_model_size = os.getenv("WICHITA_WHISPER_MODEL", "large-v3")
         
         self.logger.info(f"🎯 Autonomous Voice Hunter initialized")
         self.logger.info(f"Session: {session_name}")
