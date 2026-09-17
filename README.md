@@ -63,18 +63,24 @@ keys, ever.
 ## Status, stated plainly
 
 Working: capture pipelines, decoding, stress scoring, alert dispatch, the local
-evidence dashboard (17 Python/API tests, 7 JavaScript policy tests and 17 browser
-scenarios passing as of the 2026-09-14 review).
+evidence dashboard. The UTC timestamp contract is in place across the API and
+capture code (commit 006bee2) and the aware-versus-naive ageing behaviour is
+covered by `test_evidence_context.py`.
 
 Not yet established:
 
-- No `rf_captures/` in the checkout and **no genuine capture record with
-  provenance**. This is the next milestone and it needs the antenna.
-- Timestamps: API-created records still use naive `datetime.now()` (finding F2);
-  the UTC contract is the first local fix.
+- **No capture with established provenance.** Three 5 s, 48 kHz recordings sit at
+  the repo root (`REAL_RTL_CAPTURE_*`, 2025-09-12): non-silent, distinct from each
+  other, and consistent with the real path in `rtl_sdr_real_capture.py`. But none
+  carries a source record, observation time or analysis method, and the repo also
+  holds a `fake_audio_backup/` directory. A filename asserting REAL_ is not
+  provenance. There is still no `rf_captures/` and no live reception.
 - `wichita-websdr/` currently holds a package manifest and no application source;
   the tested UI is the FastAPI root plus `dashboard/`.
 - Capture and alert stores are process-local, so history dies with the process.
 - The acoustic stress score is experimental, not a validated probability of distress.
 
-See the progress review for the full list and the blockers behind each item.
+The 2026-09-14 review's F2 entry is now historical: finding F2 is closed, F1 was
+fixed during that review, and F3 and F4 remain open. Read the review for F3/F4
+detail, not as a current blocker list.
+
