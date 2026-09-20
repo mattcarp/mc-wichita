@@ -4,24 +4,52 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="dark" />
-  <title>Wichita · Signal evidence</title>
+  <title>Wichita · RF intelligence</title>
   <link rel="icon" href="data:," />
   <link rel="stylesheet" href="/dashboard/vendor/leaflet.css" />
-  <link rel="stylesheet" href="/dashboard/dashboard.css" />
+  <link rel="stylesheet" href="/dashboard/dashboard.css?v=20260919-console" />
   <script defer src="/dashboard/vendor/leaflet.js"></script>
-  <script type="module" src="/dashboard/dashboard.js"></script>
+  <script type="module" src="/dashboard/dashboard.js?v=20260919-console"></script>
 </head>
 <body>
   <a class="skip-link" href="#workspace">Skip to evidence workspace</a>
   <main class="wrap">
     <header class="topbar">
-      <div class="identity"><span class="brand-mark" aria-hidden="true">W</span><div><h1>Wichita</h1><p>RF evidence · Malta maritime &amp; aviation</p></div></div>
+      <div class="identity"><span class="brand-mark" aria-hidden="true">W</span><div><h1>Wichita</h1><p>RF intelligence / Malta station</p></div></div>
       <div class="controls"><label class="mode-control">Data source <select id="dataMode"><option value="live">Local API</option><option value="replay">Historical samples</option></select></label><button id="refreshNow" type="button">Refresh</button><label class="toggle"><input id="autoRefreshToggle" type="checkbox" checked /> Auto-refresh</label></div>
     </header>
-    <section class="mission border-border" aria-label="Mission"><p>Detect bad actors. Help those in distress.</p><span>Listen. Inspect the evidence. Decide.</span></section>
+    <section class="mission" aria-label="Mission"><div><p class="eyebrow">Maritime / Aviation / Voice intelligence</p><p>Detect bad actors.<br><span class="mission-emphasis">Help those in distress.</span></p></div><div class="mission-context"><span>35.90° N &nbsp; 14.51° E</span><p>Listening beyond the words.</p><span>Maltese · English · Italian · Arabic</span></div></section>
     <div class="feed-summary"><span id="overallState" class="state">Connecting</span><span id="updatedAt" role="status">Checking the local API…</span></div>
     <aside id="replayNotice" class="notice border-border" hidden>Historical samples · March 2026 · Provenance unverified. Some references are labelled SIM. These are not live observations or validated distress events.</aside>
+    <div class="instrument-grid">
+    <section class="panel rf-preview border-border" aria-labelledby="rfTitle">
+      <div class="panel-heading"><div><p class="eyebrow">Wideband receiver / visual preview</p><h2 id="rfTitle">Spectrum &amp; waterfall</h2></div><div class="controls"><span class="state warn">Synthetic preview</span><button id="pauseRf" type="button">Pause traces</button></div></div>
+      <div class="receiver-readout"><div><span class="readout-label">Preview channel</span><strong id="previewFrequency">156.800 MHz</strong></div><span class="band-label">VHF<br>108–174 MHz</span></div>
+      <canvas id="rfCanvas" role="img" aria-label="Synthetic RF spectrum above a scrolling waterfall. Peaks illustrate aviation and maritime frequencies, not received signals."></canvas>
+      <div class="rf-legend" aria-label="Preview frequency selection">
+        <button type="button" data-preview-frequency="119.450" aria-pressed="false"><span>Approach</span>119.450</button>
+        <button type="button" data-preview-frequency="121.500" aria-pressed="false"><span>Aviation guard</span>121.500</button>
+        <button type="button" data-preview-frequency="156.450" aria-pressed="false"><span>Maritime CH09</span>156.450</button>
+        <button type="button" data-preview-frequency="156.800" aria-pressed="true"><span>Distress CH16</span>156.800</button>
+        <button type="button" data-preview-frequency="162.025" aria-pressed="false"><span>AIS 2</span>162.025</button>
+      </div>
+      <div class="waveform-heading"><span>Audio envelope <span class="muted">/ generated waveform</span></span><span class="waveform-key">Synthetic signal</span></div>
+      <canvas id="audioPreviewCanvas" role="img" aria-label="Generated audio waveform for the selected preview channel, not a received recording."></canvas>
+      <p class="source-note">Synthetic visualization · Channel selection changes this preview only.</p>
+    </section>
+      <article class="panel map-panel border-border">
+        <div class="panel-heading"><div><p class="eyebrow">Central Mediterranean</p><h2 id="mapTitle">Malta overview</h2></div><button id="showBasemap" type="button">Show basemap</button></div>
+        <p class="panel-subtitle" id="mapSummary">Select an event to see whether it has recorded coordinates.</p>
+        <div id="evidenceMap" aria-label="Geographic context map"></div>
+        <div class="map-footer"><span id="mapCoordinates">35.9000° N · 14.5100° E · overview only</span><button type="button" id="resetMap">Reset view</button></div>
+        <p class="source-note" id="mapSource">Coordinate grid only. Show basemap loads OpenStreetMap tiles for the visible area.</p>
+        <div class="association border-border"><h3>Vessel association</h3><p id="associationNote">No verified, time-aligned vessel feed is connected. Nearby vessels cannot identify the speaker.</p></div>
+      </article>
+    </div>
     <section class="health-grid" aria-label="Source delivery health" id="sourceHealth"></section>
+    <section class="signal-path border-border" aria-label="Wichita analysis workflow">
+      <span class="eyebrow">From signal to meaning</span><span>RF capture <b aria-hidden="true">→</b> Voice &amp; language <b aria-hidden="true">→</b> Emotional cues <b aria-hidden="true">→</b> Evidence review</span><small>Detect distress beyond the words</small>
+    </section>
     <section class="workspace" id="workspace" aria-label="Evidence workspace">
       <article class="panel queue-panel border-border">
         <div class="panel-heading"><div><p class="eyebrow">Review queue</p><h2>Signal events</h2></div><span class="count" id="eventCount">0</span></div>
@@ -32,14 +60,6 @@
       <article class="panel evidence-panel border-border">
         <div class="panel-heading"><div><p class="eyebrow">Selected event</p><h2 id="evidenceTitle">Inspect the evidence</h2></div><span id="evidenceOrigin" class="state">No selection</span></div>
         <div id="evidenceBody"><div class="selection-empty"><span class="empty-symbol" aria-hidden="true">⌁</span><h3>Every signal needs context.</h3><p>Select an event to inspect its recording, original transcript, source and timing.</p><p class="muted">No location, measurement or conclusion is filled in when evidence is missing.</p></div></div>
-      </article>
-      <article class="panel map-panel border-border">
-        <div class="panel-heading"><div><p class="eyebrow">Geographic context</p><h2 id="mapTitle">Malta overview</h2></div><button id="showBasemap" type="button">Show basemap</button></div>
-        <p class="panel-subtitle" id="mapSummary">Select an event to see whether it has recorded coordinates.</p>
-        <div id="evidenceMap" aria-label="Geographic context map"></div>
-        <div class="map-footer"><span id="mapCoordinates">35.9000° N · 14.5100° E · overview only</span><button type="button" id="resetMap">Reset view</button></div>
-        <p class="source-note" id="mapSource">Coordinate grid only. Show basemap loads OpenStreetMap tiles for the visible area.</p>
-        <div class="association border-border"><h3>Vessel association</h3><p id="associationNote">No verified, time-aligned vessel feed is connected. Nearby vessels cannot identify the speaker.</p></div>
       </article>
       <article class="panel question-panel border-border">
         <div class="panel-heading"><div><p class="eyebrow">Ask the evidence</p><h2>What do we actually know?</h2></div></div>
