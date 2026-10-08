@@ -39,6 +39,7 @@ from api_maritime_aviation import add_maritime_aviation_routes
 from alert_dispatcher import send_stress_alert
 from discord_alerts import send_alert as send_discord_alert
 from evidence_context import delivery_health, evidence_context, answer_question
+from capture_provenance import ProvenanceImportError, import_capture
 from whisper_transcription import WhisperConfig, transcribe_audio_file
 from ai_analysis_pipeline import analyze_audio_file, extract_stress_features, score_stress
 
@@ -1464,6 +1465,38 @@ async def get_delivery_health():
 async def list_captures(limit: int = Query(100, ge=1, le=500)):
     """List recent signal captures for dashboard usage."""
     return list(reversed(CAPTURES[-limit:]))
+
+
+@app.post("/imports/provenance-capture", tags=["capture"], response_model=AlertRecord)
+async def import_provenance_capture(
+    audio_path: str = Query(..., description="Absolute or repo-relative path to a WAV capture"),
+):
+    """
+    Read-only provenance import into the local ALERTS store.
+
+    Does not invoke Mission Control, Telegram, Discord, or websocket dispatch.
+    """
+    candidate = Path(audio_path)
+    if not candidate.is_file():
+        repo_relative = Path(__file__).resolve().parent / audio_path
+        if repo_relative.is_file():
+            candidate = repo_relative
+        else:
+            raise HTTPException(status_code=404, detail="Audio file not found")
+
+    try:
+        imported = import_capture(candidate)
+    except ProvenanceImportError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    alert_fields = imported.as_alert_kwargs()
+    alert_fields["signal_type"] = SignalType.UNKNOWN
+    alert_fields["severity"] = AlertSeverity.INFO
+    record = AlertRecord(**alert_fields)
+    ALERTS.append(record)
+    if len(ALERTS) > MAX_ALERTS:
+        ALERTS.pop(0)
+    return record
 
 
 @app.get("/stress-alerts", tags=["alerts"], response_model=List[AlertRecord])
