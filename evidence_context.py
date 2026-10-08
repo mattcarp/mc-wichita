@@ -23,10 +23,10 @@ RecordLike = Union[Any, Dict[str, Any]]
 def _as_dict(record: RecordLike) -> Dict[str, Any]:
     if isinstance(record, dict):
         return record
-    if hasattr(record, "dict"):
-        return record.dict()
     if hasattr(record, "model_dump"):
         return record.model_dump()
+    if hasattr(record, "dict"):
+        return record.dict()
     raise TypeError(f"Unsupported record type: {type(record)!r}")
 
 
