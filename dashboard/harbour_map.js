@@ -1,3 +1,5 @@
+import { EntityMotion } from "./map_motion.js?v=20261009-20";
+
 const TYPE_COLORS = {
   passenger: "#5eb8ff",
   cargo: "#d4a84b",
@@ -88,6 +90,12 @@ export class HarbourMap {
     this.bases = [];
     this.paths = null;
     this.selectedMmsi = null;
+    this.selectedPlaneId = null;
+    this.planes = [];
+    this.satelliteTracks = [];
+    this.follow = null;
+    this.shipMotion = new EntityMotion(5000);
+    this.planeMotion = new EntityMotion(5000);
     this.posHistory = new Map();
     this.view = { minLat: 35.82, maxLat: 36.08, minLon: 14.28, maxLon: 14.58 };
     this.zoomMode = "all";
@@ -101,6 +109,38 @@ export class HarbourMap {
 
   onSelect(fn) {
     this._onSelect = fn;
+  }
+
+  onPlaneSelect(fn) {
+    this._onPlaneSelect = fn;
+  }
+
+  setFollow(target) {
+    this.follow = target;
+    this._draw();
+  }
+
+  clearFollow() {
+    this.follow = null;
+    this._draw();
+  }
+
+  _centerOn(lat, lon, pad = 0.016) {
+    this.view = {
+      minLat: lat - pad,
+      maxLat: lat + pad,
+      minLon: lon - pad,
+      maxLon: lon + pad,
+    };
+  }
+
+  _ensureAnimLoop() {
+    if (this._reducedMotion || this._animFrame) return;
+    const tick = () => {
+      this._draw();
+      this._animFrame = requestAnimationFrame(tick);
+    };
+    this._animFrame = requestAnimationFrame(tick);
   }
 
   async _init() {
@@ -136,39 +176,70 @@ export class HarbourMap {
     this.receiver = { ...this.receiver, ...r };
   }
 
-  update({ ships, baseStations, paths, selectedMmsi }) {
+  update({
+    ships,
+    baseStations,
+    paths,
+    selectedMmsi,
+    planes,
+    satelliteTracks,
+    selectedPlaneId,
+    follow,
+  }) {
     const now = performance.now();
     for (const s of ships || []) {
       if (s.lat == null || s.lon == null) continue;
-      const prev = this.posHistory.get(s.mmsi);
-      if (prev && !this._reducedMotion) {
-        s._anim = { from: prev, to: { lat: s.lat, lon: s.lon }, t0: now, dur: 4800 };
-      }
+      this.shipMotion.ingest(`ship:${s.mmsi}`, s, now);
       this.posHistory.set(s.mmsi, { lat: s.lat, lon: s.lon, pulse: now });
     }
+    for (const p of planes || []) {
+      if (p.lat == null || p.lon == null) continue;
+      this.planeMotion.ingest(`plane:${p.id}`, p, now);
+    }
     this.ships = ships || [];
+    this.planes = planes || [];
     this.bases = baseStations || [];
     this.paths = paths;
+    this.satelliteTracks = satelliteTracks || [];
     this.selectedMmsi = selectedMmsi;
-    this._fitView();
+    this.selectedPlaneId = selectedPlaneId;
+    if (follow !== undefined) this.follow = follow;
+    if (this.follow) {
+      this._applyFollowView(now);
+    } else {
+      this._fitView();
+    }
+    this._ensureAnimLoop();
     this._draw();
   }
 
   focusShip(mmsi) {
     const s = this.ships.find((x) => x.mmsi === mmsi);
     if (!s || s.lat == null) return;
-    const pad = 0.018;
-    this.view = {
-      minLat: s.lat - pad,
-      maxLat: s.lat + pad,
-      minLon: s.lon - pad,
-      maxLon: s.lon + pad,
-    };
+    this._centerOn(s.lat, s.lon);
     this._draw();
   }
 
+  _applyFollowView(nowMs) {
+    const f = this.follow;
+    if (!f) return;
+    if (f.kind === "ship") {
+      const disp = this.shipMotion.displayPosition(`ship:${f.id}`, nowMs);
+      if (disp) this._centerOn(disp.lat, disp.lon, 0.012);
+      return;
+    }
+    if (f.kind === "plane") {
+      const disp = this.planeMotion.displayPosition(`plane:${f.id}`, nowMs);
+      if (disp) this._centerOn(disp.lat, disp.lon, 0.04);
+    }
+  }
+
   _fitView() {
-    const pts = this.ships.filter((s) => s.lat != null && s.lon != null);
+    if (this.follow) return;
+    const pts = [
+      ...this.ships.filter((s) => s.lat != null && s.lon != null),
+      ...this.planes.filter((p) => p.lat != null && p.lon != null),
+    ];
     if (this.zoomMode === "harbour") {
       this.view = { minLat: 35.88, maxLat: 35.92, minLon: 14.49, maxLon: 14.54 };
       return;
@@ -308,6 +379,17 @@ export class HarbourMap {
       const { x, y } = this._project(p.lat, p.lon, w, h);
       parts.push(`<text x="${x}" y="${y}" class="map-place">${p.name}</text>`);
     }
+    for (const track of this.satelliteTracks) {
+      const coords = track.coordinates || [];
+      if (coords.length < 2) continue;
+      const pts = coords
+        .map(([lon, lat]) => {
+          const p = this._project(lat, lon, w, h);
+          return `${p.x.toFixed(1)},${p.y.toFixed(1)}`;
+        })
+        .join(" ");
+      parts.push(`<polyline points="${pts}" class="map-sat-track" data-sat="${track.id || ""}"/>`);
+    }
     const pathFeatures = this.paths?.features || [];
     for (const f of pathFeatures) {
       const mmsi = Number(f.properties?.mmsi || f.id || 0);
@@ -332,14 +414,33 @@ export class HarbourMap {
       );
     }
     const now = performance.now();
+    if (this.follow) this._applyFollowView(now);
     for (const s of this.ships) {
       if (s.lat == null || s.lon == null) continue;
-      let lat = s.lat;
-      let lon = s.lon;
-      if (s._anim && !this._reducedMotion) {
-        const t = Math.min(1, (now - s._anim.t0) / s._anim.dur);
-        lat = s._anim.from.lat + (s._anim.to.lat - s._anim.from.lat) * t;
-        lon = s._anim.from.lon + (s._anim.to.lon - s._anim.from.lon) * t;
+      const motion = this.shipMotion.displayPosition(`ship:${s.mmsi}`, now);
+      let lat = motion?.lat ?? s.lat;
+      let lon = motion?.lon ?? s.lon;
+      const estimated = motion?.estimated;
+      if (estimated && motion) {
+        const real = motion.trail?.[motion.trail.length - 1];
+        if (real) {
+          const a = this._project(real.lat, real.lon, w, h);
+          const b = this._project(lat, lon, w, h);
+          parts.push(
+            `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" class="map-estimated" />`,
+          );
+        }
+      }
+      const followTrail =
+        this.follow?.kind === "ship" && this.follow.id === s.mmsi ? motion?.trail : null;
+      if (followTrail && followTrail.length > 1) {
+        const tpts = followTrail
+          .map((pt) => {
+            const p = this._project(pt.lat, pt.lon, w, h);
+            return `${p.x.toFixed(1)},${p.y.toFixed(1)}`;
+          })
+          .join(" ");
+        parts.push(`<polyline points="${tpts}" class="map-follow-trail"/>`);
       }
       const proj = this._projectShip(lat, lon, w, h);
       const stale = (s.last_signal_s || 0) > 600;
@@ -361,10 +462,68 @@ export class HarbourMap {
         );
       }
     }
+    for (const p of this.planes) {
+      if (p.lat == null || p.lon == null) continue;
+      const motion = this.planeMotion.displayPosition(`plane:${p.id}`, now);
+      let lat = motion?.lat ?? p.lat;
+      let lon = motion?.lon ?? p.lon;
+      const estimated = motion?.estimated;
+      if (estimated && motion) {
+        const real = motion.trail?.[motion.trail.length - 1];
+        if (real) {
+          const a = this._project(real.lat, real.lon, w, h);
+          const b = this._project(lat, lon, w, h);
+          parts.push(
+            `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" class="map-estimated" />`,
+          );
+        }
+      }
+      const followTrail =
+        this.follow?.kind === "plane" && this.follow.id === p.id ? motion?.trail : null;
+      if (followTrail && followTrail.length > 1) {
+        const tpts = followTrail
+          .map((pt) => {
+            const pr = this._project(pt.lat, pt.lon, w, h);
+            return `${pr.x.toFixed(1)},${pr.y.toFixed(1)}`;
+          })
+          .join(" ");
+        parts.push(`<polyline points="${tpts}" class="map-follow-trail"/>`);
+      }
+      const proj = this._projectShip(lat, lon, w, h);
+      const hdg = (p.heading_deg ?? 0) * (Math.PI / 180);
+      const sel = p.id === this.selectedPlaneId;
+      const r = sel ? 8 : 6;
+      const col = "#c9a4ff";
+      const tipX = proj.x + Math.sin(hdg) * r;
+      const tipY = proj.y - Math.cos(hdg) * r;
+      const lx = proj.x + Math.sin(hdg + 2.4) * (r * 0.65);
+      const ly = proj.y - Math.cos(hdg + 2.4) * (r * 0.65);
+      const rx = proj.x + Math.sin(hdg - 2.4) * (r * 0.65);
+      const ry = proj.y - Math.cos(hdg - 2.4) * (r * 0.65);
+      if (proj.offFrame) {
+        const deg = (proj.angle * 180) / Math.PI;
+        parts.push(
+          `<g class="map-plane-edge" data-plane-id="${p.id}" role="button" tabindex="0" transform="translate(${proj.x.toFixed(1)},${proj.y.toFixed(1)}) rotate(${deg.toFixed(1)})">
+            <polygon points="0,-${r} ${r + 3},0 0,${r} -${r + 3},0" fill="${col}"/>
+          </g>`,
+        );
+      } else {
+        parts.push(
+          `<g class="map-plane" data-plane-id="${p.id}" role="button" tabindex="0">
+            <polygon points="${tipX.toFixed(1)},${tipY.toFixed(1)} ${lx.toFixed(1)},${ly.toFixed(1)} ${rx.toFixed(1)},${ry.toFixed(1)}" fill="${col}" class="${sel ? "map-plane-selected" : ""}"/>
+            ${estimated ? `<title>Estimated position</title>` : ""}
+          </g>`,
+        );
+      }
+    }
     this._svg.innerHTML = parts.join("");
     this._svg.querySelectorAll("[data-mmsi]").forEach((el) => {
       const mmsi = Number(el.getAttribute("data-mmsi"));
       el.addEventListener("click", () => this._onSelect?.(mmsi));
+    });
+    this._svg.querySelectorAll("[data-plane-id]").forEach((el) => {
+      const id = el.getAttribute("data-plane-id");
+      el.addEventListener("click", () => this._onPlaneSelect?.(id));
     });
   }
 }

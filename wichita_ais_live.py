@@ -14,6 +14,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from zoneinfo import ZoneInfo
 
 from wichita_ais_copy import count_freshness, enrich_ship_copy, harbour_summary, freshness_bucket, movement_counts
+from wichita_provenance import SOURCE_OUR_ANTENNA, provenance_fields
 from wichita_captures import VALLETTA_AIS_BASE_MMSIS, mmsi_label
 
 MALTA_TZ = ZoneInfo("Europe/Malta")
@@ -251,6 +252,7 @@ def normalize_ship(raw: Dict[str, Any], now: Optional[datetime] = None) -> Dict[
         "nav_status": raw.get("status"),
         "freshness": freshness_bucket(last_sig_s),
     }
+    ship.update(provenance_fields(SOURCE_OUR_ANTENNA, last_sig_s))
     return enrich_ship_copy(ship, raw)
 
 

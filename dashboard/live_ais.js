@@ -1,5 +1,7 @@
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261009-19";
-import { HarbourMap, typeColor } from "./harbour_map.js?v=20261009-19";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261009-20";
+import { HarbourMap, typeColor } from "./harbour_map.js?v=20261009-20";
+import { provenanceBadge } from "./entity_labels.js?v=20261009-20";
+import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261009-20";
 
 const GROUPS = [
   { key: "now", title: "Heard now" },
@@ -9,7 +11,10 @@ const GROUPS = [
 
 const state = {
   snapshot: null,
+  sky: null,
   selectedMmsi: null,
+  selectedPlaneId: null,
+  follow: null,
   map: null,
   timer: null,
 };
@@ -69,6 +74,7 @@ function shipCardHtml(s, selected) {
   const fade = s.freshness === "earlier" ? " ship-card-fade" : "";
   const sel = s.mmsi === selected ? " selected" : "";
   return `<li class="live-ship-card${fade}${sel}" data-mmsi="${s.mmsi}" role="button" tabindex="0" style="--ship-type-color:${col}">
+    ${provenanceBadge(s)}
     <div class="live-ship-card-head">
       <span class="ship-type-icon" aria-hidden="true"></span>
       <span class="live-ship-flag" title="${s.country || ""}">${flag}</span>
@@ -178,18 +184,64 @@ function renderDrawer(ship) {
   $("#drawerClose")?.addEventListener("click", () => selectShip(null));
 }
 
+function renderFollowCard() {
+  const el = $("#mapFollowCard");
+  if (!el) return;
+  if (!state.follow) {
+    el.hidden = true;
+    el.innerHTML = "";
+    return;
+  }
+  el.hidden = false;
+  if (state.follow.kind === "ship") {
+    const ship = (state.snapshot?.ships || []).find((s) => s.mmsi === state.follow.id);
+    if (!ship) return;
+    el.innerHTML = `${provenanceBadge(ship)}
+      <p><strong>Following ${ship.display_name}</strong> — tap again or press Esc to stop.</p>
+      <p class="ship-lead">${ship.lead_sentence || ""}</p>`;
+    return;
+  }
+  const plane = (state.sky?.adsb?.aircraft || []).find((p) => p.id === state.follow.id);
+  if (!plane) return;
+  el.innerHTML = `${provenanceBadge(plane)}
+    <p><strong>Following ${plane.display_name}</strong> — tap again or press Esc to stop.</p>
+    <p class="mono muted">${plane.altitude_ft != null ? `${Math.round(plane.altitude_ft)} ft` : "—"} · squawk ${plane.squawk || "—"}</p>
+    ${plane.squawk_note ? `<p class="squawk-alert calm">${plane.squawk_note}</p>` : ""}`;
+}
+
+function satelliteTracksForMap(sky) {
+  return (sky?.satellites?.satellites || []).map((s) => ({
+    id: s.norad,
+    coordinates: s.ground_track || [],
+  }));
+}
+
 async function selectShip(mmsi) {
+  if (mmsi && state.follow?.kind === "ship" && state.follow.id === mmsi) {
+    state.follow = null;
+    mmsi = null;
+  } else if (mmsi) {
+    state.follow = { kind: "ship", id: mmsi };
+    state.selectedPlaneId = null;
+  } else {
+    state.follow = null;
+  }
   state.selectedMmsi = mmsi;
   const ship = mmsi ? (state.snapshot?.ships || []).find((s) => s.mmsi === mmsi) : null;
   renderShipList(state.snapshot);
+  renderFollowCard();
   if (state.map) {
     state.map.update({
       ships: state.snapshot?.ships,
       baseStations: state.snapshot?.base_stations,
       paths: state.snapshot?.paths,
+      planes: state.sky?.adsb?.aircraft,
+      satelliteTracks: satelliteTracksForMap(state.sky?.satellites),
       selectedMmsi: mmsi,
+      selectedPlaneId: state.selectedPlaneId,
+      follow: state.follow,
     });
-    if (mmsi) state.map.focusShip(mmsi);
+    if (mmsi && !state.follow) state.map.focusShip(mmsi);
   }
   const narrow = (document.documentElement.clientWidth || 800) < 720;
   if (narrow) renderSheet(ship);
@@ -207,6 +259,31 @@ async function selectShip(mmsi) {
       /* keep card */
     }
   }
+}
+
+async function selectPlane(id) {
+  if (id && state.follow?.kind === "plane" && state.follow.id === id) {
+    state.follow = null;
+    id = null;
+  } else if (id) {
+    state.follow = { kind: "plane", id };
+    state.selectedMmsi = null;
+  } else {
+    state.follow = null;
+  }
+  state.selectedPlaneId = id;
+  renderPlanesPanel(state.sky?.adsb);
+  renderFollowCard();
+  state.map?.update({
+    ships: state.snapshot?.ships,
+    baseStations: state.snapshot?.base_stations,
+    paths: state.snapshot?.paths,
+    planes: state.sky?.adsb?.aircraft,
+    satelliteTracks: satelliteTracksForMap(state.sky?.satellites),
+    selectedMmsi: state.selectedMmsi,
+    selectedPlaneId: id,
+    follow: state.follow,
+  });
 }
 
 export async function renderLiveEvents() {
@@ -283,15 +360,27 @@ async function pollLive() {
         state.map = new HarbourMap(host);
         state.map.setReceiver({ ...data.receiver, label: data.receiver?.label });
         state.map.onSelect((mmsi) => selectShip(mmsi));
+        state.map.onPlaneSelect((id) => selectPlane(id));
       }
     }
+    state.sky = await fetchSkySnapshots();
+    renderPlanesPanel(state.sky.adsb);
+    renderSatellitesPanel(state.sky.satellites);
+    $("#planesPanel")?.querySelectorAll(".live-plane-card").forEach((li) => {
+      li.addEventListener("click", () => selectPlane(li.getAttribute("data-plane-id")));
+    });
     state.map?.setReceiver({ ...data.receiver, label: data.receiver?.label });
     state.map?.update({
       ships: data.ships,
       baseStations: data.base_stations,
       paths: data.paths,
+      planes: state.sky?.adsb?.aircraft,
+      satelliteTracks: satelliteTracksForMap(state.sky?.satellites),
       selectedMmsi: state.selectedMmsi,
+      selectedPlaneId: state.selectedPlaneId,
+      follow: state.follow,
     });
+    renderFollowCard();
     renderStationLive(data);
     await renderLiveEvents();
   } catch {
@@ -303,4 +392,25 @@ export function initLiveAis() {
   pollLive();
   if (state.timer) clearInterval(state.timer);
   state.timer = setInterval(pollLive, 5000);
+  document.addEventListener("keydown", (ev) => {
+    if (ev.key === "Escape" && state.follow) {
+      state.follow = null;
+      state.selectedMmsi = null;
+      state.selectedPlaneId = null;
+      renderFollowCard();
+      renderShipList(state.snapshot);
+      renderPlanesPanel(state.sky?.adsb);
+      state.map?.clearFollow();
+      state.map?.update({
+        ships: state.snapshot?.ships,
+        baseStations: state.snapshot?.base_stations,
+        paths: state.snapshot?.paths,
+        planes: state.sky?.adsb?.aircraft,
+        satelliteTracks: satelliteTracksForMap(state.sky?.satellites),
+        selectedMmsi: null,
+        selectedPlaneId: null,
+        follow: null,
+      });
+    }
+  });
 }
