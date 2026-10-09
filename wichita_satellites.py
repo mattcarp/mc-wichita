@@ -14,7 +14,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from zoneinfo import ZoneInfo
 
-from wichita_provenance import SOURCE_COMPUTED, provenance_fields
+from wichita_provenance import SOURCE_COMPUTED, SOURCE_LABELS, provenance_fields
 
 try:
     from sgp4.api import Satrec, jday
@@ -25,16 +25,22 @@ except ImportError:  # pragma: no cover
 logger = logging.getLogger(__name__)
 
 MALTA_TZ = ZoneInfo("Europe/Malta")
-OBSERVER_LAT = 35.898666
-OBSERVER_LON = 14.5145
+OBSERVER_LAT = 35.8989
+OBSERVER_LON = 14.5146
+OBSERVER_ALT_KM = 0.05  # ~50 m above WGS84 ellipsoid
 CACHE_HOURS = 12
+
+WGS84_A_KM = 6378.137
+WGS84_F = 1.0 / 298.257223563
+
+
 def _cache_path() -> Path:
     raw = os.environ.get("WICHITA_TLE_CACHE", "").strip()
     if raw:
         return Path(raw).expanduser().resolve()
     return Path(__file__).resolve().parent / "dashboard" / "data" / "celestrak_tle_cache.json"
 
-# Curated NORAD catalog numbers (CelesTrak gp.php?CATNR=).
+
 SATELLITES: Tuple[Tuple[str, int], ...] = (
     ("ISS (ZARYA)", 25544),
     ("NOAA 15", 25338),
@@ -112,7 +118,53 @@ def refresh_tle_cache(force: bool = False) -> Dict[str, Any]:
     return cache
 
 
-def _elevation_deg(sat: Satrec, when: datetime, lat: float, lon: float) -> float:
+def _gmst_rad(jd_ut: float) -> float:
+    """Greenwich mean sidereal time (radians) at Julian date UT (Vallado)."""
+    t = (jd_ut - 2451545.0) / 36525.0
+    gmst_deg = (
+        280.46061837
+        + 360.98564736629 * (jd_ut - 2451545.0)
+        + 0.000387933 * t * t
+        - (t**3) / 38710000.0
+    )
+    return math.radians(gmst_deg % 360.0)
+
+
+def _geodetic_to_ecef_km(lat_deg: float, lon_deg: float, alt_km: float) -> Tuple[float, float, float]:
+    e2 = WGS84_F * (2.0 - WGS84_F)
+    lat = math.radians(lat_deg)
+    lon = math.radians(lon_deg)
+    sin_lat = math.sin(lat)
+    cos_lat = math.cos(lat)
+    n = WGS84_A_KM / math.sqrt(1.0 - e2 * sin_lat * sin_lat)
+    x = (n + alt_km) * cos_lat * math.cos(lon)
+    y = (n + alt_km) * cos_lat * math.sin(lon)
+    z = (n * (1.0 - e2) + alt_km) * sin_lat
+    return x, y, z
+
+
+def _teme_to_ecef_km(r_teme: Tuple[float, float, float], gmst: float) -> Tuple[float, float, float]:
+    x, y, z = r_teme
+    c = math.cos(gmst)
+    s = math.sin(gmst)
+    return (c * x + s * y, -s * x + c * y, z)
+
+
+def _ecef_to_enu(
+    dx: float, dy: float, dz: float, lat_deg: float, lon_deg: float
+) -> Tuple[float, float, float]:
+    lat = math.radians(lat_deg)
+    lon = math.radians(lon_deg)
+    sin_lat, cos_lat = math.sin(lat), math.cos(lat)
+    sin_lon, cos_lon = math.sin(lon), math.cos(lon)
+    east = -sin_lon * dx + cos_lon * dy
+    north = -sin_lat * cos_lon * dx - sin_lat * sin_lon * dy + cos_lat * dz
+    up = cos_lat * cos_lon * dx + cos_lat * sin_lon * dy + sin_lat * dz
+    return east, north, up
+
+
+def _elevation_deg(sat: Satrec, when: datetime, lat: float, lon: float, alt_km: float) -> float:
+    when = when.astimezone(timezone.utc)
     jd, fr = jday(
         when.year,
         when.month,
@@ -121,31 +173,18 @@ def _elevation_deg(sat: Satrec, when: datetime, lat: float, lon: float) -> float
         when.minute,
         when.second + when.microsecond / 1e6,
     )
-    e, r, v = sat.sgp4(jd, fr)
-    if e != 0:
+    err, r_teme, _v = sat.sgp4(jd, fr)
+    if err != 0:
         return -90.0
-    # ECI position km; simple topocentric conversion.
-    x, y, z = r
-    theta = math.radians(lon)
-    phi = math.radians(lat)
-    # Greenwich sidereal approx
-    t = (jd + fr - 2451545.0) / 36525.0
-    gmst = math.radians((280.46061837 + 360.98564736629 * (jd + fr - 2451545.0)) % 360)
-    xg = x * math.cos(gmst) + y * math.sin(gmst)
-    yg = -x * math.sin(gmst) + y * math.cos(gmst)
-    zg = z
-    xe = xg * math.sin(theta) - yg * math.cos(theta)
-    ye = xg * math.cos(theta) + yg * math.sin(theta)
-    ze = zg
-    xn = xe
-    yn = ye * math.cos(phi) - ze * math.sin(phi)
-    zn = ye * math.sin(phi) + ze * math.cos(phi)
-    az = math.atan2(yn, xn)
-    elev = math.atan2(zn, math.hypot(xn, yn))
-    return math.degrees(elev)
+    gmst = _gmst_rad(jd + fr)
+    sx, sy, sz = _teme_to_ecef_km((r_teme[0], r_teme[1], r_teme[2]), gmst)
+    ox, oy, oz = _geodetic_to_ecef_km(lat, lon, alt_km)
+    east, north, up = _ecef_to_enu(sx - ox, sy - oy, sz - oz, lat, lon)
+    return math.degrees(math.atan2(up, math.hypot(east, north)))
 
 
 def _subpoint(sat: Satrec, when: datetime) -> Tuple[float, float]:
+    when = when.astimezone(timezone.utc)
     jd, fr = jday(
         when.year,
         when.month,
@@ -154,13 +193,12 @@ def _subpoint(sat: Satrec, when: datetime) -> Tuple[float, float]:
         when.minute,
         when.second + when.microsecond / 1e6,
     )
-    e, r, _v = sat.sgp4(jd, fr)
-    if e != 0:
+    err, r_teme, _v = sat.sgp4(jd, fr)
+    if err != 0:
         return 0.0, 0.0
-    x, y, z = r
-    lon = math.degrees(math.atan2(y, x)) % 360.0
-    if lon > 180:
-        lon -= 360
+    gmst = _gmst_rad(jd + fr)
+    x, y, z = _teme_to_ecef_km((r_teme[0], r_teme[1], r_teme[2]), gmst)
+    lon = math.degrees(math.atan2(y, x))
     hyp = math.hypot(x, y)
     lat = math.degrees(math.atan2(z, hyp))
     return lat, lon
@@ -175,15 +213,15 @@ def next_passes(
     min_elev: float = 10.0,
 ) -> List[Dict[str, Any]]:
     passes: List[Dict[str, Any]] = []
-    step = timedelta(seconds=30)
-    t = start
-    end = start + timedelta(hours=hours)
+    step = timedelta(seconds=20)
+    t = start.astimezone(timezone.utc)
+    end = t + timedelta(hours=hours)
     in_pass = False
     pass_start: Optional[datetime] = None
     max_el = -90.0
     max_t: Optional[datetime] = None
     while t < end:
-        el = _elevation_deg(sat, t, OBSERVER_LAT, OBSERVER_LON)
+        el = _elevation_deg(sat, t, OBSERVER_LAT, OBSERVER_LON, OBSERVER_ALT_KM)
         if el >= min_elev:
             if not in_pass:
                 in_pass = True
@@ -214,7 +252,7 @@ def next_passes(
 
 def ground_track(sat: Satrec, start: datetime, minutes: int = 90, step_sec: int = 120) -> List[List[float]]:
     pts: List[List[float]] = []
-    t = start
+    t = start.astimezone(timezone.utc)
     for _ in range((minutes * 60) // step_sec + 1):
         lat, lon = _subpoint(sat, t)
         pts.append([round(lon, 4), round(lat, 4)])
@@ -222,11 +260,36 @@ def ground_track(sat: Satrec, start: datetime, minutes: int = 90, step_sec: int 
     return pts
 
 
+def _tle_age_label(fetched_at_utc: Optional[str], now: datetime) -> Tuple[Optional[float], str]:
+    if not fetched_at_utc:
+        return None, "TLE age unknown"
+    try:
+        t0 = datetime.fromisoformat(fetched_at_utc.replace("Z", "+00:00"))
+    except ValueError:
+        return None, "TLE age unknown"
+    age_sec = max(0.0, (now.astimezone(timezone.utc) - t0).total_seconds())
+    if age_sec < 120:
+        return age_sec, "TLE just updated"
+    if age_sec < 3600:
+        return age_sec, f"TLE {int(age_sec // 60)} min old"
+    if age_sec < _cache_max_age_sec():
+        return age_sec, f"TLE {int(age_sec // 3600)} h old"
+    return age_sec, f"TLE over {int(_cache_max_age_sec() // 3600)} h old"
+
+
+def _satellite_provenance(fetched_at_utc: Optional[str], now: datetime) -> Dict[str, Any]:
+    age_sec, tle_label = _tle_age_label(fetched_at_utc, now)
+    base = provenance_fields(SOURCE_COMPUTED, age_sec)
+    base["freshness_label"] = tle_label
+    base["tle_age_s"] = age_sec
+    return base
+
+
 def satellite_overview(force_tle: bool = False) -> Dict[str, Any]:
-    prov = provenance_fields(SOURCE_COMPUTED, None)
+    now = datetime.now(timezone.utc)
     if Satrec is None:
         return {
-            **prov,
+            **_satellite_provenance(None, now),
             "error": "Satellite propagation unavailable (install sgp4)",
             "observer": {"lat": OBSERVER_LAT, "lon": OBSERVER_LON, "label": "Valletta balcony (approx.)"},
             "tle_fetched_at_utc": None,
@@ -237,7 +300,8 @@ def satellite_overview(force_tle: bool = False) -> Dict[str, Any]:
     except Exception as exc:  # noqa: BLE001
         logger.warning("TLE refresh failed: %s", exc)
         cache = load_tle_cache()
-    now = datetime.now(timezone.utc)
+    fetched_at = cache.get("fetched_at_utc")
+    prov = _satellite_provenance(fetched_at, now)
     out_sats: List[Dict[str, Any]] = []
     for _name, norad in SATELLITES:
         entry = (cache.get("satellites") or {}).get(str(norad))
@@ -253,13 +317,14 @@ def satellite_overview(force_tle: bool = False) -> Dict[str, Any]:
                 "norad": norad,
                 "next_passes": passes,
                 "ground_track": track,
-                **provenance_fields(SOURCE_COMPUTED, None),
+                **_satellite_provenance(fetched_at, now),
             }
         )
     return {
         **prov,
+        "source_label": SOURCE_LABELS[SOURCE_COMPUTED],
         "observer": {"lat": OBSERVER_LAT, "lon": OBSERVER_LON, "label": "Valletta balcony (approx.)"},
-        "tle_fetched_at_utc": cache.get("fetched_at_utc"),
+        "tle_fetched_at_utc": fetched_at,
         "tle_source": cache.get("source") or "CelesTrak",
         "satellites": out_sats,
     }

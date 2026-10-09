@@ -1,7 +1,7 @@
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261009-20";
-import { HarbourMap, typeColor } from "./harbour_map.js?v=20261009-20";
-import { provenanceBadge } from "./entity_labels.js?v=20261009-20";
-import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261009-20";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261009-21";
+import { HarbourMap, typeColor } from "./harbour_map.js?v=20261009-21";
+import { provenanceBadge } from "./entity_labels.js?v=20261009-21";
+import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261009-21";
 
 const GROUPS = [
   { key: "now", title: "Heard now" },

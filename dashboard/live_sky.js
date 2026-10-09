@@ -1,4 +1,4 @@
-import { provenanceBadge } from "./entity_labels.js?v=20261009-20";
+import { provenanceBadge } from "./entity_labels.js?v=20261009-21";
 
 function $(sel) {
   return document.querySelector(sel);

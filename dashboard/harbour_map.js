@@ -1,4 +1,4 @@
-import { EntityMotion } from "./map_motion.js?v=20261009-20";
+import { EntityMotion } from "./map_motion.js?v=20261009-21";
 
 const TYPE_COLORS = {
   passenger: "#5eb8ff",
@@ -104,6 +104,7 @@ export class HarbourMap {
     this._svg = null;
     this._mapW = 400;
     this._mapH = 220;
+    this._lastObservedW = 0;
     this._init();
   }
 
@@ -165,8 +166,14 @@ export class HarbourMap {
         this._draw();
       });
     });
-    this._resizeObserver = new ResizeObserver(() => this._draw());
-    this._resizeObserver.observe(this.container);
+    this._resizeObserver = new ResizeObserver(() => {
+      const inner = this.container.querySelector(".harbour-map-inner");
+      const w = Math.floor(inner?.clientWidth || 0);
+      if (!w || w === this._lastObservedW) return;
+      this._lastObservedW = w;
+      this._draw();
+    });
+    this._resizeObserver.observe(wrap);
     this._fitView();
     this._draw();
   }
@@ -275,10 +282,8 @@ export class HarbourMap {
   _measure() {
     const inner = this.container.querySelector(".harbour-map-inner");
     const cw = Math.floor(inner?.clientWidth || this.container.clientWidth || 320);
-    const ch = Math.floor(this.container.clientHeight || inner?.clientHeight || 0);
     const w = Math.max(280, Math.min(cw, 1200));
-    const aspectH = Math.round(w * 0.52);
-    const h = ch >= 120 ? Math.max(aspectH, ch) : aspectH;
+    const h = Math.round(w * 0.52);
     this._mapW = w;
     this._mapH = h;
     return { w, h };
@@ -349,7 +354,7 @@ export class HarbourMap {
     this._svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
     this._svg.removeAttribute("width");
     this._svg.style.width = "100%";
-    this._svg.style.height = `${h}px`;
+    this._svg.style.height = "100%";
     this._svg.style.maxWidth = "100%";
     this._svg.style.display = "block";
 
