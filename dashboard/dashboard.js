@@ -4,7 +4,7 @@ import {
   plotInnerWidth,
   psdSpan,
   samplePsdAtMhz,
-} from "./spectrum_geometry.mjs";
+} from "./spectrum_geometry.mjs?v=20261009-14";
 
 const MALTA_TZ = "Europe/Malta";
 const VALLETTA = { lat: 35.8987, lon: 14.5145, span: 0.06 };
@@ -207,6 +207,31 @@ function renderSpectrumMarkersHtml(w, h, ctx, span) {
     .join("");
 }
 
+function drawFilterRollOffBands(ctx, w, h, span) {
+  const { minF, maxF, drawMin, drawMax } = span;
+  ctx.save();
+  ctx.font = "9px Geist Mono, monospace";
+  ctx.fillStyle = "rgba(100, 110, 130, 0.14)";
+  const xPlotMin = freqToPlotX(minF, w, span);
+  const xDrawMin = freqToPlotX(drawMin, w, span);
+  if (xDrawMin > xPlotMin + 4) {
+    ctx.fillRect(xPlotMin, 0, xDrawMin - xPlotMin, h);
+    ctx.fillStyle = "#8b93a7";
+    ctx.textAlign = "center";
+    ctx.fillText("filter roll-off", (xPlotMin + xDrawMin) / 2, 12);
+  }
+  const xDrawMax = freqToPlotX(drawMax, w, span);
+  const xPlotMax = freqToPlotX(maxF, w, span);
+  if (xPlotMax > xDrawMax + 4) {
+    ctx.fillStyle = "rgba(100, 110, 130, 0.14)";
+    ctx.fillRect(xDrawMax, 0, xPlotMax - xDrawMax, h);
+    ctx.fillStyle = "#8b93a7";
+    ctx.textAlign = "center";
+    ctx.fillText("filter roll-off", (xDrawMax + xPlotMax) / 2, 12);
+  }
+  ctx.restore();
+}
+
 function drawSpectrum(psd) {
   const canvas = $("#spectrumCanvas");
   const caption = $("#spectrumCaption");
@@ -234,6 +259,7 @@ function drawSpectrum(psd) {
   const ySpan = Math.max(3, yHiDb - yLoDb);
   ctx.fillStyle = "#08090c";
   ctx.fillRect(0, 0, w, h);
+  drawFilterRollOffBands(ctx, w, h, span);
   ctx.strokeStyle = "#252a36";
   for (let i = 0; i <= 4; i++) {
     const y = (h * i) / 4;
@@ -250,7 +276,6 @@ function drawSpectrum(psd) {
   let penDown = false;
   let lastFm = null;
   let lastX = null;
-  let lastY = null;
   for (let i = 0; i < freqs.length; i++) {
     const fm = freqs[i];
     if (fm < drawMin || fm > drawMax) {
@@ -274,22 +299,9 @@ function drawSpectrum(psd) {
     }
     lastFm = fm;
     lastX = x;
-    lastY = y;
   }
-  const expectedEndX = freqToPlotX(drawMax, w, span);
-  if (lastFm != null && lastFm < drawMax - 1e-4) {
-    const endDb = samplePsdAtMhz(psd, drawMax);
-    if (endDb != null) {
-      const endY = Math.max(
-        6,
-        Math.min(h - 6, h - 6 - ((endDb - yLoDb) / ySpan) * (h - 12)),
-      );
-      ctx.lineTo(expectedEndX, endY);
-      lastFm = drawMax;
-      lastX = expectedEndX;
-      lastY = endY;
-    }
-  }
+  const expectedEndX =
+    lastFm != null ? freqToPlotX(lastFm, w, span) : freqToPlotX(drawMax, w, span);
   canvas.dataset.traceEndMhz = String(lastFm ?? "");
   canvas.dataset.traceEndX = String(lastX ?? "");
   canvas.dataset.expectedTraceEndX = String(expectedEndX);
@@ -493,10 +505,16 @@ function bookmarkMeasurable(mhz, psd) {
 function renderBookmarks(psd) {
   const ul = $("#bookmarkLegend");
   if (!ul) return;
+  const narrow = (document.documentElement.clientWidth || 800) < 420;
   ul.innerHTML = BOOKMARKS.map((b) => {
     const ok = bookmarkMeasurable(b.mhz, psd);
-    const note = ok ? "" : " — not measurable in this capture";
-    return `<li>${b.key} ${b.mhz.toFixed(3)} MHz${note}</li>`;
+    if (ok) {
+      return `<li>${b.key} ${b.mhz.toFixed(3)} MHz</li>`;
+    }
+    if (narrow) {
+      return `<li class="legend-unmeasurable">${b.key} ${b.mhz.toFixed(3)}, not measurable here</li>`;
+    }
+    return `<li class="legend-unmeasurable">${b.key} ${b.mhz.toFixed(3)} MHz — not measurable in this capture</li>`;
   }).join("");
 }
 

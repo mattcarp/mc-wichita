@@ -21,7 +21,7 @@ test("draw_max maps just right of AIS2 on balcony axis", () => {
   assert.ok(frac > 0.95);
 });
 
-test("last drawn trace x within 1px of freqToPlotX(draw_max)", () => {
+test("last drawn trace x matches last real bin (no synthesis)", () => {
   const psd = {
     plot_min_mhz: 156.238,
     plot_max_mhz: 162.237,
@@ -31,6 +31,8 @@ test("last drawn trace x within 1px of freqToPlotX(draw_max)", () => {
     psd_db_per_hz: [-110, -108, -109, -112],
     tuner_center_mhz: 159.238,
   };
-  const { lastX, expectedX } = spectrumTraceEndX(psd, 640);
+  const { lastX, expectedX, lastFm } = spectrumTraceEndX(psd, 640);
+  assert.equal(lastFm, 162.041);
+  assert.ok(lastX != null && expectedX != null);
   assert.ok(Math.abs(lastX - expectedX) <= 1);
 });

@@ -56,9 +56,7 @@ export function spectrumTraceEndX(psd, cssWidth) {
     lastFm = fm;
     lastX = freqToPlotX(fm, cssWidth, span);
   }
-  if (lastFm != null && lastFm < drawMax - 1e-4) {
-    lastX = freqToPlotX(drawMax, cssWidth, span);
-    lastFm = drawMax;
-  }
-  return { lastX, lastFm, expectedX: freqToPlotX(drawMax, cssWidth, span) };
+  const expectedX =
+    lastFm != null ? freqToPlotX(lastFm, cssWidth, span) : null;
+  return { lastX, lastFm, expectedX };
 }
