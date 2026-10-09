@@ -1737,20 +1737,14 @@ async def waterfall_stream(websocket: WebSocket):
     await websocket.accept()
 
     try:
-        while True:
-            # This would stream actual FFT data from HackRF
-            # For demo, send random data
-            fft_data = {
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-                "center_freq_mhz": 100.0,
-                "bandwidth_mhz": 20.0,
-                "fft_size": 1024,
-                "power_data": list(np.random.random(1024) * -100),
+        await websocket.send_json(
+            {
+                "type": "unavailable",
+                "message": "Live waterfall is not served from the web process. Use /api/capture-feed for recorded PSD.",
             }
-
-            await websocket.send_json(fft_data)
-            await asyncio.sleep(0.1)  # 10 Hz update rate
-
+        )
+        while True:
+            await websocket.receive_text()
     except Exception:
         await websocket.close()
 
