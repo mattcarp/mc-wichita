@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 import types
 from pathlib import Path
@@ -137,6 +138,9 @@ def test_psd_plot_span_from_sigmf():
     assert psd["draw_max_mhz"] < psd["plot_max_mhz"]
     assert psd["draw_min_mhz"] > psd["plot_min_mhz"] + 0.2
     assert "CH09 at band edge" in " ".join(psd.get("span_notes") or [])
+    assert "CH70 at band edge" in " ".join(psd.get("span_notes") or [])
+    assert max(psd["freq_mhz"]) >= psd["draw_max_mhz"] - 0.01
+    assert min(psd["freq_mhz"]) <= psd["draw_min_mhz"] + 0.01
     assert "AIS2 near band edge" in " ".join(psd.get("span_notes") or [])
     assert "trace starts" in psd.get("span_caption", "")
     assert psd.get("span_caption")
@@ -145,6 +149,15 @@ def test_psd_plot_span_from_sigmf():
     psd_in = wc.load_wideband_psd(indoor.path, max_points=500)
     assert psd_in["iq_center_mhz"] == 159.4125
     assert psd_in["plot_min_mhz"] > 156.4
+
+
+def test_spectrum_x_alignment_node():
+    root = Path(__file__).resolve().parent
+    subprocess.run(
+        ["node", "--test", "dashboard/spectrum_x_alignment_test.mjs"],
+        cwd=root,
+        check=True,
+    )
 
 
 def test_antenna_power_rejected():

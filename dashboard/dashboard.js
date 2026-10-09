@@ -1,7 +1,13 @@
+import {
+  PLOT_PAD_X,
+  freqToPlotX,
+  plotInnerWidth,
+  psdSpan,
+  samplePsdAtMhz,
+} from "./spectrum_geometry.mjs";
+
 const MALTA_TZ = "Europe/Malta";
 const VALLETTA = { lat: 35.8987, lon: 14.5145, span: 0.06 };
-const MARINE_FALLBACK_MIN_MHZ = 156.45;
-const MARINE_FALLBACK_MAX_MHZ = 162.4;
 
 const BOOKMARKS = [
   { key: "CH09", mhz: 156.45, color: "#3ec6c9" },
@@ -111,45 +117,6 @@ function formatCaption(sentences) {
       return t;
     })
     .join(" ");
-}
-
-function samplePsdAtMhz(psd, mhz) {
-  const freqs = psd.freq_mhz;
-  const vals = psd.psd_db_per_hz;
-  if (!freqs?.length) return null;
-  if (mhz <= freqs[0]) return vals[0];
-  if (mhz >= freqs[freqs.length - 1]) return vals[vals.length - 1];
-  for (let i = 1; i < freqs.length; i++) {
-    if (freqs[i] >= mhz) {
-      const t = (mhz - freqs[i - 1]) / (freqs[i] - freqs[i - 1]);
-      return vals[i - 1] + t * (vals[i] - vals[i - 1]);
-    }
-  }
-  return vals[vals.length - 1];
-}
-
-function psdSpan(psd) {
-  const minF = psd?.plot_min_mhz ?? MARINE_FALLBACK_MIN_MHZ;
-  const maxF = psd?.plot_max_mhz ?? MARINE_FALLBACK_MAX_MHZ;
-  const drawMin = psd?.draw_min_mhz ?? minF;
-  const drawMax = psd?.draw_max_mhz ?? maxF;
-  return { minF, maxF, drawMin, drawMax };
-}
-
-function freqToAxisX(mhz, w, span) {
-  const { minF, maxF } = span;
-  return ((mhz - minF) / (maxF - minF + 1e-9)) * w;
-}
-
-const PLOT_PAD_X = 10;
-
-function plotInnerWidth(w) {
-  return Math.max(1, w - 2 * PLOT_PAD_X);
-}
-
-/** Map MHz to canvas x with horizontal inset so edge channels (CH09) are not clipped. */
-function freqToPlotX(mhz, w, span) {
-  return PLOT_PAD_X + freqToAxisX(mhz, plotInnerWidth(w), span);
 }
 
 function clampMarkerCenterX(x, width, w) {
@@ -281,6 +248,9 @@ function drawSpectrum(psd) {
   ctx.clip();
   ctx.beginPath();
   let penDown = false;
+  let lastFm = null;
+  let lastX = null;
+  let lastY = null;
   for (let i = 0; i < freqs.length; i++) {
     const fm = freqs[i];
     if (fm < drawMin || fm > drawMax) {
@@ -302,7 +272,27 @@ function drawSpectrum(psd) {
     } else {
       ctx.lineTo(x, y);
     }
+    lastFm = fm;
+    lastX = x;
+    lastY = y;
   }
+  const expectedEndX = freqToPlotX(drawMax, w, span);
+  if (lastFm != null && lastFm < drawMax - 1e-4) {
+    const endDb = samplePsdAtMhz(psd, drawMax);
+    if (endDb != null) {
+      const endY = Math.max(
+        6,
+        Math.min(h - 6, h - 6 - ((endDb - yLoDb) / ySpan) * (h - 12)),
+      );
+      ctx.lineTo(expectedEndX, endY);
+      lastFm = drawMax;
+      lastX = expectedEndX;
+      lastY = endY;
+    }
+  }
+  canvas.dataset.traceEndMhz = String(lastFm ?? "");
+  canvas.dataset.traceEndX = String(lastX ?? "");
+  canvas.dataset.expectedTraceEndX = String(expectedEndX);
   ctx.strokeStyle = "#3ec6c9";
   ctx.lineWidth = 1.5;
   ctx.stroke();
@@ -494,10 +484,20 @@ function drawAirband(airband) {
   }
 }
 
-function renderBookmarks() {
+function bookmarkMeasurable(mhz, psd) {
+  if (!psd?.available) return true;
+  const { drawMin, drawMax } = psdSpan(psd);
+  return mhz >= drawMin - 0.001 && mhz <= drawMax + 0.001;
+}
+
+function renderBookmarks(psd) {
   const ul = $("#bookmarkLegend");
   if (!ul) return;
-  ul.innerHTML = BOOKMARKS.map((b) => `<li>${b.key} ${b.mhz.toFixed(3)} MHz</li>`).join("");
+  ul.innerHTML = BOOKMARKS.map((b) => {
+    const ok = bookmarkMeasurable(b.mhz, psd);
+    const note = ok ? "" : " — not measurable in this capture";
+    return `<li>${b.key} ${b.mhz.toFixed(3)} MHz${note}</li>`;
+  }).join("");
 }
 
 function renderAisCounts(summary, messages) {
@@ -679,6 +679,7 @@ function redrawCharts() {
   if (!state.lastPsd || !state.lastAnalysis) return;
   updateLiveBandHeading(state.lastPsd);
   updateWaterfallAxisLabels(state.lastPsd);
+  renderBookmarks(state.lastPsd);
   drawSpectrum(state.lastPsd);
   drawBurstWaterfall(state.lastAnalysis, state.lastPsd, state.colorBlind, state.lastDuration);
 }

@@ -12,7 +12,7 @@ import re
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
 from zoneinfo import ZoneInfo
 
 MALTA_TZ = ZoneInfo("Europe/Malta")
@@ -36,7 +36,6 @@ PSD_EDGE_MARGIN_BINS = 4
 IQ_PLOT_HALF_FRAC = 0.5
 IQ_USABLE_HALF_FRAC = 0.45
 AIS2_MHZ = MARINE_BOOKMARKS_MHZ["AIS2"]
-CH09_MHZ = MARINE_BOOKMARKS_MHZ["CH09"]
 AIRBAND_WATCH_MHZ = {
     "121.5_distress": 121.5,
     "123.1_SAR": 123.1,
@@ -207,37 +206,81 @@ def _right_rolloff_draw_index(
     return i_lo
 
 
-def _left_rolloff_draw_index(
+def _moving_avg(vals: List[float], radius: int = 3) -> List[float]:
+    out: List[float] = []
+    for i in range(len(vals)):
+        lo = max(0, i - radius)
+        hi = min(len(vals), i + radius + 1)
+        out.append(sum(vals[lo:hi]) / (hi - lo))
+    return out
+
+
+def _left_draw_flatness_index(
     freqs: List[float],
     psd: List[float],
     i_lo: int,
     i_hi: int,
-    floor_mhz: float,
 ) -> int:
-    """First index at or after the left filter roll-off (climb from DC toward centre)."""
+    """First bin where smoothed PSD is within ~1 dB of the in-band median (past left roll-off)."""
     core = [
         psd[j]
         for j in range(i_lo, i_hi + 1)
-        if freqs[j] > freqs[i_lo] + 0.12
+        if freqs[j] > freqs[i_lo] + 0.2 and freqs[j] < freqs[i_hi] - 0.2
     ]
     if not core:
-        return i_lo
+        return i_lo + 1
     med = sorted(core)[len(core) // 2]
-    start = i_lo
-    for j in range(i_lo, i_hi + 1):
-        if freqs[j] >= floor_mhz - 1e-6:
-            start = j
-            break
+    smooth = _moving_avg(psd, 3)
+    start = i_lo + 1
     for i in range(start, i_hi):
-        if psd[i] < med - 25:
-            continue
-        seg = psd[i_lo : i + 1]
-        if len(seg) < 8:
-            continue
-        rise_per_bin = (seg[-1] - seg[0]) / max(1, len(seg) - 1)
-        if rise_per_bin < 0.35:
+        if smooth[i] >= med - 1.0:
             return i
-    return i_hi
+    return min(i_lo + 1, i_hi)
+
+
+def _nearest_index(freqs: List[float], mhz: float) -> int:
+    return min(range(len(freqs)), key=lambda i: abs(freqs[i] - mhz))
+
+
+def _downsample_psd(
+    freqs: List[float],
+    psd: List[float],
+    max_points: int,
+    keep_mhz: Iterable[float],
+) -> Tuple[List[float], List[float]]:
+    n = len(freqs)
+    if n <= max_points:
+        return freqs, psd
+    keep: Set[int] = {0, n - 1}
+    for mhz in keep_mhz:
+        keep.add(_nearest_index(freqs, mhz))
+    step = max(1, n // max_points)
+    for i in range(0, n, step):
+        keep.add(i)
+    idxs = sorted(keep)
+    while len(idxs) > max_points:
+        step = max(2, len(idxs) // max_points + 1)
+        idxs = [idxs[i] for i in range(0, len(idxs), step)]
+        if idxs[0] != 0:
+            idxs.insert(0, 0)
+        if idxs[-1] != n - 1:
+            idxs.append(n - 1)
+    return [freqs[i] for i in idxs], [psd[i] for i in idxs]
+
+
+def _marine_bookmark_span_notes(
+    draw_lo: float, draw_hi: float, usable_hi: float
+) -> List[str]:
+    notes: List[str] = []
+    for label, mhz in MARINE_BOOKMARKS_MHZ.items():
+        if mhz < draw_lo - 0.001 or mhz > draw_hi + 0.001:
+            notes.append(f"{label} at band edge, not measurable in this capture")
+    if AIS2_MHZ <= draw_hi + 0.001 and AIS2_MHZ >= draw_lo - 0.001:
+        if AIS2_MHZ > usable_hi + 0.001:
+            notes.append("AIS2 near band edge, levels understated")
+        elif AIS2_MHZ > draw_hi - 0.02:
+            notes.append("AIS2 near band edge, levels understated")
+    return notes
 
 
 def compute_psd_plot_span(
@@ -267,18 +310,12 @@ def compute_psd_plot_span(
     usable_lo = cf_mhz - usable_half
     usable_hi = cf_mhz + usable_half
     i_lo, i_hi = _index_span(freqs, plot_lo, plot_hi)
-    draw_lo_idx = _left_rolloff_draw_index(freqs, psd, i_lo, i_hi, usable_lo)
-    draw_lo_mhz = max(freqs[draw_lo_idx], usable_lo, plot_lo)
+    draw_lo_idx = _left_draw_flatness_index(freqs, psd, i_lo, i_hi)
+    draw_lo_mhz = freqs[draw_lo_idx]
     draw_hi_idx = _right_rolloff_draw_index(freqs, psd, i_lo, i_hi)
     draw_hi_mhz = freqs[draw_hi_idx]
 
-    notes: List[str] = []
-    if CH09_MHZ < draw_lo_mhz - 0.001:
-        notes.append("CH09 at band edge, not measurable in this capture")
-    if AIS2_MHZ > usable_hi + 0.001:
-        notes.append("AIS2 near band edge, levels understated")
-    elif AIS2_MHZ > draw_hi_mhz - 0.02:
-        notes.append("AIS2 near band edge, levels understated")
+    notes = _marine_bookmark_span_notes(draw_lo_mhz, draw_hi_mhz, usable_hi)
 
     span_caption = (
         f"Plotted span {plot_lo:.3f}–{plot_hi:.3f} MHz "
@@ -505,10 +542,16 @@ def load_wideband_psd(capture_dir: Path, max_points: int = 2048) -> Dict[str, An
     i_lo, i_hi = _index_span(freqs, span["plot_min_mhz"], span["plot_max_mhz"])
     freqs = freqs[i_lo : i_hi + 1]
     psd = psd[i_lo : i_hi + 1]
-    if len(freqs) > max_points:
-        step = max(1, len(freqs) // max_points)
-        freqs = freqs[::step][:max_points]
-        psd = psd[::step][:max_points]
+    keep_mhz = [
+        span["plot_min_mhz"],
+        span["plot_max_mhz"],
+        span["draw_min_mhz"],
+        span["draw_max_mhz"],
+        *MARINE_BOOKMARKS_MHZ.values(),
+    ]
+    freqs, psd = _downsample_psd(freqs, psd, max_points, keep_mhz)
+    span["draw_min_mhz"] = freqs[_nearest_index(freqs, span["draw_min_mhz"])]
+    span["draw_max_mhz"] = freqs[_nearest_index(freqs, span["draw_max_mhz"])]
     analysis = _read_json(capture_dir / "analysis_report.json") or {}
     settings = _load_capture_settings(capture_dir)
     rb = settings.get("readback")
