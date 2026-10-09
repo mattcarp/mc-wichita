@@ -39,11 +39,27 @@ from api_maritime_aviation import add_maritime_aviation_routes
 from alert_dispatcher import send_stress_alert
 from discord_alerts import send_alert as send_discord_alert
 from evidence_context import delivery_health, evidence_context, answer_question
+from wichita_ais_routes import router as live_ais_router
+from wichita_gods_eye_routes import router as sky_router
+from wichita_capture_routes import router as capture_feed_router
 from whisper_transcription import WhisperConfig, transcribe_audio_file
 from ai_analysis_pipeline import analyze_audio_file, extract_stress_features, score_stress
 
+from contextlib import asynccontextmanager
+
+from wichita_live_events import get_engine
+
+
+@asynccontextmanager
+async def _wichita_lifespan(app):  # noqa: ARG001
+    get_engine().start()
+    yield
+    get_engine().stop()
+
+
 # Initialize FastAPI with rich metadata
 app = FastAPI(
+    lifespan=_wichita_lifespan,
     title="RF Digital Forensics Toolkit API",
     description="""
     ## 🎯 Full-Spectrum SIGINT Platform
@@ -913,7 +929,10 @@ async def capture_signal(request: CaptureRequest, background_tasks: BackgroundTa
         cmd.extend(["-a", "1"])
 
     if request.antenna_power:
-        cmd.extend(["-b", "1"])
+        raise HTTPException(
+            status_code=403,
+            detail="antenna_power (Bias-T) is disabled on the web API. Enable bias-T only from a local operator session.",
+        )
 
     try:
         subprocess.run(
@@ -1082,17 +1101,37 @@ async def get_ais_vessels():
     or from sample data. Each vessel includes MMSI, name, lat/lon, speed,
     course, and ISO-8601 timestamp for voice-capture correlation.
     """
-    from ais_decoder import get_sample_vessels
+    import wichita_captures as wc
 
-    vessels = get_sample_vessels()
+    refs = wc.scan_captures()
+    vessels = []
+    for ref in refs[:5]:
+        analysis = wc._read_json(ref.path / "analysis_report.json") or {}
+        for msg in wc.decode_ais_from_nmea(ref.path, analysis):
+            mmsi = msg.get("mmsi")
+            if not mmsi or mmsi in wc.VALLETTA_AIS_BASE_MMSIS:
+                continue
+            if msg.get("lat") is None or msg.get("lon") is None:
+                continue
+            vessels.append(
+                {
+                    "mmsi": mmsi,
+                    "name": msg.get("name"),
+                    "lat": msg["lat"],
+                    "lon": msg["lon"],
+                    "source": "capture_feed",
+                    "capture_id": ref.capture_id,
+                }
+            )
 
     return {
         "vessels": vessels,
         "total_count": len(vessels),
         "coverage_area": "Central Mediterranean",
         "receiver_location": "Valletta, Malta",
-        "decoder": "pyais",
+        "decoder": "capture_library",
         "channels_mhz": [161.975, 162.025],
+        "note": "Empty list means no vessels decoded yet.",
     }
 
 
@@ -1713,20 +1752,14 @@ async def waterfall_stream(websocket: WebSocket):
     await websocket.accept()
 
     try:
-        while True:
-            # This would stream actual FFT data from HackRF
-            # For demo, send random data
-            fft_data = {
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-                "center_freq_mhz": 100.0,
-                "bandwidth_mhz": 20.0,
-                "fft_size": 1024,
-                "power_data": list(np.random.random(1024) * -100),
+        await websocket.send_json(
+            {
+                "type": "unavailable",
+                "message": "Live waterfall is not served from the web process. Use /api/capture-feed for recorded PSD.",
             }
-
-            await websocket.send_json(fft_data)
-            await asyncio.sleep(0.1)  # 10 Hz update rate
-
+        )
+        while True:
+            await websocket.receive_text()
     except Exception:
         await websocket.close()
 
@@ -1737,34 +1770,19 @@ async def waterfall_stream(websocket: WebSocket):
 @app.get("/status", tags=["system"])
 async def system_status():
     """
-    Get HackRF and system status.
-
-    Includes device info and health checks.
+    Receive-only station status (SDRplay RSPdx-R2). No transmit paths.
     """
-    # Check HackRF
-    hackrf_status = "disconnected"
-    hackrf_info = {}
+    import wichita_captures as wc
 
-    try:
-        result = subprocess.run(
-            ["hackrf_info"], capture_output=True, text=True, timeout=2
-        )
-        if "Serial number" in result.stdout:
-            hackrf_status = "connected"
-            for line in result.stdout.split("\n"):
-                if "Serial number:" in line:
-                    hackrf_info["serial"] = line.split(":")[1].strip()
-                elif "Firmware Version:" in line:
-                    hackrf_info["firmware"] = line.split(":")[1].strip()
-    except subprocess.SubprocessError:
-        pass
-
+    refs = wc.scan_captures()
+    station = wc.station_payload(refs) if refs else {}
     return {
         "status": "operational",
-        "hackrf_status": hackrf_status,
-        "hackrf_info": hackrf_info,
+        "mode": "receive_only",
+        "receiver": station.get("receiver", "SDRplay RSPdx-R2"),
+        "receiver_serial": station.get("device_serial", "unknown"),
+        "captures_on_disk": len(refs),
         "location": "Valletta, Malta",
-        "coverage": "1 MHz - 6 GHz",
         "timestamp": datetime.now(timezone.utc),
         "api_version": "2.0.0",
     }
@@ -1774,11 +1792,16 @@ async def system_status():
 async def health():
     """Lightweight health endpoint for dashboard polling."""
     status = await system_status()
+    import wichita_captures as wc
+
+    refs = wc.scan_captures()
     return {
         "status": "ok",
         "api_version": "2.0.0",
         "timestamp": datetime.now(timezone.utc),
-        "hackrf_status": status.get("hackrf_status", "unknown"),
+        "receiver": status.get("receiver", "SDRplay RSPdx-R2"),
+        "receiver_serial": status.get("receiver_serial", "unknown"),
+        "captures_on_disk": len(refs),
         "alerts_count": len(ALERTS),
         "stress_alerts_count": len([alert for alert in ALERTS if _is_stress_alert(alert)]),
         "captures_count": len(CAPTURES),
@@ -1790,14 +1813,25 @@ async def health():
 
 @app.get("/dashboard/{filename:path}", include_in_schema=False)
 async def dashboard_asset(filename: str):
-    allowed = {"dashboard.css", "dashboard.js", "evidence-model.mjs", "vendor/leaflet.js", "vendor/leaflet.css"}
-    if filename not in allowed:
+    base = Path(__file__).resolve().parent / "dashboard"
+    asset = (base / filename).resolve()
+    if not str(asset).startswith(str(base.resolve())):
         raise HTTPException(status_code=404, detail="Dashboard asset not found")
-    asset = Path(__file__).resolve().parent / "dashboard" / filename
     if not asset.is_file():
         raise HTTPException(status_code=404, detail="Dashboard asset not found")
-    media_type = "text/css" if filename.endswith(".css") else "text/javascript"
-    return FileResponse(str(asset), media_type=media_type)
+    if filename.endswith(".css"):
+        media_type = "text/css"
+    elif filename.endswith(".js") or filename.endswith(".mjs"):
+        media_type = "text/javascript"
+    elif filename.endswith(".woff2"):
+        media_type = "font/woff2"
+    else:
+        media_type = "application/octet-stream"
+    return FileResponse(
+        str(asset),
+        media_type=media_type,
+        headers={"Cache-Control": "no-cache, must-revalidate"},
+    )
 
 
 @app.get("/", include_in_schema=False)
@@ -1805,12 +1839,19 @@ async def root():
     """Serve Wichita dashboard."""
     dashboard_path = Path(__file__).resolve().parent / "dashboard" / "index.html"
     if dashboard_path.exists():
-        return FileResponse(str(dashboard_path), media_type="text/html")
+        return FileResponse(
+            str(dashboard_path),
+            media_type="text/html",
+            headers={"Cache-Control": "no-cache, must-revalidate"},
+        )
     raise HTTPException(status_code=404, detail="Dashboard not found")
 
 
 # Add maritime and aviation routes
 app = add_maritime_aviation_routes(app)
+app.include_router(capture_feed_router)
+app.include_router(live_ais_router)
+app.include_router(sky_router)
 
 if __name__ == "__main__":
     import uvicorn

@@ -1,0 +1,25 @@
+{
+  "audio_rate": 16000.0,
+  "channels": {
+    "AIR_121p500MHz_distress": {
+      "freq_hz": 121500000.0,
+      "mode": "am",
+      "wav": "/tmp/vm/AIR_121p500MHz_distress_am_16k.wav",
+      "duration_s": 45.0,
+      "noise_floor_dbfs": -59.8,
+      "peak_dbfs": -58.5,
+      "peak_over_noise_db": 1.3,
+      "openings_ge_0p3s_8db": []
+    },
+    "AIR_121p900MHz": {
+      "freq_hz": 121900000.0,
+      "mode": "am",
+      "wav": "/tmp/vm/AIR_121p900MHz_am_16k.wav",
+      "duration_s": 45.0,
+      "noise_floor_dbfs": -58.8,
+      "peak_dbfs": -57.4,
+      "peak_over_noise_db": 1.3,
+      "openings_ge_0p3s_8db": []
+    }
+  }
+}

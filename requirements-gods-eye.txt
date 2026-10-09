@@ -1,0 +1,3 @@
+# Optional runtime deps for satellite pass prediction (SGP4 / CelesTrak TLE cache).
+# Install: pip install -r requirements-gods-eye.txt
+sgp4>=2.23

@@ -1,0 +1,5580 @@
+{
+ "readback": {
+  "biasT_ctrl": "false",
+  "antenna": "Antenna A",
+  "RFGR": 4.0,
+  "IFGR": 35.0,
+  "agc": false
+ },
+ "dwell_s": 3.0,
+ "floor_db": -7.850661516189575,
+ "channels": [
+  {
+   "freq_mhz": 118.0,
+   "maxhold_db": -4.6585211753845215,
+   "avg_db": -14.738211631774902,
+   "maxhold_over_floor_db": 3.2,
+   "avg_over_floor_db": -6.9
+  },
+  {
+   "freq_mhz": 118.025,
+   "maxhold_db": -2.6108922958374023,
+   "avg_db": -13.011968612670898,
+   "maxhold_over_floor_db": 5.2,
+   "avg_over_floor_db": -5.2
+  },
+  {
+   "freq_mhz": 118.05,
+   "maxhold_db": -1.1783777475357056,
+   "avg_db": -12.434187889099121,
+   "maxhold_over_floor_db": 6.7,
+   "avg_over_floor_db": -4.6
+  },
+  {
+   "freq_mhz": 118.075,
+   "maxhold_db": -2.189027786254883,
+   "avg_db": -12.477865219116211,
+   "maxhold_over_floor_db": 5.7,
+   "avg_over_floor_db": -4.6
+  },
+  {
+   "freq_mhz": 118.1,
+   "maxhold_db": -2.0368399620056152,
+   "avg_db": -12.899789810180664,
+   "maxhold_over_floor_db": 5.8,
+   "avg_over_floor_db": -5.0
+  },
+  {
+   "freq_mhz": 118.125,
+   "maxhold_db": -3.0021286010742188,
+   "avg_db": -13.759928703308105,
+   "maxhold_over_floor_db": 4.8,
+   "avg_over_floor_db": -5.9
+  },
+  {
+   "freq_mhz": 118.15,
+   "maxhold_db": -3.610443592071533,
+   "avg_db": -13.751202583312988,
+   "maxhold_over_floor_db": 4.2,
+   "avg_over_floor_db": -5.9
+  },
+  {
+   "freq_mhz": 118.175,
+   "maxhold_db": -3.633403778076172,
+   "avg_db": -13.757608413696289,
+   "maxhold_over_floor_db": 4.2,
+   "avg_over_floor_db": -5.9
+  },
+  {
+   "freq_mhz": 118.2,
+   "maxhold_db": -3.385291576385498,
+   "avg_db": -13.522380828857422,
+   "maxhold_over_floor_db": 4.5,
+   "avg_over_floor_db": -5.7
+  },
+  {
+   "freq_mhz": 118.225,
+   "maxhold_db": -3.750011920928955,
+   "avg_db": -13.844256401062012,
+   "maxhold_over_floor_db": 4.1,
+   "avg_over_floor_db": -6.0
+  },
+  {
+   "freq_mhz": 118.25,
+   "maxhold_db": -2.8137269020080566,
+   "avg_db": -13.710983276367188,
+   "maxhold_over_floor_db": 5.0,
+   "avg_over_floor_db": -5.9
+  },
+  {
+   "freq_mhz": 118.275,
+   "maxhold_db": -3.799373149871826,
+   "avg_db": -13.81523609161377,
+   "maxhold_over_floor_db": 4.1,
+   "avg_over_floor_db": -6.0
+  },
+  {
+   "freq_mhz": 118.3,
+   "maxhold_db": -4.131326198577881,
+   "avg_db": -13.423337936401367,
+   "maxhold_over_floor_db": 3.7,
+   "avg_over_floor_db": -5.6
+  },
+  {
+   "freq_mhz": 118.325,
+   "maxhold_db": -3.9952099323272705,
+   "avg_db": -13.646926879882812,
+   "maxhold_over_floor_db": 3.9,
+   "avg_over_floor_db": -5.8
+  },
+  {
+   "freq_mhz": 118.35,
+   "maxhold_db": -3.8692898750305176,
+   "avg_db": -13.51209831237793,
+   "maxhold_over_floor_db": 4.0,
+   "avg_over_floor_db": -5.7
+  },
+  {
+   "freq_mhz": 118.375,
+   "maxhold_db": -1.7244737148284912,
+   "avg_db": -13.38713550567627,
+   "maxhold_over_floor_db": 6.1,
+   "avg_over_floor_db": -5.5
+  },
+  {
+   "freq_mhz": 118.4,
+   "maxhold_db": -0.1584046185016632,
+   "avg_db": -12.059852600097656,
+   "maxhold_over_floor_db": 7.7,
+   "avg_over_floor_db": -4.2
+  },
+  {
+   "freq_mhz": 118.425,
+   "maxhold_db": -0.29752016067504883,
+   "avg_db": -11.28371810913086,
+   "maxhold_over_floor_db": 7.6,
+   "avg_over_floor_db": -3.4
+  },
+  {
+   "freq_mhz": 118.45,
+   "maxhold_db": -0.8193587064743042,
+   "avg_db": -11.548405647277832,
+   "maxhold_over_floor_db": 7.0,
+   "avg_over_floor_db": -3.7
+  },
+  {
+   "freq_mhz": 118.475,
+   "maxhold_db": -1.82900071144104,
+   "avg_db": -12.36279582977295,
+   "maxhold_over_floor_db": 6.0,
+   "avg_over_floor_db": -4.5
+  },
+  {
+   "freq_mhz": 118.5,
+   "maxhold_db": -3.548436403274536,
+   "avg_db": -13.078590393066406,
+   "maxhold_over_floor_db": 4.3,
+   "avg_over_floor_db": -5.2
+  },
+  {
+   "freq_mhz": 118.525,
+   "maxhold_db": -3.4314963817596436,
+   "avg_db": -13.628350257873535,
+   "maxhold_over_floor_db": 4.4,
+   "avg_over_floor_db": -5.8
+  },
+  {
+   "freq_mhz": 118.55,
+   "maxhold_db": -3.967215061187744,
+   "avg_db": -13.705157279968262,
+   "maxhold_over_floor_db": 3.9,
+   "avg_over_floor_db": -5.9
+  },
+  {
+   "freq_mhz": 118.575,
+   "maxhold_db": -3.561746597290039,
+   "avg_db": -13.831888198852539,
+   "maxhold_over_floor_db": 4.3,
+   "avg_over_floor_db": -6.0
+  },
+  {
+   "freq_mhz": 118.6,
+   "maxhold_db": -2.696746826171875,
+   "avg_db": -13.449915885925293,
+   "maxhold_over_floor_db": 5.2,
+   "avg_over_floor_db": -5.6
+  },
+  {
+   "freq_mhz": 118.625,
+   "maxhold_db": -3.4207687377929688,
+   "avg_db": -13.654834747314453,
+   "maxhold_over_floor_db": 4.4,
+   "avg_over_floor_db": -5.8
+  },
+  {
+   "freq_mhz": 118.65,
+   "maxhold_db": -3.675372838973999,
+   "avg_db": -13.599395751953125,
+   "maxhold_over_floor_db": 4.2,
+   "avg_over_floor_db": -5.7
+  },
+  {
+   "freq_mhz": 118.675,
+   "maxhold_db": -3.2322983741760254,
+   "avg_db": -13.580102920532227,
+   "maxhold_over_floor_db": 4.6,
+   "avg_over_floor_db": -5.7
+  },
+  {
+   "freq_mhz": 118.7,
+   "maxhold_db": -2.9372663497924805,
+   "avg_db": -13.272294044494629,
+   "maxhold_over_floor_db": 4.9,
+   "avg_over_floor_db": -5.4
+  },
+  {
+   "freq_mhz": 118.725,
+   "maxhold_db": -2.996321201324463,
+   "avg_db": -13.282812118530273,
+   "maxhold_over_floor_db": 4.9,
+   "avg_over_floor_db": -5.4
+  },
+  {
+   "freq_mhz": 118.75,
+   "maxhold_db": -2.9939732551574707,
+   "avg_db": -13.346391677856445,
+   "maxhold_over_floor_db": 4.9,
+   "avg_over_floor_db": -5.5
+  },
+  {
+   "freq_mhz": 118.775,
+   "maxhold_db": -2.674821376800537,
+   "avg_db": -13.027924537658691,
+   "maxhold_over_floor_db": 5.2,
+   "avg_over_floor_db": -5.2
+  },
+  {
+   "freq_mhz": 118.8,
+   "maxhold_db": -0.7070697546005249,
+   "avg_db": -11.977596282958984,
+   "maxhold_over_floor_db": 7.1,
+   "avg_over_floor_db": -4.1
+  },
+  {
+   "freq_mhz": 118.825,
+   "maxhold_db": 0.5756770372390747,
+   "avg_db": -10.47104263305664,
+   "maxhold_over_floor_db": 8.4,
+   "avg_over_floor_db": -2.6
+  },
+  {
+   "freq_mhz": 118.85,
+   "maxhold_db": 0.29147663712501526,
+   "avg_db": -11.395462989807129,
+   "maxhold_over_floor_db": 8.1,
+   "avg_over_floor_db": -3.5
+  },
+  {
+   "freq_mhz": 118.875,
+   "maxhold_db": -1.9452855587005615,
+   "avg_db": -12.644523620605469,
+   "maxhold_over_floor_db": 5.9,
+   "avg_over_floor_db": -4.8
+  },
+  {
+   "freq_mhz": 118.9,
+   "maxhold_db": -2.3790290355682373,
+   "avg_db": -12.840890884399414,
+   "maxhold_over_floor_db": 5.5,
+   "avg_over_floor_db": -5.0
+  },
+  {
+   "freq_mhz": 118.925,
+   "maxhold_db": -2.277757167816162,
+   "avg_db": -13.037822723388672,
+   "maxhold_over_floor_db": 5.6,
+   "avg_over_floor_db": -5.2
+  },
+  {
+   "freq_mhz": 118.95,
+   "maxhold_db": -2.7397384643554688,
+   "avg_db": -13.052125930786133,
+   "maxhold_over_floor_db": 5.1,
+   "avg_over_floor_db": -5.2
+  },
+  {
+   "freq_mhz": 118.975,
+   "maxhold_db": -2.68737530708313,
+   "avg_db": -12.984081268310547,
+   "maxhold_over_floor_db": 5.2,
+   "avg_over_floor_db": -5.1
+  },
+  {
+   "freq_mhz": 119.0,
+   "maxhold_db": -2.8946330547332764,
+   "avg_db": -12.794476509094238,
+   "maxhold_over_floor_db": 5.0,
+   "avg_over_floor_db": -4.9
+  },
+  {
+   "freq_mhz": 119.025,
+   "maxhold_db": -3.0263044834136963,
+   "avg_db": -12.661745071411133,
+   "maxhold_over_floor_db": 4.8,
+   "avg_over_floor_db": -4.8
+  },
+  {
+   "freq_mhz": 119.05,
+   "maxhold_db": 2.2842350006103516,
+   "avg_db": -12.15711784362793,
+   "maxhold_over_floor_db": 10.1,
+   "avg_over_floor_db": -4.3
+  },
+  {
+   "freq_mhz": 119.075,
+   "maxhold_db": -1.6009758710861206,
+   "avg_db": -12.554540634155273,
+   "maxhold_over_floor_db": 6.2,
+   "avg_over_floor_db": -4.7
+  },
+  {
+   "freq_mhz": 119.1,
+   "maxhold_db": -1.3280396461486816,
+   "avg_db": -12.354591369628906,
+   "maxhold_over_floor_db": 6.5,
+   "avg_over_floor_db": -4.5
+  },
+  {
+   "freq_mhz": 119.125,
+   "maxhold_db": -2.4529380798339844,
+   "avg_db": -12.532636642456055,
+   "maxhold_over_floor_db": 5.4,
+   "avg_over_floor_db": -4.7
+  },
+  {
+   "freq_mhz": 119.15,
+   "maxhold_db": -2.5908141136169434,
+   "avg_db": -12.375146865844727,
+   "maxhold_over_floor_db": 5.3,
+   "avg_over_floor_db": -4.5
+  },
+  {
+   "freq_mhz": 119.175,
+   "maxhold_db": -1.059282898902893,
+   "avg_db": -12.011551856994629,
+   "maxhold_over_floor_db": 6.8,
+   "avg_over_floor_db": -4.2
+  },
+  {
+   "freq_mhz": 119.2,
+   "maxhold_db": 0.3047061562538147,
+   "avg_db": -10.332794189453125,
+   "maxhold_over_floor_db": 8.2,
+   "avg_over_floor_db": -2.5
+  },
+  {
+   "freq_mhz": 119.225,
+   "maxhold_db": 2.8685083389282227,
+   "avg_db": -8.620441436767578,
+   "maxhold_over_floor_db": 10.7,
+   "avg_over_floor_db": -0.8
+  },
+  {
+   "freq_mhz": 119.25,
+   "maxhold_db": 0.4699656069278717,
+   "avg_db": -11.09565544128418,
+   "maxhold_over_floor_db": 8.3,
+   "avg_over_floor_db": -3.2
+  },
+  {
+   "freq_mhz": 119.275,
+   "maxhold_db": -1.4315671920776367,
+   "avg_db": -11.936654090881348,
+   "maxhold_over_floor_db": 6.4,
+   "avg_over_floor_db": -4.1
+  },
+  {
+   "freq_mhz": 119.3,
+   "maxhold_db": -2.0723578929901123,
+   "avg_db": -12.323358535766602,
+   "maxhold_over_floor_db": 5.8,
+   "avg_over_floor_db": -4.5
+  },
+  {
+   "freq_mhz": 119.325,
+   "maxhold_db": -1.2331953048706055,
+   "avg_db": -12.59377384185791,
+   "maxhold_over_floor_db": 6.6,
+   "avg_over_floor_db": -4.7
+  },
+  {
+   "freq_mhz": 119.35,
+   "maxhold_db": 0.5361950993537903,
+   "avg_db": -12.396801948547363,
+   "maxhold_over_floor_db": 8.4,
+   "avg_over_floor_db": -4.5
+  },
+  {
+   "freq_mhz": 119.375,
+   "maxhold_db": -0.8163164854049683,
+   "avg_db": -12.762187957763672,
+   "maxhold_over_floor_db": 7.0,
+   "avg_over_floor_db": -4.9
+  },
+  {
+   "freq_mhz": 119.4,
+   "maxhold_db": -1.4111100435256958,
+   "avg_db": -12.488022804260254,
+   "maxhold_over_floor_db": 6.4,
+   "avg_over_floor_db": -4.6
+  },
+  {
+   "freq_mhz": 119.425,
+   "maxhold_db": -3.149510383605957,
+   "avg_db": -13.071189880371094,
+   "maxhold_over_floor_db": 4.7,
+   "avg_over_floor_db": -5.2
+  },
+  {
+   "freq_mhz": 119.45,
+   "maxhold_db": -3.3661677837371826,
+   "avg_db": -13.085580825805664,
+   "maxhold_over_floor_db": 4.5,
+   "avg_over_floor_db": -5.2
+  },
+  {
+   "freq_mhz": 119.475,
+   "maxhold_db": -3.6584534645080566,
+   "avg_db": -12.977727890014648,
+   "maxhold_over_floor_db": 4.2,
+   "avg_over_floor_db": -5.1
+  },
+  {
+   "freq_mhz": 119.5,
+   "maxhold_db": -1.629636287689209,
+   "avg_db": -12.027429580688477,
+   "maxhold_over_floor_db": 6.2,
+   "avg_over_floor_db": -4.2
+  },
+  {
+   "freq_mhz": 119.525,
+   "maxhold_db": -1.9821257591247559,
+   "avg_db": -11.59079360961914,
+   "maxhold_over_floor_db": 5.9,
+   "avg_over_floor_db": -3.7
+  },
+  {
+   "freq_mhz": 119.55,
+   "maxhold_db": -0.9457036852836609,
+   "avg_db": -11.390629768371582,
+   "maxhold_over_floor_db": 6.9,
+   "avg_over_floor_db": -3.5
+  },
+  {
+   "freq_mhz": 119.575,
+   "maxhold_db": 1.2066974639892578,
+   "avg_db": -10.912174224853516,
+   "maxhold_over_floor_db": 9.1,
+   "avg_over_floor_db": -3.1
+  },
+  {
+   "freq_mhz": 119.6,
+   "maxhold_db": 5.3019304275512695,
+   "avg_db": -7.486954689025879,
+   "maxhold_over_floor_db": 13.2,
+   "avg_over_floor_db": 0.4
+  },
+  {
+   "freq_mhz": 119.625,
+   "maxhold_db": 4.503249168395996,
+   "avg_db": -8.399733543395996,
+   "maxhold_over_floor_db": 12.4,
+   "avg_over_floor_db": -0.5
+  },
+  {
+   "freq_mhz": 119.65,
+   "maxhold_db": 0.6463414430618286,
+   "avg_db": -10.03681755065918,
+   "maxhold_over_floor_db": 8.5,
+   "avg_over_floor_db": -2.2
+  },
+  {
+   "freq_mhz": 119.675,
+   "maxhold_db": 3.1728873252868652,
+   "avg_db": -10.29120922088623,
+   "maxhold_over_floor_db": 11.0,
+   "avg_over_floor_db": -2.4
+  },
+  {
+   "freq_mhz": 119.7,
+   "maxhold_db": 1.0211442708969116,
+   "avg_db": -10.080193519592285,
+   "maxhold_over_floor_db": 8.9,
+   "avg_over_floor_db": -2.2
+  },
+  {
+   "freq_mhz": 119.725,
+   "maxhold_db": 0.39741188287734985,
+   "avg_db": -10.461207389831543,
+   "maxhold_over_floor_db": 8.2,
+   "avg_over_floor_db": -2.6
+  },
+  {
+   "freq_mhz": 119.75,
+   "maxhold_db": -0.5108498930931091,
+   "avg_db": -10.57647705078125,
+   "maxhold_over_floor_db": 7.3,
+   "avg_over_floor_db": -2.7
+  },
+  {
+   "freq_mhz": 119.775,
+   "maxhold_db": 0.36012786626815796,
+   "avg_db": -10.578868865966797,
+   "maxhold_over_floor_db": 8.2,
+   "avg_over_floor_db": -2.7
+  },
+  {
+   "freq_mhz": 119.8,
+   "maxhold_db": 0.30847442150115967,
+   "avg_db": -9.70324420928955,
+   "maxhold_over_floor_db": 8.2,
+   "avg_over_floor_db": -1.9
+  },
+  {
+   "freq_mhz": 119.825,
+   "maxhold_db": -0.2120421975851059,
+   "avg_db": -10.252121925354004,
+   "maxhold_over_floor_db": 7.6,
+   "avg_over_floor_db": -2.4
+  },
+  {
+   "freq_mhz": 119.85,
+   "maxhold_db": -0.2724170386791229,
+   "avg_db": -10.337966918945312,
+   "maxhold_over_floor_db": 7.6,
+   "avg_over_floor_db": -2.5
+  },
+  {
+   "freq_mhz": 119.875,
+   "maxhold_db": 0.03522373363375664,
+   "avg_db": -10.326247215270996,
+   "maxhold_over_floor_db": 7.9,
+   "avg_over_floor_db": -2.5
+  },
+  {
+   "freq_mhz": 119.9,
+   "maxhold_db": 0.9665828943252563,
+   "avg_db": -9.358453750610352,
+   "maxhold_over_floor_db": 8.8,
+   "avg_over_floor_db": -1.5
+  },
+  {
+   "freq_mhz": 119.925,
+   "maxhold_db": 0.37986379861831665,
+   "avg_db": -9.885675430297852,
+   "maxhold_over_floor_db": 8.2,
+   "avg_over_floor_db": -2.0
+  },
+  {
+   "freq_mhz": 119.95,
+   "maxhold_db": 0.603275716304779,
+   "avg_db": -9.79798412322998,
+   "maxhold_over_floor_db": 8.5,
+   "avg_over_floor_db": -1.9
+  },
+  {
+   "freq_mhz": 119.975,
+   "maxhold_db": 4.021080017089844,
+   "avg_db": -8.204675674438477,
+   "maxhold_over_floor_db": 11.9,
+   "avg_over_floor_db": -0.4
+  },
+  {
+   "freq_mhz": 120.0,
+   "maxhold_db": 32.394020080566406,
+   "avg_db": 19.707897186279297,
+   "maxhold_over_floor_db": 40.2,
+   "avg_over_floor_db": 27.6
+  },
+  {
+   "freq_mhz": 120.025,
+   "maxhold_db": 4.273510932922363,
+   "avg_db": -7.903751850128174,
+   "maxhold_over_floor_db": 12.1,
+   "avg_over_floor_db": -0.1
+  },
+  {
+   "freq_mhz": 120.05,
+   "maxhold_db": 1.1412370204925537,
+   "avg_db": -9.33420181274414,
+   "maxhold_over_floor_db": 9.0,
+   "avg_over_floor_db": -1.5
+  },
+  {
+   "freq_mhz": 120.075,
+   "maxhold_db": 0.9733325839042664,
+   "avg_db": -9.560644149780273,
+   "maxhold_over_floor_db": 8.8,
+   "avg_over_floor_db": -1.7
+  },
+  {
+   "freq_mhz": 120.1,
+   "maxhold_db": 1.2905311584472656,
+   "avg_db": -8.877640724182129,
+   "maxhold_over_floor_db": 9.1,
+   "avg_over_floor_db": -1.0
+  },
+  {
+   "freq_mhz": 120.125,
+   "maxhold_db": 0.18946854770183563,
+   "avg_db": -9.92331314086914,
+   "maxhold_over_floor_db": 8.0,
+   "avg_over_floor_db": -2.1
+  },
+  {
+   "freq_mhz": 120.15,
+   "maxhold_db": 0.38412147760391235,
+   "avg_db": -9.806462287902832,
+   "maxhold_over_floor_db": 8.2,
+   "avg_over_floor_db": -2.0
+  },
+  {
+   "freq_mhz": 120.175,
+   "maxhold_db": 0.13261184096336365,
+   "avg_db": -9.631608963012695,
+   "maxhold_over_floor_db": 8.0,
+   "avg_over_floor_db": -1.8
+  },
+  {
+   "freq_mhz": 120.2,
+   "maxhold_db": 1.669380784034729,
+   "avg_db": -8.70453929901123,
+   "maxhold_over_floor_db": 9.5,
+   "avg_over_floor_db": -0.9
+  },
+  {
+   "freq_mhz": 120.225,
+   "maxhold_db": 0.7755954265594482,
+   "avg_db": -9.668853759765625,
+   "maxhold_over_floor_db": 8.6,
+   "avg_over_floor_db": -1.8
+  },
+  {
+   "freq_mhz": 120.25,
+   "maxhold_db": 0.9245301485061646,
+   "avg_db": -9.42016887664795,
+   "maxhold_over_floor_db": 8.8,
+   "avg_over_floor_db": -1.6
+  },
+  {
+   "freq_mhz": 120.275,
+   "maxhold_db": 1.215973138809204,
+   "avg_db": -9.15101146697998,
+   "maxhold_over_floor_db": 9.1,
+   "avg_over_floor_db": -1.3
+  },
+  {
+   "freq_mhz": 120.3,
+   "maxhold_db": 3.8601901531219482,
+   "avg_db": -8.11023998260498,
+   "maxhold_over_floor_db": 11.7,
+   "avg_over_floor_db": -0.3
+  },
+  {
+   "freq_mhz": 120.325,
+   "maxhold_db": 4.819146633148193,
+   "avg_db": -8.542402267456055,
+   "maxhold_over_floor_db": 12.7,
+   "avg_over_floor_db": -0.7
+  },
+  {
+   "freq_mhz": 120.35,
+   "maxhold_db": 3.634434223175049,
+   "avg_db": -8.976913452148438,
+   "maxhold_over_floor_db": 11.5,
+   "avg_over_floor_db": -1.1
+  },
+  {
+   "freq_mhz": 120.375,
+   "maxhold_db": 5.959962844848633,
+   "avg_db": -7.037858009338379,
+   "maxhold_over_floor_db": 13.8,
+   "avg_over_floor_db": 0.8
+  },
+  {
+   "freq_mhz": 120.4,
+   "maxhold_db": 4.309938907623291,
+   "avg_db": -6.284627437591553,
+   "maxhold_over_floor_db": 12.2,
+   "avg_over_floor_db": 1.6
+  },
+  {
+   "freq_mhz": 120.425,
+   "maxhold_db": 2.3894283771514893,
+   "avg_db": -8.624456405639648,
+   "maxhold_over_floor_db": 10.2,
+   "avg_over_floor_db": -0.8
+  },
+  {
+   "freq_mhz": 120.45,
+   "maxhold_db": 0.8604353666305542,
+   "avg_db": -9.384140014648438,
+   "maxhold_over_floor_db": 8.7,
+   "avg_over_floor_db": -1.5
+  },
+  {
+   "freq_mhz": 120.475,
+   "maxhold_db": 2.078141689300537,
+   "avg_db": -9.023673057556152,
+   "maxhold_over_floor_db": 9.9,
+   "avg_over_floor_db": -1.2
+  },
+  {
+   "freq_mhz": 120.5,
+   "maxhold_db": 1.7413513660430908,
+   "avg_db": -9.12430191040039,
+   "maxhold_over_floor_db": 9.6,
+   "avg_over_floor_db": -1.3
+  },
+  {
+   "freq_mhz": 120.525,
+   "maxhold_db": 0.7830215096473694,
+   "avg_db": -9.575243949890137,
+   "maxhold_over_floor_db": 8.6,
+   "avg_over_floor_db": -1.7
+  },
+  {
+   "freq_mhz": 120.55,
+   "maxhold_db": -0.2764075994491577,
+   "avg_db": -9.578063011169434,
+   "maxhold_over_floor_db": 7.6,
+   "avg_over_floor_db": -1.7
+  },
+  {
+   "freq_mhz": 120.575,
+   "maxhold_db": 1.1701914072036743,
+   "avg_db": -9.3553466796875,
+   "maxhold_over_floor_db": 9.0,
+   "avg_over_floor_db": -1.5
+  },
+  {
+   "freq_mhz": 120.6,
+   "maxhold_db": 2.5347342491149902,
+   "avg_db": -8.920709609985352,
+   "maxhold_over_floor_db": 10.4,
+   "avg_over_floor_db": -1.1
+  },
+  {
+   "freq_mhz": 120.625,
+   "maxhold_db": 4.2318620681762695,
+   "avg_db": -8.908811569213867,
+   "maxhold_over_floor_db": 12.1,
+   "avg_over_floor_db": -1.1
+  },
+  {
+   "freq_mhz": 120.65,
+   "maxhold_db": 7.569850921630859,
+   "avg_db": -8.335295677185059,
+   "maxhold_over_floor_db": 15.4,
+   "avg_over_floor_db": -0.5
+  },
+  {
+   "freq_mhz": 120.675,
+   "maxhold_db": 4.201848983764648,
+   "avg_db": -8.737536430358887,
+   "maxhold_over_floor_db": 12.1,
+   "avg_over_floor_db": -0.9
+  },
+  {
+   "freq_mhz": 120.7,
+   "maxhold_db": 2.157935619354248,
+   "avg_db": -8.850425720214844,
+   "maxhold_over_floor_db": 10.0,
+   "avg_over_floor_db": -1.0
+  },
+  {
+   "freq_mhz": 120.725,
+   "maxhold_db": 1.3440781831741333,
+   "avg_db": -8.982921600341797,
+   "maxhold_over_floor_db": 9.2,
+   "avg_over_floor_db": -1.1
+  },
+  {
+   "freq_mhz": 120.75,
+   "maxhold_db": 3.2791759967803955,
+   "avg_db": -7.980160236358643,
+   "maxhold_over_floor_db": 11.1,
+   "avg_over_floor_db": -0.1
+  },
+  {
+   "freq_mhz": 120.775,
+   "maxhold_db": 9.311982154846191,
+   "avg_db": -3.7022175788879395,
+   "maxhold_over_floor_db": 17.2,
+   "avg_over_floor_db": 4.1
+  },
+  {
+   "freq_mhz": 120.8,
+   "maxhold_db": 5.6609206199646,
+   "avg_db": -7.1434807777404785,
+   "maxhold_over_floor_db": 13.5,
+   "avg_over_floor_db": 0.7
+  },
+  {
+   "freq_mhz": 120.825,
+   "maxhold_db": 2.0960874557495117,
+   "avg_db": -8.705521583557129,
+   "maxhold_over_floor_db": 9.9,
+   "avg_over_floor_db": -0.9
+  },
+  {
+   "freq_mhz": 120.85,
+   "maxhold_db": 1.7862616777420044,
+   "avg_db": -9.300246238708496,
+   "maxhold_over_floor_db": 9.6,
+   "avg_over_floor_db": -1.4
+  },
+  {
+   "freq_mhz": 120.875,
+   "maxhold_db": 2.099780321121216,
+   "avg_db": -9.12622356414795,
+   "maxhold_over_floor_db": 10.0,
+   "avg_over_floor_db": -1.3
+  },
+  {
+   "freq_mhz": 120.9,
+   "maxhold_db": 3.449303150177002,
+   "avg_db": -8.970793724060059,
+   "maxhold_over_floor_db": 11.3,
+   "avg_over_floor_db": -1.1
+  },
+  {
+   "freq_mhz": 120.925,
+   "maxhold_db": 2.796560525894165,
+   "avg_db": -9.030055046081543,
+   "maxhold_over_floor_db": 10.6,
+   "avg_over_floor_db": -1.2
+  },
+  {
+   "freq_mhz": 120.95,
+   "maxhold_db": 8.378372192382812,
+   "avg_db": -8.100198745727539,
+   "maxhold_over_floor_db": 16.2,
+   "avg_over_floor_db": -0.2
+  },
+  {
+   "freq_mhz": 120.975,
+   "maxhold_db": 2.2859675884246826,
+   "avg_db": -8.812152862548828,
+   "maxhold_over_floor_db": 10.1,
+   "avg_over_floor_db": -1.0
+  },
+  {
+   "freq_mhz": 121.0,
+   "maxhold_db": 2.129476308822632,
+   "avg_db": -9.866334915161133,
+   "maxhold_over_floor_db": 10.0,
+   "avg_over_floor_db": -2.0
+  },
+  {
+   "freq_mhz": 121.025,
+   "maxhold_db": 0.6176019906997681,
+   "avg_db": -9.954883575439453,
+   "maxhold_over_floor_db": 8.5,
+   "avg_over_floor_db": -2.1
+  },
+  {
+   "freq_mhz": 121.05,
+   "maxhold_db": 0.9552704095840454,
+   "avg_db": -9.840181350708008,
+   "maxhold_over_floor_db": 8.8,
+   "avg_over_floor_db": -2.0
+  },
+  {
+   "freq_mhz": 121.075,
+   "maxhold_db": -0.10784912109375,
+   "avg_db": -9.6332368850708,
+   "maxhold_over_floor_db": 7.7,
+   "avg_over_floor_db": -1.8
+  },
+  {
+   "freq_mhz": 121.1,
+   "maxhold_db": 2.251089572906494,
+   "avg_db": -9.093330383300781,
+   "maxhold_over_floor_db": 10.1,
+   "avg_over_floor_db": -1.2
+  },
+  {
+   "freq_mhz": 121.125,
+   "maxhold_db": 2.8625333309173584,
+   "avg_db": -8.394035339355469,
+   "maxhold_over_floor_db": 10.7,
+   "avg_over_floor_db": -0.5
+  },
+  {
+   "freq_mhz": 121.15,
+   "maxhold_db": 7.2312188148498535,
+   "avg_db": -5.426666736602783,
+   "maxhold_over_floor_db": 15.1,
+   "avg_over_floor_db": 2.4
+  },
+  {
+   "freq_mhz": 121.175,
+   "maxhold_db": 8.092018127441406,
+   "avg_db": -3.9493637084960938,
+   "maxhold_over_floor_db": 15.9,
+   "avg_over_floor_db": 3.9
+  },
+  {
+   "freq_mhz": 121.2,
+   "maxhold_db": 4.181647777557373,
+   "avg_db": -6.505852222442627,
+   "maxhold_over_floor_db": 12.0,
+   "avg_over_floor_db": 1.3
+  },
+  {
+   "freq_mhz": 121.225,
+   "maxhold_db": 3.4936013221740723,
+   "avg_db": -7.701882362365723,
+   "maxhold_over_floor_db": 11.3,
+   "avg_over_floor_db": 0.1
+  },
+  {
+   "freq_mhz": 121.25,
+   "maxhold_db": 1.7307419776916504,
+   "avg_db": -8.105043411254883,
+   "maxhold_over_floor_db": 9.6,
+   "avg_over_floor_db": -0.3
+  },
+  {
+   "freq_mhz": 121.275,
+   "maxhold_db": 4.523406982421875,
+   "avg_db": -7.708170413970947,
+   "maxhold_over_floor_db": 12.4,
+   "avg_over_floor_db": 0.1
+  },
+  {
+   "freq_mhz": 121.3,
+   "maxhold_db": 3.125782012939453,
+   "avg_db": -7.787071228027344,
+   "maxhold_over_floor_db": 11.0,
+   "avg_over_floor_db": 0.1
+  },
+  {
+   "freq_mhz": 121.325,
+   "maxhold_db": 2.4232757091522217,
+   "avg_db": -7.938770294189453,
+   "maxhold_over_floor_db": 10.3,
+   "avg_over_floor_db": -0.1
+  },
+  {
+   "freq_mhz": 121.35,
+   "maxhold_db": 2.5097436904907227,
+   "avg_db": -8.023122787475586,
+   "maxhold_over_floor_db": 10.4,
+   "avg_over_floor_db": -0.2
+  },
+  {
+   "freq_mhz": 121.375,
+   "maxhold_db": 2.162757396697998,
+   "avg_db": -8.050314903259277,
+   "maxhold_over_floor_db": 10.0,
+   "avg_over_floor_db": -0.2
+  },
+  {
+   "freq_mhz": 121.4,
+   "maxhold_db": 2.0002353191375732,
+   "avg_db": -8.059245109558105,
+   "maxhold_over_floor_db": 9.9,
+   "avg_over_floor_db": -0.2
+  },
+  {
+   "freq_mhz": 121.425,
+   "maxhold_db": 2.6353726387023926,
+   "avg_db": -8.386673927307129,
+   "maxhold_over_floor_db": 10.5,
+   "avg_over_floor_db": -0.5
+  },
+  {
+   "freq_mhz": 121.45,
+   "maxhold_db": 2.156672716140747,
+   "avg_db": -8.484498977661133,
+   "maxhold_over_floor_db": 10.0,
+   "avg_over_floor_db": -0.6
+  },
+  {
+   "freq_mhz": 121.475,
+   "maxhold_db": 2.171630620956421,
+   "avg_db": -8.36076545715332,
+   "maxhold_over_floor_db": 10.0,
+   "avg_over_floor_db": -0.5
+  },
+  {
+   "freq_mhz": 121.5,
+   "maxhold_db": 3.4972352981567383,
+   "avg_db": -7.825250148773193,
+   "maxhold_over_floor_db": 11.3,
+   "avg_over_floor_db": 0.0
+  },
+  {
+   "freq_mhz": 121.525,
+   "maxhold_db": 6.95658016204834,
+   "avg_db": -5.879011631011963,
+   "maxhold_over_floor_db": 14.8,
+   "avg_over_floor_db": 2.0
+  },
+  {
+   "freq_mhz": 121.55,
+   "maxhold_db": 6.506747245788574,
+   "avg_db": -4.32346773147583,
+   "maxhold_over_floor_db": 14.4,
+   "avg_over_floor_db": 3.5
+  },
+  {
+   "freq_mhz": 121.575,
+   "maxhold_db": 7.43546199798584,
+   "avg_db": -3.810967206954956,
+   "maxhold_over_floor_db": 15.3,
+   "avg_over_floor_db": 4.0
+  },
+  {
+   "freq_mhz": 121.6,
+   "maxhold_db": 10.491741180419922,
+   "avg_db": -4.917632102966309,
+   "maxhold_over_floor_db": 18.3,
+   "avg_over_floor_db": 2.9
+  },
+  {
+   "freq_mhz": 121.625,
+   "maxhold_db": 6.295517921447754,
+   "avg_db": -7.738893508911133,
+   "maxhold_over_floor_db": 14.1,
+   "avg_over_floor_db": 0.1
+  },
+  {
+   "freq_mhz": 121.65,
+   "maxhold_db": 2.0922675132751465,
+   "avg_db": -8.428739547729492,
+   "maxhold_over_floor_db": 9.9,
+   "avg_over_floor_db": -0.6
+  },
+  {
+   "freq_mhz": 121.675,
+   "maxhold_db": 2.13209867477417,
+   "avg_db": -8.44853687286377,
+   "maxhold_over_floor_db": 10.0,
+   "avg_over_floor_db": -0.6
+  },
+  {
+   "freq_mhz": 121.7,
+   "maxhold_db": 3.2511889934539795,
+   "avg_db": -8.425049781799316,
+   "maxhold_over_floor_db": 11.1,
+   "avg_over_floor_db": -0.6
+  },
+  {
+   "freq_mhz": 121.725,
+   "maxhold_db": 2.0447328090667725,
+   "avg_db": -8.589600563049316,
+   "maxhold_over_floor_db": 9.9,
+   "avg_over_floor_db": -0.7
+  },
+  {
+   "freq_mhz": 121.75,
+   "maxhold_db": 2.9351119995117188,
+   "avg_db": -8.537700653076172,
+   "maxhold_over_floor_db": 10.8,
+   "avg_over_floor_db": -0.7
+  },
+  {
+   "freq_mhz": 121.775,
+   "maxhold_db": 1.7393901348114014,
+   "avg_db": -8.355320930480957,
+   "maxhold_over_floor_db": 9.6,
+   "avg_over_floor_db": -0.5
+  },
+  {
+   "freq_mhz": 121.8,
+   "maxhold_db": 4.814045429229736,
+   "avg_db": -7.851746559143066,
+   "maxhold_over_floor_db": 12.7,
+   "avg_over_floor_db": -0.0
+  },
+  {
+   "freq_mhz": 121.825,
+   "maxhold_db": 5.49127197265625,
+   "avg_db": -7.869877338409424,
+   "maxhold_over_floor_db": 13.3,
+   "avg_over_floor_db": -0.0
+  },
+  {
+   "freq_mhz": 121.85,
+   "maxhold_db": 2.9144957065582275,
+   "avg_db": -8.143128395080566,
+   "maxhold_over_floor_db": 10.8,
+   "avg_over_floor_db": -0.3
+  },
+  {
+   "freq_mhz": 121.875,
+   "maxhold_db": 3.2153737545013428,
+   "avg_db": -7.603137969970703,
+   "maxhold_over_floor_db": 11.1,
+   "avg_over_floor_db": 0.2
+  },
+  {
+   "freq_mhz": 121.9,
+   "maxhold_db": 6.753562927246094,
+   "avg_db": -5.988759517669678,
+   "maxhold_over_floor_db": 14.6,
+   "avg_over_floor_db": 1.9
+  },
+  {
+   "freq_mhz": 121.925,
+   "maxhold_db": 6.224853992462158,
+   "avg_db": -4.757613182067871,
+   "maxhold_over_floor_db": 14.1,
+   "avg_over_floor_db": 3.1
+  },
+  {
+   "freq_mhz": 121.95,
+   "maxhold_db": 7.2347307205200195,
+   "avg_db": -3.9689130783081055,
+   "maxhold_over_floor_db": 15.1,
+   "avg_over_floor_db": 3.9
+  },
+  {
+   "freq_mhz": 121.975,
+   "maxhold_db": 5.256779670715332,
+   "avg_db": -4.444888591766357,
+   "maxhold_over_floor_db": 13.1,
+   "avg_over_floor_db": 3.4
+  },
+  {
+   "freq_mhz": 122.0,
+   "maxhold_db": 5.079472064971924,
+   "avg_db": -6.614394664764404,
+   "maxhold_over_floor_db": 12.9,
+   "avg_over_floor_db": 1.2
+  },
+  {
+   "freq_mhz": 122.025,
+   "maxhold_db": 2.010556936264038,
+   "avg_db": -7.9949798583984375,
+   "maxhold_over_floor_db": 9.9,
+   "avg_over_floor_db": -0.1
+  },
+  {
+   "freq_mhz": 122.05,
+   "maxhold_db": 2.5381205081939697,
+   "avg_db": -8.081877708435059,
+   "maxhold_over_floor_db": 10.4,
+   "avg_over_floor_db": -0.2
+  },
+  {
+   "freq_mhz": 122.075,
+   "maxhold_db": 3.3422744274139404,
+   "avg_db": -8.057435989379883,
+   "maxhold_over_floor_db": 11.2,
+   "avg_over_floor_db": -0.2
+  },
+  {
+   "freq_mhz": 122.1,
+   "maxhold_db": 4.067970275878906,
+   "avg_db": -8.129020690917969,
+   "maxhold_over_floor_db": 11.9,
+   "avg_over_floor_db": -0.3
+  },
+  {
+   "freq_mhz": 122.125,
+   "maxhold_db": 3.4129085540771484,
+   "avg_db": -8.012893676757812,
+   "maxhold_over_floor_db": 11.3,
+   "avg_over_floor_db": -0.2
+  },
+  {
+   "freq_mhz": 122.15,
+   "maxhold_db": 2.897712230682373,
+   "avg_db": -8.26217269897461,
+   "maxhold_over_floor_db": 10.7,
+   "avg_over_floor_db": -0.4
+  },
+  {
+   "freq_mhz": 122.175,
+   "maxhold_db": 2.266726016998291,
+   "avg_db": -7.787222385406494,
+   "maxhold_over_floor_db": 10.1,
+   "avg_over_floor_db": 0.1
+  },
+  {
+   "freq_mhz": 122.2,
+   "maxhold_db": 2.892515182495117,
+   "avg_db": -7.952919006347656,
+   "maxhold_over_floor_db": 10.7,
+   "avg_over_floor_db": -0.1
+  },
+  {
+   "freq_mhz": 122.225,
+   "maxhold_db": 6.361241340637207,
+   "avg_db": -7.15517520904541,
+   "maxhold_over_floor_db": 14.2,
+   "avg_over_floor_db": 0.7
+  },
+  {
+   "freq_mhz": 122.25,
+   "maxhold_db": 6.490005970001221,
+   "avg_db": -6.872065544128418,
+   "maxhold_over_floor_db": 14.3,
+   "avg_over_floor_db": 1.0
+  },
+  {
+   "freq_mhz": 122.275,
+   "maxhold_db": 4.677247524261475,
+   "avg_db": -6.287613391876221,
+   "maxhold_over_floor_db": 12.5,
+   "avg_over_floor_db": 1.6
+  },
+  {
+   "freq_mhz": 122.3,
+   "maxhold_db": 6.219851493835449,
+   "avg_db": -5.395700454711914,
+   "maxhold_over_floor_db": 14.1,
+   "avg_over_floor_db": 2.5
+  },
+  {
+   "freq_mhz": 122.325,
+   "maxhold_db": 6.47178840637207,
+   "avg_db": -4.986711502075195,
+   "maxhold_over_floor_db": 14.3,
+   "avg_over_floor_db": 2.9
+  },
+  {
+   "freq_mhz": 122.35,
+   "maxhold_db": 6.113879203796387,
+   "avg_db": -4.5809526443481445,
+   "maxhold_over_floor_db": 14.0,
+   "avg_over_floor_db": 3.3
+  },
+  {
+   "freq_mhz": 122.375,
+   "maxhold_db": 5.854333877563477,
+   "avg_db": -4.878483772277832,
+   "maxhold_over_floor_db": 13.7,
+   "avg_over_floor_db": 3.0
+  },
+  {
+   "freq_mhz": 122.4,
+   "maxhold_db": 3.2737340927124023,
+   "avg_db": -6.536326885223389,
+   "maxhold_over_floor_db": 11.1,
+   "avg_over_floor_db": 1.3
+  },
+  {
+   "freq_mhz": 122.425,
+   "maxhold_db": 2.523148536682129,
+   "avg_db": -7.397547245025635,
+   "maxhold_over_floor_db": 10.4,
+   "avg_over_floor_db": 0.5
+  },
+  {
+   "freq_mhz": 122.45,
+   "maxhold_db": 3.207059383392334,
+   "avg_db": -7.402646064758301,
+   "maxhold_over_floor_db": 11.1,
+   "avg_over_floor_db": 0.4
+  },
+  {
+   "freq_mhz": 122.475,
+   "maxhold_db": 3.7759828567504883,
+   "avg_db": -7.051382541656494,
+   "maxhold_over_floor_db": 11.6,
+   "avg_over_floor_db": 0.8
+  },
+  {
+   "freq_mhz": 122.5,
+   "maxhold_db": 1.8898885250091553,
+   "avg_db": -8.978026390075684,
+   "maxhold_over_floor_db": 9.7,
+   "avg_over_floor_db": -1.1
+  },
+  {
+   "freq_mhz": 122.525,
+   "maxhold_db": 1.1095118522644043,
+   "avg_db": -8.775598526000977,
+   "maxhold_over_floor_db": 9.0,
+   "avg_over_floor_db": -0.9
+  },
+  {
+   "freq_mhz": 122.55,
+   "maxhold_db": 6.0228166580200195,
+   "avg_db": -7.834234714508057,
+   "maxhold_over_floor_db": 13.9,
+   "avg_over_floor_db": 0.0
+  },
+  {
+   "freq_mhz": 122.575,
+   "maxhold_db": 6.148534297943115,
+   "avg_db": -7.290724754333496,
+   "maxhold_over_floor_db": 14.0,
+   "avg_over_floor_db": 0.6
+  },
+  {
+   "freq_mhz": 122.6,
+   "maxhold_db": 2.196267604827881,
+   "avg_db": -8.376471519470215,
+   "maxhold_over_floor_db": 10.0,
+   "avg_over_floor_db": -0.5
+  },
+  {
+   "freq_mhz": 122.625,
+   "maxhold_db": 2.4895880222320557,
+   "avg_db": -8.307126998901367,
+   "maxhold_over_floor_db": 10.3,
+   "avg_over_floor_db": -0.5
+  },
+  {
+   "freq_mhz": 122.65,
+   "maxhold_db": 4.3798394203186035,
+   "avg_db": -7.3658342361450195,
+   "maxhold_over_floor_db": 12.2,
+   "avg_over_floor_db": 0.5
+  },
+  {
+   "freq_mhz": 122.675,
+   "maxhold_db": 6.133892059326172,
+   "avg_db": -5.242219924926758,
+   "maxhold_over_floor_db": 14.0,
+   "avg_over_floor_db": 2.6
+  },
+  {
+   "freq_mhz": 122.7,
+   "maxhold_db": 5.226690292358398,
+   "avg_db": -5.27626895904541,
+   "maxhold_over_floor_db": 13.1,
+   "avg_over_floor_db": 2.6
+  },
+  {
+   "freq_mhz": 122.725,
+   "maxhold_db": 5.655198574066162,
+   "avg_db": -4.592376708984375,
+   "maxhold_over_floor_db": 13.5,
+   "avg_over_floor_db": 3.3
+  },
+  {
+   "freq_mhz": 122.75,
+   "maxhold_db": 5.8213348388671875,
+   "avg_db": -4.776693820953369,
+   "maxhold_over_floor_db": 13.7,
+   "avg_over_floor_db": 3.1
+  },
+  {
+   "freq_mhz": 122.775,
+   "maxhold_db": 6.547150135040283,
+   "avg_db": -4.782600402832031,
+   "maxhold_over_floor_db": 14.4,
+   "avg_over_floor_db": 3.1
+  },
+  {
+   "freq_mhz": 122.8,
+   "maxhold_db": 3.1793885231018066,
+   "avg_db": -6.655771255493164,
+   "maxhold_over_floor_db": 11.0,
+   "avg_over_floor_db": 1.2
+  },
+  {
+   "freq_mhz": 122.825,
+   "maxhold_db": 2.537181854248047,
+   "avg_db": -7.69928503036499,
+   "maxhold_over_floor_db": 10.4,
+   "avg_over_floor_db": 0.2
+  },
+  {
+   "freq_mhz": 122.85,
+   "maxhold_db": 3.440868377685547,
+   "avg_db": -7.871215343475342,
+   "maxhold_over_floor_db": 11.3,
+   "avg_over_floor_db": -0.0
+  },
+  {
+   "freq_mhz": 122.875,
+   "maxhold_db": 5.652410984039307,
+   "avg_db": -6.601175308227539,
+   "maxhold_over_floor_db": 13.5,
+   "avg_over_floor_db": 1.2
+  },
+  {
+   "freq_mhz": 122.9,
+   "maxhold_db": 2.998641014099121,
+   "avg_db": -7.9566497802734375,
+   "maxhold_over_floor_db": 10.8,
+   "avg_over_floor_db": -0.1
+  },
+  {
+   "freq_mhz": 122.925,
+   "maxhold_db": 2.7857208251953125,
+   "avg_db": -8.114496231079102,
+   "maxhold_over_floor_db": 10.6,
+   "avg_over_floor_db": -0.3
+  },
+  {
+   "freq_mhz": 122.95,
+   "maxhold_db": 1.946738839149475,
+   "avg_db": -8.243983268737793,
+   "maxhold_over_floor_db": 9.8,
+   "avg_over_floor_db": -0.4
+  },
+  {
+   "freq_mhz": 122.975,
+   "maxhold_db": 3.9976093769073486,
+   "avg_db": -7.185311794281006,
+   "maxhold_over_floor_db": 11.8,
+   "avg_over_floor_db": 0.7
+  },
+  {
+   "freq_mhz": 123.0,
+   "maxhold_db": 2.7642879486083984,
+   "avg_db": -7.750934600830078,
+   "maxhold_over_floor_db": 10.6,
+   "avg_over_floor_db": 0.1
+  },
+  {
+   "freq_mhz": 123.025,
+   "maxhold_db": 4.1866912841796875,
+   "avg_db": -7.262212753295898,
+   "maxhold_over_floor_db": 12.0,
+   "avg_over_floor_db": 0.6
+  },
+  {
+   "freq_mhz": 123.05,
+   "maxhold_db": 5.616937637329102,
+   "avg_db": -6.196988105773926,
+   "maxhold_over_floor_db": 13.5,
+   "avg_over_floor_db": 1.7
+  },
+  {
+   "freq_mhz": 123.075,
+   "maxhold_db": 5.6517462730407715,
+   "avg_db": -5.121524333953857,
+   "maxhold_over_floor_db": 13.5,
+   "avg_over_floor_db": 2.7
+  },
+  {
+   "freq_mhz": 123.1,
+   "maxhold_db": 4.877495288848877,
+   "avg_db": -5.269822597503662,
+   "maxhold_over_floor_db": 12.7,
+   "avg_over_floor_db": 2.6
+  },
+  {
+   "freq_mhz": 123.125,
+   "maxhold_db": 5.418998718261719,
+   "avg_db": -4.758058071136475,
+   "maxhold_over_floor_db": 13.3,
+   "avg_over_floor_db": 3.1
+  },
+  {
+   "freq_mhz": 123.15,
+   "maxhold_db": 4.491172790527344,
+   "avg_db": -5.41093635559082,
+   "maxhold_over_floor_db": 12.3,
+   "avg_over_floor_db": 2.4
+  },
+  {
+   "freq_mhz": 123.175,
+   "maxhold_db": 5.173803329467773,
+   "avg_db": -4.808321475982666,
+   "maxhold_over_floor_db": 13.0,
+   "avg_over_floor_db": 3.0
+  },
+  {
+   "freq_mhz": 123.2,
+   "maxhold_db": 8.470047950744629,
+   "avg_db": -5.603909015655518,
+   "maxhold_over_floor_db": 16.3,
+   "avg_over_floor_db": 2.2
+  },
+  {
+   "freq_mhz": 123.225,
+   "maxhold_db": 3.8905904293060303,
+   "avg_db": -7.536458969116211,
+   "maxhold_over_floor_db": 11.7,
+   "avg_over_floor_db": 0.3
+  },
+  {
+   "freq_mhz": 123.25,
+   "maxhold_db": 2.5275979042053223,
+   "avg_db": -7.9200944900512695,
+   "maxhold_over_floor_db": 10.4,
+   "avg_over_floor_db": -0.1
+  },
+  {
+   "freq_mhz": 123.275,
+   "maxhold_db": 4.036487102508545,
+   "avg_db": -6.870715141296387,
+   "maxhold_over_floor_db": 11.9,
+   "avg_over_floor_db": 1.0
+  },
+  {
+   "freq_mhz": 123.3,
+   "maxhold_db": 2.559502601623535,
+   "avg_db": -7.806134223937988,
+   "maxhold_over_floor_db": 10.4,
+   "avg_over_floor_db": 0.0
+  },
+  {
+   "freq_mhz": 123.325,
+   "maxhold_db": 3.058475971221924,
+   "avg_db": -7.780101299285889,
+   "maxhold_over_floor_db": 10.9,
+   "avg_over_floor_db": 0.1
+  },
+  {
+   "freq_mhz": 123.35,
+   "maxhold_db": 2.6605539321899414,
+   "avg_db": -7.757359027862549,
+   "maxhold_over_floor_db": 10.5,
+   "avg_over_floor_db": 0.1
+  },
+  {
+   "freq_mhz": 123.375,
+   "maxhold_db": 4.316908359527588,
+   "avg_db": -6.608433723449707,
+   "maxhold_over_floor_db": 12.2,
+   "avg_over_floor_db": 1.2
+  },
+  {
+   "freq_mhz": 123.4,
+   "maxhold_db": 3.9822516441345215,
+   "avg_db": -6.887746334075928,
+   "maxhold_over_floor_db": 11.8,
+   "avg_over_floor_db": 1.0
+  },
+  {
+   "freq_mhz": 123.425,
+   "maxhold_db": 4.106301784515381,
+   "avg_db": -6.125454902648926,
+   "maxhold_over_floor_db": 12.0,
+   "avg_over_floor_db": 1.7
+  },
+  {
+   "freq_mhz": 123.45,
+   "maxhold_db": 4.556177139282227,
+   "avg_db": -5.503605842590332,
+   "maxhold_over_floor_db": 12.4,
+   "avg_over_floor_db": 2.3
+  },
+  {
+   "freq_mhz": 123.475,
+   "maxhold_db": 6.483067989349365,
+   "avg_db": -4.546896457672119,
+   "maxhold_over_floor_db": 14.3,
+   "avg_over_floor_db": 3.3
+  },
+  {
+   "freq_mhz": 123.5,
+   "maxhold_db": 5.776768684387207,
+   "avg_db": -4.76320219039917,
+   "maxhold_over_floor_db": 13.6,
+   "avg_over_floor_db": 3.1
+  },
+  {
+   "freq_mhz": 123.525,
+   "maxhold_db": 6.379676342010498,
+   "avg_db": -4.207357883453369,
+   "maxhold_over_floor_db": 14.2,
+   "avg_over_floor_db": 3.6
+  },
+  {
+   "freq_mhz": 123.55,
+   "maxhold_db": 6.094335556030273,
+   "avg_db": -5.234050273895264,
+   "maxhold_over_floor_db": 13.9,
+   "avg_over_floor_db": 2.6
+  },
+  {
+   "freq_mhz": 123.575,
+   "maxhold_db": 4.577129364013672,
+   "avg_db": -5.120601177215576,
+   "maxhold_over_floor_db": 12.4,
+   "avg_over_floor_db": 2.7
+  },
+  {
+   "freq_mhz": 123.6,
+   "maxhold_db": 3.5780751705169678,
+   "avg_db": -6.721366882324219,
+   "maxhold_over_floor_db": 11.4,
+   "avg_over_floor_db": 1.1
+  },
+  {
+   "freq_mhz": 123.625,
+   "maxhold_db": 4.9251532554626465,
+   "avg_db": -7.252101898193359,
+   "maxhold_over_floor_db": 12.8,
+   "avg_over_floor_db": 0.6
+  },
+  {
+   "freq_mhz": 123.65,
+   "maxhold_db": 4.442485809326172,
+   "avg_db": -7.643711566925049,
+   "maxhold_over_floor_db": 12.3,
+   "avg_over_floor_db": 0.2
+  },
+  {
+   "freq_mhz": 123.675,
+   "maxhold_db": 3.051515579223633,
+   "avg_db": -7.390726089477539,
+   "maxhold_over_floor_db": 10.9,
+   "avg_over_floor_db": 0.5
+  },
+  {
+   "freq_mhz": 123.7,
+   "maxhold_db": 2.119471311569214,
+   "avg_db": -7.860084533691406,
+   "maxhold_over_floor_db": 10.0,
+   "avg_over_floor_db": -0.0
+  },
+  {
+   "freq_mhz": 123.725,
+   "maxhold_db": 2.7046890258789062,
+   "avg_db": -8.05472183227539,
+   "maxhold_over_floor_db": 10.6,
+   "avg_over_floor_db": -0.2
+  },
+  {
+   "freq_mhz": 123.75,
+   "maxhold_db": 3.274657726287842,
+   "avg_db": -7.903537273406982,
+   "maxhold_over_floor_db": 11.1,
+   "avg_over_floor_db": -0.1
+  },
+  {
+   "freq_mhz": 123.775,
+   "maxhold_db": 2.6546807289123535,
+   "avg_db": -7.197683334350586,
+   "maxhold_over_floor_db": 10.5,
+   "avg_over_floor_db": 0.7
+  },
+  {
+   "freq_mhz": 123.8,
+   "maxhold_db": 3.3384313583374023,
+   "avg_db": -6.917579650878906,
+   "maxhold_over_floor_db": 11.2,
+   "avg_over_floor_db": 0.9
+  },
+  {
+   "freq_mhz": 123.825,
+   "maxhold_db": 5.078692436218262,
+   "avg_db": -6.238398551940918,
+   "maxhold_over_floor_db": 12.9,
+   "avg_over_floor_db": 1.6
+  },
+  {
+   "freq_mhz": 123.85,
+   "maxhold_db": 5.829413414001465,
+   "avg_db": -6.020790100097656,
+   "maxhold_over_floor_db": 13.7,
+   "avg_over_floor_db": 1.8
+  },
+  {
+   "freq_mhz": 123.875,
+   "maxhold_db": 3.6044442653656006,
+   "avg_db": -5.83665657043457,
+   "maxhold_over_floor_db": 11.5,
+   "avg_over_floor_db": 2.0
+  },
+  {
+   "freq_mhz": 123.9,
+   "maxhold_db": 5.161917686462402,
+   "avg_db": -5.914754867553711,
+   "maxhold_over_floor_db": 13.0,
+   "avg_over_floor_db": 1.9
+  },
+  {
+   "freq_mhz": 123.925,
+   "maxhold_db": 4.769224643707275,
+   "avg_db": -5.736067771911621,
+   "maxhold_over_floor_db": 12.6,
+   "avg_over_floor_db": 2.1
+  },
+  {
+   "freq_mhz": 123.95,
+   "maxhold_db": 3.193618059158325,
+   "avg_db": -6.675163269042969,
+   "maxhold_over_floor_db": 11.0,
+   "avg_over_floor_db": 1.2
+  },
+  {
+   "freq_mhz": 123.975,
+   "maxhold_db": 3.4604289531707764,
+   "avg_db": -6.678722381591797,
+   "maxhold_over_floor_db": 11.3,
+   "avg_over_floor_db": 1.2
+  },
+  {
+   "freq_mhz": 124.0,
+   "maxhold_db": 0.5529571175575256,
+   "avg_db": -9.296463012695312,
+   "maxhold_over_floor_db": 8.4,
+   "avg_over_floor_db": -1.4
+  },
+  {
+   "freq_mhz": 124.025,
+   "maxhold_db": 1.0159145593643188,
+   "avg_db": -9.470919609069824,
+   "maxhold_over_floor_db": 8.9,
+   "avg_over_floor_db": -1.6
+  },
+  {
+   "freq_mhz": 124.05,
+   "maxhold_db": 0.7508897185325623,
+   "avg_db": -9.411504745483398,
+   "maxhold_over_floor_db": 8.6,
+   "avg_over_floor_db": -1.6
+  },
+  {
+   "freq_mhz": 124.075,
+   "maxhold_db": 2.0680928230285645,
+   "avg_db": -9.022809982299805,
+   "maxhold_over_floor_db": 9.9,
+   "avg_over_floor_db": -1.2
+  },
+  {
+   "freq_mhz": 124.1,
+   "maxhold_db": 2.0772416591644287,
+   "avg_db": -8.960929870605469,
+   "maxhold_over_floor_db": 9.9,
+   "avg_over_floor_db": -1.1
+  },
+  {
+   "freq_mhz": 124.125,
+   "maxhold_db": 1.7542213201522827,
+   "avg_db": -8.834562301635742,
+   "maxhold_over_floor_db": 9.6,
+   "avg_over_floor_db": -1.0
+  },
+  {
+   "freq_mhz": 124.15,
+   "maxhold_db": 5.407735824584961,
+   "avg_db": -7.900076866149902,
+   "maxhold_over_floor_db": 13.3,
+   "avg_over_floor_db": -0.0
+  },
+  {
+   "freq_mhz": 124.175,
+   "maxhold_db": 3.723804473876953,
+   "avg_db": -7.7209954261779785,
+   "maxhold_over_floor_db": 11.6,
+   "avg_over_floor_db": 0.1
+  },
+  {
+   "freq_mhz": 124.2,
+   "maxhold_db": 3.2707550525665283,
+   "avg_db": -7.266027927398682,
+   "maxhold_over_floor_db": 11.1,
+   "avg_over_floor_db": 0.6
+  },
+  {
+   "freq_mhz": 124.225,
+   "maxhold_db": 3.368307590484619,
+   "avg_db": -7.028653144836426,
+   "maxhold_over_floor_db": 11.2,
+   "avg_over_floor_db": 0.8
+  },
+  {
+   "freq_mhz": 124.25,
+   "maxhold_db": 4.113171577453613,
+   "avg_db": -6.54265022277832,
+   "maxhold_over_floor_db": 12.0,
+   "avg_over_floor_db": 1.3
+  },
+  {
+   "freq_mhz": 124.275,
+   "maxhold_db": 4.292281150817871,
+   "avg_db": -6.262632369995117,
+   "maxhold_over_floor_db": 12.1,
+   "avg_over_floor_db": 1.6
+  },
+  {
+   "freq_mhz": 124.3,
+   "maxhold_db": 4.4997782707214355,
+   "avg_db": -5.915713787078857,
+   "maxhold_over_floor_db": 12.4,
+   "avg_over_floor_db": 1.9
+  },
+  {
+   "freq_mhz": 124.325,
+   "maxhold_db": 3.7860026359558105,
+   "avg_db": -6.20245361328125,
+   "maxhold_over_floor_db": 11.6,
+   "avg_over_floor_db": 1.6
+  },
+  {
+   "freq_mhz": 124.35,
+   "maxhold_db": 3.6092686653137207,
+   "avg_db": -6.692507743835449,
+   "maxhold_over_floor_db": 11.5,
+   "avg_over_floor_db": 1.2
+  },
+  {
+   "freq_mhz": 124.375,
+   "maxhold_db": 4.166236877441406,
+   "avg_db": -6.769739151000977,
+   "maxhold_over_floor_db": 12.0,
+   "avg_over_floor_db": 1.1
+  },
+  {
+   "freq_mhz": 124.4,
+   "maxhold_db": 2.817348003387451,
+   "avg_db": -7.770766735076904,
+   "maxhold_over_floor_db": 10.7,
+   "avg_over_floor_db": 0.1
+  },
+  {
+   "freq_mhz": 124.425,
+   "maxhold_db": 2.919844388961792,
+   "avg_db": -8.157139778137207,
+   "maxhold_over_floor_db": 10.8,
+   "avg_over_floor_db": -0.3
+  },
+  {
+   "freq_mhz": 124.45,
+   "maxhold_db": 4.132044792175293,
+   "avg_db": -7.535297870635986,
+   "maxhold_over_floor_db": 12.0,
+   "avg_over_floor_db": 0.3
+  },
+  {
+   "freq_mhz": 124.475,
+   "maxhold_db": 6.281777381896973,
+   "avg_db": -6.698121547698975,
+   "maxhold_over_floor_db": 14.1,
+   "avg_over_floor_db": 1.2
+  },
+  {
+   "freq_mhz": 124.5,
+   "maxhold_db": 4.511023044586182,
+   "avg_db": -7.856237411499023,
+   "maxhold_over_floor_db": 12.4,
+   "avg_over_floor_db": -0.0
+  },
+  {
+   "freq_mhz": 124.525,
+   "maxhold_db": 3.41593074798584,
+   "avg_db": -7.4789628982543945,
+   "maxhold_over_floor_db": 11.3,
+   "avg_over_floor_db": 0.4
+  },
+  {
+   "freq_mhz": 124.55,
+   "maxhold_db": 4.568549156188965,
+   "avg_db": -7.246136665344238,
+   "maxhold_over_floor_db": 12.4,
+   "avg_over_floor_db": 0.6
+  },
+  {
+   "freq_mhz": 124.575,
+   "maxhold_db": 13.189286231994629,
+   "avg_db": -0.9505777955055237,
+   "maxhold_over_floor_db": 21.0,
+   "avg_over_floor_db": 6.9
+  },
+  {
+   "freq_mhz": 124.6,
+   "maxhold_db": 14.734434127807617,
+   "avg_db": 0.6512091159820557,
+   "maxhold_over_floor_db": 22.6,
+   "avg_over_floor_db": 8.5
+  },
+  {
+   "freq_mhz": 124.625,
+   "maxhold_db": 2.8506624698638916,
+   "avg_db": -6.920716285705566,
+   "maxhold_over_floor_db": 10.7,
+   "avg_over_floor_db": 0.9
+  },
+  {
+   "freq_mhz": 124.65,
+   "maxhold_db": 3.1853723526000977,
+   "avg_db": -6.566431999206543,
+   "maxhold_over_floor_db": 11.0,
+   "avg_over_floor_db": 1.3
+  },
+  {
+   "freq_mhz": 124.675,
+   "maxhold_db": 3.5615620613098145,
+   "avg_db": -6.766068935394287,
+   "maxhold_over_floor_db": 11.4,
+   "avg_over_floor_db": 1.1
+  },
+  {
+   "freq_mhz": 124.7,
+   "maxhold_db": 14.440910339355469,
+   "avg_db": 0.1916269212961197,
+   "maxhold_over_floor_db": 22.3,
+   "avg_over_floor_db": 8.0
+  },
+  {
+   "freq_mhz": 124.725,
+   "maxhold_db": 15.295137405395508,
+   "avg_db": 0.9411608576774597,
+   "maxhold_over_floor_db": 23.1,
+   "avg_over_floor_db": 8.8
+  },
+  {
+   "freq_mhz": 124.75,
+   "maxhold_db": 3.6453330516815186,
+   "avg_db": -6.818298816680908,
+   "maxhold_over_floor_db": 11.5,
+   "avg_over_floor_db": 1.0
+  },
+  {
+   "freq_mhz": 124.775,
+   "maxhold_db": 4.7206525802612305,
+   "avg_db": -6.593283653259277,
+   "maxhold_over_floor_db": 12.6,
+   "avg_over_floor_db": 1.3
+  },
+  {
+   "freq_mhz": 124.8,
+   "maxhold_db": 5.467073440551758,
+   "avg_db": -7.3552565574646,
+   "maxhold_over_floor_db": 13.3,
+   "avg_over_floor_db": 0.5
+  },
+  {
+   "freq_mhz": 124.825,
+   "maxhold_db": 13.62459945678711,
+   "avg_db": -0.7585116624832153,
+   "maxhold_over_floor_db": 21.5,
+   "avg_over_floor_db": 7.1
+  },
+  {
+   "freq_mhz": 124.85,
+   "maxhold_db": 9.249236106872559,
+   "avg_db": -4.0554423332214355,
+   "maxhold_over_floor_db": 17.1,
+   "avg_over_floor_db": 3.8
+  },
+  {
+   "freq_mhz": 124.875,
+   "maxhold_db": 2.7190301418304443,
+   "avg_db": -7.9986724853515625,
+   "maxhold_over_floor_db": 10.6,
+   "avg_over_floor_db": -0.1
+  },
+  {
+   "freq_mhz": 124.9,
+   "maxhold_db": 1.2869133949279785,
+   "avg_db": -8.226356506347656,
+   "maxhold_over_floor_db": 9.1,
+   "avg_over_floor_db": -0.4
+  },
+  {
+   "freq_mhz": 124.925,
+   "maxhold_db": 2.0458438396453857,
+   "avg_db": -7.957789421081543,
+   "maxhold_over_floor_db": 9.9,
+   "avg_over_floor_db": -0.1
+  },
+  {
+   "freq_mhz": 124.95,
+   "maxhold_db": 14.061473846435547,
+   "avg_db": -0.9204401969909668,
+   "maxhold_over_floor_db": 21.9,
+   "avg_over_floor_db": 6.9
+  },
+  {
+   "freq_mhz": 124.975,
+   "maxhold_db": 10.683088302612305,
+   "avg_db": -3.312763214111328,
+   "maxhold_over_floor_db": 18.5,
+   "avg_over_floor_db": 4.5
+  },
+  {
+   "freq_mhz": 125.0,
+   "maxhold_db": 6.324170112609863,
+   "avg_db": -5.629788398742676,
+   "maxhold_over_floor_db": 14.2,
+   "avg_over_floor_db": 2.2
+  },
+  {
+   "freq_mhz": 125.025,
+   "maxhold_db": 3.206000328063965,
+   "avg_db": -7.123990058898926,
+   "maxhold_over_floor_db": 11.1,
+   "avg_over_floor_db": 0.7
+  },
+  {
+   "freq_mhz": 125.05,
+   "maxhold_db": 3.576944351196289,
+   "avg_db": -6.6942033767700195,
+   "maxhold_over_floor_db": 11.4,
+   "avg_over_floor_db": 1.2
+  },
+  {
+   "freq_mhz": 125.075,
+   "maxhold_db": 3.5424768924713135,
+   "avg_db": -6.698775291442871,
+   "maxhold_over_floor_db": 11.4,
+   "avg_over_floor_db": 1.2
+  },
+  {
+   "freq_mhz": 125.1,
+   "maxhold_db": 3.7891900539398193,
+   "avg_db": -6.452752113342285,
+   "maxhold_over_floor_db": 11.6,
+   "avg_over_floor_db": 1.4
+  },
+  {
+   "freq_mhz": 125.125,
+   "maxhold_db": 3.709777355194092,
+   "avg_db": -7.362130165100098,
+   "maxhold_over_floor_db": 11.6,
+   "avg_over_floor_db": 0.5
+  },
+  {
+   "freq_mhz": 125.15,
+   "maxhold_db": 3.059171199798584,
+   "avg_db": -7.060481071472168,
+   "maxhold_over_floor_db": 10.9,
+   "avg_over_floor_db": 0.8
+  },
+  {
+   "freq_mhz": 125.175,
+   "maxhold_db": 2.7688450813293457,
+   "avg_db": -7.234009742736816,
+   "maxhold_over_floor_db": 10.6,
+   "avg_over_floor_db": 0.6
+  },
+  {
+   "freq_mhz": 125.2,
+   "maxhold_db": 1.0965346097946167,
+   "avg_db": -8.369720458984375,
+   "maxhold_over_floor_db": 8.9,
+   "avg_over_floor_db": -0.5
+  },
+  {
+   "freq_mhz": 125.225,
+   "maxhold_db": 1.8123033046722412,
+   "avg_db": -8.692625045776367,
+   "maxhold_over_floor_db": 9.7,
+   "avg_over_floor_db": -0.8
+  },
+  {
+   "freq_mhz": 125.25,
+   "maxhold_db": 1.6897486448287964,
+   "avg_db": -8.096480369567871,
+   "maxhold_over_floor_db": 9.5,
+   "avg_over_floor_db": -0.2
+  },
+  {
+   "freq_mhz": 125.275,
+   "maxhold_db": 1.7879468202590942,
+   "avg_db": -8.498046875,
+   "maxhold_over_floor_db": 9.6,
+   "avg_over_floor_db": -0.6
+  },
+  {
+   "freq_mhz": 125.3,
+   "maxhold_db": 1.8411521911621094,
+   "avg_db": -8.376903533935547,
+   "maxhold_over_floor_db": 9.7,
+   "avg_over_floor_db": -0.5
+  },
+  {
+   "freq_mhz": 125.325,
+   "maxhold_db": 2.066598415374756,
+   "avg_db": -8.110121726989746,
+   "maxhold_over_floor_db": 9.9,
+   "avg_over_floor_db": -0.3
+  },
+  {
+   "freq_mhz": 125.35,
+   "maxhold_db": 2.664649486541748,
+   "avg_db": -7.381169319152832,
+   "maxhold_over_floor_db": 10.5,
+   "avg_over_floor_db": 0.5
+  },
+  {
+   "freq_mhz": 125.375,
+   "maxhold_db": 2.8416976928710938,
+   "avg_db": -7.658256530761719,
+   "maxhold_over_floor_db": 10.7,
+   "avg_over_floor_db": 0.2
+  },
+  {
+   "freq_mhz": 125.4,
+   "maxhold_db": 2.5088329315185547,
+   "avg_db": -7.7605719566345215,
+   "maxhold_over_floor_db": 10.4,
+   "avg_over_floor_db": 0.1
+  },
+  {
+   "freq_mhz": 125.425,
+   "maxhold_db": 4.088131427764893,
+   "avg_db": -7.175992012023926,
+   "maxhold_over_floor_db": 11.9,
+   "avg_over_floor_db": 0.7
+  },
+  {
+   "freq_mhz": 125.45,
+   "maxhold_db": 3.826136827468872,
+   "avg_db": -6.707213401794434,
+   "maxhold_over_floor_db": 11.7,
+   "avg_over_floor_db": 1.1
+  },
+  {
+   "freq_mhz": 125.475,
+   "maxhold_db": 5.074150085449219,
+   "avg_db": -6.691408157348633,
+   "maxhold_over_floor_db": 12.9,
+   "avg_over_floor_db": 1.2
+  },
+  {
+   "freq_mhz": 125.5,
+   "maxhold_db": 2.355595588684082,
+   "avg_db": -8.120396614074707,
+   "maxhold_over_floor_db": 10.2,
+   "avg_over_floor_db": -0.3
+  },
+  {
+   "freq_mhz": 125.525,
+   "maxhold_db": 2.588214874267578,
+   "avg_db": -8.281044006347656,
+   "maxhold_over_floor_db": 10.4,
+   "avg_over_floor_db": -0.4
+  },
+  {
+   "freq_mhz": 125.55,
+   "maxhold_db": 2.6201274394989014,
+   "avg_db": -7.4200239181518555,
+   "maxhold_over_floor_db": 10.5,
+   "avg_over_floor_db": 0.4
+  },
+  {
+   "freq_mhz": 125.575,
+   "maxhold_db": 3.3375179767608643,
+   "avg_db": -7.017028331756592,
+   "maxhold_over_floor_db": 11.2,
+   "avg_over_floor_db": 0.8
+  },
+  {
+   "freq_mhz": 125.6,
+   "maxhold_db": 2.015150785446167,
+   "avg_db": -7.815155506134033,
+   "maxhold_over_floor_db": 9.9,
+   "avg_over_floor_db": 0.0
+  },
+  {
+   "freq_mhz": 125.625,
+   "maxhold_db": 1.8253623247146606,
+   "avg_db": -7.958042621612549,
+   "maxhold_over_floor_db": 9.7,
+   "avg_over_floor_db": -0.1
+  },
+  {
+   "freq_mhz": 125.65,
+   "maxhold_db": 2.5300683975219727,
+   "avg_db": -7.635908126831055,
+   "maxhold_over_floor_db": 10.4,
+   "avg_over_floor_db": 0.2
+  },
+  {
+   "freq_mhz": 125.675,
+   "maxhold_db": 2.601323366165161,
+   "avg_db": -7.290503978729248,
+   "maxhold_over_floor_db": 10.5,
+   "avg_over_floor_db": 0.6
+  },
+  {
+   "freq_mhz": 125.7,
+   "maxhold_db": 2.7776498794555664,
+   "avg_db": -7.352054119110107,
+   "maxhold_over_floor_db": 10.6,
+   "avg_over_floor_db": 0.5
+  },
+  {
+   "freq_mhz": 125.725,
+   "maxhold_db": 3.490717649459839,
+   "avg_db": -7.211731910705566,
+   "maxhold_over_floor_db": 11.3,
+   "avg_over_floor_db": 0.6
+  },
+  {
+   "freq_mhz": 125.75,
+   "maxhold_db": 4.21610164642334,
+   "avg_db": -6.682471752166748,
+   "maxhold_over_floor_db": 12.1,
+   "avg_over_floor_db": 1.2
+  },
+  {
+   "freq_mhz": 125.775,
+   "maxhold_db": 4.789714813232422,
+   "avg_db": -6.720080375671387,
+   "maxhold_over_floor_db": 12.6,
+   "avg_over_floor_db": 1.1
+  },
+  {
+   "freq_mhz": 125.8,
+   "maxhold_db": 3.2841970920562744,
+   "avg_db": -6.873783111572266,
+   "maxhold_over_floor_db": 11.1,
+   "avg_over_floor_db": 1.0
+  },
+  {
+   "freq_mhz": 125.825,
+   "maxhold_db": 3.164842367172241,
+   "avg_db": -7.026305198669434,
+   "maxhold_over_floor_db": 11.0,
+   "avg_over_floor_db": 0.8
+  },
+  {
+   "freq_mhz": 125.85,
+   "maxhold_db": 2.7101004123687744,
+   "avg_db": -6.986098289489746,
+   "maxhold_over_floor_db": 10.6,
+   "avg_over_floor_db": 0.9
+  },
+  {
+   "freq_mhz": 125.875,
+   "maxhold_db": 3.8787355422973633,
+   "avg_db": -6.381723403930664,
+   "maxhold_over_floor_db": 11.7,
+   "avg_over_floor_db": 1.5
+  },
+  {
+   "freq_mhz": 125.9,
+   "maxhold_db": 3.3183634281158447,
+   "avg_db": -7.374077320098877,
+   "maxhold_over_floor_db": 11.2,
+   "avg_over_floor_db": 0.5
+  },
+  {
+   "freq_mhz": 125.925,
+   "maxhold_db": 3.8850810527801514,
+   "avg_db": -7.970922470092773,
+   "maxhold_over_floor_db": 11.7,
+   "avg_over_floor_db": -0.1
+  },
+  {
+   "freq_mhz": 125.95,
+   "maxhold_db": 2.857776165008545,
+   "avg_db": -7.306005477905273,
+   "maxhold_over_floor_db": 10.7,
+   "avg_over_floor_db": 0.5
+  },
+  {
+   "freq_mhz": 125.975,
+   "maxhold_db": 2.852235794067383,
+   "avg_db": -7.659196376800537,
+   "maxhold_over_floor_db": 10.7,
+   "avg_over_floor_db": 0.2
+  },
+  {
+   "freq_mhz": 126.0,
+   "maxhold_db": 1.4516823291778564,
+   "avg_db": -8.659550666809082,
+   "maxhold_over_floor_db": 9.3,
+   "avg_over_floor_db": -0.8
+  },
+  {
+   "freq_mhz": 126.025,
+   "maxhold_db": 0.6632457971572876,
+   "avg_db": -8.780538558959961,
+   "maxhold_over_floor_db": 8.5,
+   "avg_over_floor_db": -0.9
+  },
+  {
+   "freq_mhz": 126.05,
+   "maxhold_db": 1.7241706848144531,
+   "avg_db": -8.51920223236084,
+   "maxhold_over_floor_db": 9.6,
+   "avg_over_floor_db": -0.7
+  },
+  {
+   "freq_mhz": 126.075,
+   "maxhold_db": 1.3102612495422363,
+   "avg_db": -8.319398880004883,
+   "maxhold_over_floor_db": 9.2,
+   "avg_over_floor_db": -0.5
+  },
+  {
+   "freq_mhz": 126.1,
+   "maxhold_db": 2.2210230827331543,
+   "avg_db": -8.098377227783203,
+   "maxhold_over_floor_db": 10.1,
+   "avg_over_floor_db": -0.2
+  },
+  {
+   "freq_mhz": 126.125,
+   "maxhold_db": 1.8583533763885498,
+   "avg_db": -8.102861404418945,
+   "maxhold_over_floor_db": 9.7,
+   "avg_over_floor_db": -0.3
+  },
+  {
+   "freq_mhz": 126.15,
+   "maxhold_db": 3.6253671646118164,
+   "avg_db": -7.584136009216309,
+   "maxhold_over_floor_db": 11.5,
+   "avg_over_floor_db": 0.3
+  },
+  {
+   "freq_mhz": 126.175,
+   "maxhold_db": 3.3111727237701416,
+   "avg_db": -7.169809818267822,
+   "maxhold_over_floor_db": 11.2,
+   "avg_over_floor_db": 0.7
+  },
+  {
+   "freq_mhz": 126.2,
+   "maxhold_db": 2.9259471893310547,
+   "avg_db": -7.547680854797363,
+   "maxhold_over_floor_db": 10.8,
+   "avg_over_floor_db": 0.3
+  },
+  {
+   "freq_mhz": 126.225,
+   "maxhold_db": 3.472079038619995,
+   "avg_db": -7.546769142150879,
+   "maxhold_over_floor_db": 11.3,
+   "avg_over_floor_db": 0.3
+  },
+  {
+   "freq_mhz": 126.25,
+   "maxhold_db": 2.331131935119629,
+   "avg_db": -7.276079177856445,
+   "maxhold_over_floor_db": 10.2,
+   "avg_over_floor_db": 0.6
+  },
+  {
+   "freq_mhz": 126.275,
+   "maxhold_db": 14.958748817443848,
+   "avg_db": -0.13091398775577545,
+   "maxhold_over_floor_db": 22.8,
+   "avg_over_floor_db": 7.7
+  },
+  {
+   "freq_mhz": 126.3,
+   "maxhold_db": 1.9664829969406128,
+   "avg_db": -7.532145977020264,
+   "maxhold_over_floor_db": 9.8,
+   "avg_over_floor_db": 0.3
+  },
+  {
+   "freq_mhz": 126.325,
+   "maxhold_db": 2.953413486480713,
+   "avg_db": -7.829323768615723,
+   "maxhold_over_floor_db": 10.8,
+   "avg_over_floor_db": 0.0
+  },
+  {
+   "freq_mhz": 126.35,
+   "maxhold_db": 5.1004414558410645,
+   "avg_db": -6.857243537902832,
+   "maxhold_over_floor_db": 13.0,
+   "avg_over_floor_db": 1.0
+  },
+  {
+   "freq_mhz": 126.375,
+   "maxhold_db": 5.429444789886475,
+   "avg_db": -6.830586910247803,
+   "maxhold_over_floor_db": 13.3,
+   "avg_over_floor_db": 1.0
+  },
+  {
+   "freq_mhz": 126.4,
+   "maxhold_db": 5.488329887390137,
+   "avg_db": -7.736637592315674,
+   "maxhold_over_floor_db": 13.3,
+   "avg_over_floor_db": 0.1
+  },
+  {
+   "freq_mhz": 126.425,
+   "maxhold_db": 4.220667362213135,
+   "avg_db": -7.94236946105957,
+   "maxhold_over_floor_db": 12.1,
+   "avg_over_floor_db": -0.1
+  },
+  {
+   "freq_mhz": 126.45,
+   "maxhold_db": 2.508341073989868,
+   "avg_db": -8.112968444824219,
+   "maxhold_over_floor_db": 10.4,
+   "avg_over_floor_db": -0.3
+  },
+  {
+   "freq_mhz": 126.475,
+   "maxhold_db": 2.5878992080688477,
+   "avg_db": -7.749691009521484,
+   "maxhold_over_floor_db": 10.4,
+   "avg_over_floor_db": 0.1
+  },
+  {
+   "freq_mhz": 126.5,
+   "maxhold_db": 2.744612455368042,
+   "avg_db": -7.64749002456665,
+   "maxhold_over_floor_db": 10.6,
+   "avg_over_floor_db": 0.2
+  },
+  {
+   "freq_mhz": 126.525,
+   "maxhold_db": 2.897632122039795,
+   "avg_db": -7.888907432556152,
+   "maxhold_over_floor_db": 10.7,
+   "avg_over_floor_db": -0.0
+  },
+  {
+   "freq_mhz": 126.55,
+   "maxhold_db": 3.629390001296997,
+   "avg_db": -7.376623153686523,
+   "maxhold_over_floor_db": 11.5,
+   "avg_over_floor_db": 0.5
+  },
+  {
+   "freq_mhz": 126.575,
+   "maxhold_db": 3.3843326568603516,
+   "avg_db": -6.781392574310303,
+   "maxhold_over_floor_db": 11.2,
+   "avg_over_floor_db": 1.1
+  },
+  {
+   "freq_mhz": 126.6,
+   "maxhold_db": 3.213486433029175,
+   "avg_db": -6.7811737060546875,
+   "maxhold_over_floor_db": 11.1,
+   "avg_over_floor_db": 1.1
+  },
+  {
+   "freq_mhz": 126.625,
+   "maxhold_db": 3.2812774181365967,
+   "avg_db": -6.790987014770508,
+   "maxhold_over_floor_db": 11.1,
+   "avg_over_floor_db": 1.1
+  },
+  {
+   "freq_mhz": 126.65,
+   "maxhold_db": 4.791360378265381,
+   "avg_db": -5.7578277587890625,
+   "maxhold_over_floor_db": 12.6,
+   "avg_over_floor_db": 2.1
+  },
+  {
+   "freq_mhz": 126.675,
+   "maxhold_db": 5.617707252502441,
+   "avg_db": -5.372183322906494,
+   "maxhold_over_floor_db": 13.5,
+   "avg_over_floor_db": 2.5
+  },
+  {
+   "freq_mhz": 126.7,
+   "maxhold_db": 3.9834940433502197,
+   "avg_db": -6.087970733642578,
+   "maxhold_over_floor_db": 11.8,
+   "avg_over_floor_db": 1.8
+  },
+  {
+   "freq_mhz": 126.725,
+   "maxhold_db": 4.76268196105957,
+   "avg_db": -5.8580756187438965,
+   "maxhold_over_floor_db": 12.6,
+   "avg_over_floor_db": 2.0
+  },
+  {
+   "freq_mhz": 126.75,
+   "maxhold_db": 4.049959182739258,
+   "avg_db": -5.3686137199401855,
+   "maxhold_over_floor_db": 11.9,
+   "avg_over_floor_db": 2.5
+  },
+  {
+   "freq_mhz": 126.775,
+   "maxhold_db": 4.144118309020996,
+   "avg_db": -5.957262992858887,
+   "maxhold_over_floor_db": 12.0,
+   "avg_over_floor_db": 1.9
+  },
+  {
+   "freq_mhz": 126.8,
+   "maxhold_db": 4.049463748931885,
+   "avg_db": -7.190088272094727,
+   "maxhold_over_floor_db": 11.9,
+   "avg_over_floor_db": 0.7
+  },
+  {
+   "freq_mhz": 126.825,
+   "maxhold_db": 3.953084945678711,
+   "avg_db": -7.716285705566406,
+   "maxhold_over_floor_db": 11.8,
+   "avg_over_floor_db": 0.1
+  },
+  {
+   "freq_mhz": 126.85,
+   "maxhold_db": 2.0410754680633545,
+   "avg_db": -7.79867696762085,
+   "maxhold_over_floor_db": 9.9,
+   "avg_over_floor_db": 0.1
+  },
+  {
+   "freq_mhz": 126.875,
+   "maxhold_db": 2.065739870071411,
+   "avg_db": -7.849576473236084,
+   "maxhold_over_floor_db": 9.9,
+   "avg_over_floor_db": 0.0
+  },
+  {
+   "freq_mhz": 126.9,
+   "maxhold_db": 3.601672410964966,
+   "avg_db": -7.904531478881836,
+   "maxhold_over_floor_db": 11.5,
+   "avg_over_floor_db": -0.1
+  },
+  {
+   "freq_mhz": 126.925,
+   "maxhold_db": 1.8914884328842163,
+   "avg_db": -8.163479804992676,
+   "maxhold_over_floor_db": 9.7,
+   "avg_over_floor_db": -0.3
+  },
+  {
+   "freq_mhz": 126.95,
+   "maxhold_db": 3.2212181091308594,
+   "avg_db": -7.489305019378662,
+   "maxhold_over_floor_db": 11.1,
+   "avg_over_floor_db": 0.4
+  },
+  {
+   "freq_mhz": 126.975,
+   "maxhold_db": 1.774269938468933,
+   "avg_db": -7.380483627319336,
+   "maxhold_over_floor_db": 9.6,
+   "avg_over_floor_db": 0.5
+  },
+  {
+   "freq_mhz": 127.0,
+   "maxhold_db": 1.8760266304016113,
+   "avg_db": -8.538135528564453,
+   "maxhold_over_floor_db": 9.7,
+   "avg_over_floor_db": -0.7
+  },
+  {
+   "freq_mhz": 127.025,
+   "maxhold_db": 3.7839272022247314,
+   "avg_db": -8.261248588562012,
+   "maxhold_over_floor_db": 11.6,
+   "avg_over_floor_db": -0.4
+  },
+  {
+   "freq_mhz": 127.05,
+   "maxhold_db": 3.9673044681549072,
+   "avg_db": -7.078542232513428,
+   "maxhold_over_floor_db": 11.8,
+   "avg_over_floor_db": 0.8
+  },
+  {
+   "freq_mhz": 127.075,
+   "maxhold_db": 3.7056663036346436,
+   "avg_db": -7.575026035308838,
+   "maxhold_over_floor_db": 11.6,
+   "avg_over_floor_db": 0.3
+  },
+  {
+   "freq_mhz": 127.1,
+   "maxhold_db": 2.3829665184020996,
+   "avg_db": -8.483814239501953,
+   "maxhold_over_floor_db": 10.2,
+   "avg_over_floor_db": -0.6
+  },
+  {
+   "freq_mhz": 127.125,
+   "maxhold_db": 1.8204867839813232,
+   "avg_db": -8.545124053955078,
+   "maxhold_over_floor_db": 9.7,
+   "avg_over_floor_db": -0.7
+  },
+  {
+   "freq_mhz": 127.15,
+   "maxhold_db": 3.2137396335601807,
+   "avg_db": -7.296725273132324,
+   "maxhold_over_floor_db": 11.1,
+   "avg_over_floor_db": 0.6
+  },
+  {
+   "freq_mhz": 127.175,
+   "maxhold_db": 2.840043306350708,
+   "avg_db": -7.4623942375183105,
+   "maxhold_over_floor_db": 10.7,
+   "avg_over_floor_db": 0.4
+  },
+  {
+   "freq_mhz": 127.2,
+   "maxhold_db": 2.374230146408081,
+   "avg_db": -8.123716354370117,
+   "maxhold_over_floor_db": 10.2,
+   "avg_over_floor_db": -0.3
+  },
+  {
+   "freq_mhz": 127.225,
+   "maxhold_db": 3.593684196472168,
+   "avg_db": -7.753087043762207,
+   "maxhold_over_floor_db": 11.4,
+   "avg_over_floor_db": 0.1
+  },
+  {
+   "freq_mhz": 127.25,
+   "maxhold_db": 3.448645830154419,
+   "avg_db": -7.303760528564453,
+   "maxhold_over_floor_db": 11.3,
+   "avg_over_floor_db": 0.5
+  },
+  {
+   "freq_mhz": 127.275,
+   "maxhold_db": 5.411492347717285,
+   "avg_db": -7.043602466583252,
+   "maxhold_over_floor_db": 13.3,
+   "avg_over_floor_db": 0.8
+  },
+  {
+   "freq_mhz": 127.3,
+   "maxhold_db": 3.992156982421875,
+   "avg_db": -7.354066848754883,
+   "maxhold_over_floor_db": 11.8,
+   "avg_over_floor_db": 0.5
+  },
+  {
+   "freq_mhz": 127.325,
+   "maxhold_db": 4.651541233062744,
+   "avg_db": -6.732778072357178,
+   "maxhold_over_floor_db": 12.5,
+   "avg_over_floor_db": 1.1
+  },
+  {
+   "freq_mhz": 127.35,
+   "maxhold_db": 6.9958953857421875,
+   "avg_db": -6.4540791511535645,
+   "maxhold_over_floor_db": 14.8,
+   "avg_over_floor_db": 1.4
+  },
+  {
+   "freq_mhz": 127.375,
+   "maxhold_db": 6.378355026245117,
+   "avg_db": -6.507205009460449,
+   "maxhold_over_floor_db": 14.2,
+   "avg_over_floor_db": 1.3
+  },
+  {
+   "freq_mhz": 127.4,
+   "maxhold_db": 3.7765657901763916,
+   "avg_db": -6.917447090148926,
+   "maxhold_over_floor_db": 11.6,
+   "avg_over_floor_db": 0.9
+  },
+  {
+   "freq_mhz": 127.425,
+   "maxhold_db": 3.498959541320801,
+   "avg_db": -6.95453405380249,
+   "maxhold_over_floor_db": 11.3,
+   "avg_over_floor_db": 0.9
+  },
+  {
+   "freq_mhz": 127.45,
+   "maxhold_db": 4.328581809997559,
+   "avg_db": -6.241488933563232,
+   "maxhold_over_floor_db": 12.2,
+   "avg_over_floor_db": 1.6
+  },
+  {
+   "freq_mhz": 127.475,
+   "maxhold_db": 2.8161323070526123,
+   "avg_db": -7.407376289367676,
+   "maxhold_over_floor_db": 10.7,
+   "avg_over_floor_db": 0.4
+  },
+  {
+   "freq_mhz": 127.5,
+   "maxhold_db": 1.6102193593978882,
+   "avg_db": -7.933320045471191,
+   "maxhold_over_floor_db": 9.5,
+   "avg_over_floor_db": -0.1
+  },
+  {
+   "freq_mhz": 127.525,
+   "maxhold_db": 3.131303310394287,
+   "avg_db": -7.74888801574707,
+   "maxhold_over_floor_db": 11.0,
+   "avg_over_floor_db": 0.1
+  },
+  {
+   "freq_mhz": 127.55,
+   "maxhold_db": 4.337762832641602,
+   "avg_db": -6.605977535247803,
+   "maxhold_over_floor_db": 12.2,
+   "avg_over_floor_db": 1.2
+  },
+  {
+   "freq_mhz": 127.575,
+   "maxhold_db": 3.1120386123657227,
+   "avg_db": -7.188324451446533,
+   "maxhold_over_floor_db": 11.0,
+   "avg_over_floor_db": 0.7
+  },
+  {
+   "freq_mhz": 127.6,
+   "maxhold_db": 2.964189291000366,
+   "avg_db": -7.492315769195557,
+   "maxhold_over_floor_db": 10.8,
+   "avg_over_floor_db": 0.4
+  },
+  {
+   "freq_mhz": 127.625,
+   "maxhold_db": 4.02744197845459,
+   "avg_db": -7.180991172790527,
+   "maxhold_over_floor_db": 11.9,
+   "avg_over_floor_db": 0.7
+  },
+  {
+   "freq_mhz": 127.65,
+   "maxhold_db": 3.773571252822876,
+   "avg_db": -7.049241542816162,
+   "maxhold_over_floor_db": 11.6,
+   "avg_over_floor_db": 0.8
+  },
+  {
+   "freq_mhz": 127.675,
+   "maxhold_db": 3.5491204261779785,
+   "avg_db": -7.216308116912842,
+   "maxhold_over_floor_db": 11.4,
+   "avg_over_floor_db": 0.6
+  },
+  {
+   "freq_mhz": 127.7,
+   "maxhold_db": 3.6764965057373047,
+   "avg_db": -7.191251754760742,
+   "maxhold_over_floor_db": 11.5,
+   "avg_over_floor_db": 0.7
+  },
+  {
+   "freq_mhz": 127.725,
+   "maxhold_db": 4.355203151702881,
+   "avg_db": -6.622105121612549,
+   "maxhold_over_floor_db": 12.2,
+   "avg_over_floor_db": 1.2
+  },
+  {
+   "freq_mhz": 127.75,
+   "maxhold_db": 4.3594560623168945,
+   "avg_db": -6.098965644836426,
+   "maxhold_over_floor_db": 12.2,
+   "avg_over_floor_db": 1.8
+  },
+  {
+   "freq_mhz": 127.775,
+   "maxhold_db": 3.966216802597046,
+   "avg_db": -6.353649616241455,
+   "maxhold_over_floor_db": 11.8,
+   "avg_over_floor_db": 1.5
+  },
+  {
+   "freq_mhz": 127.8,
+   "maxhold_db": 3.8015296459198,
+   "avg_db": -6.347480773925781,
+   "maxhold_over_floor_db": 11.7,
+   "avg_over_floor_db": 1.5
+  },
+  {
+   "freq_mhz": 127.825,
+   "maxhold_db": 4.6487274169921875,
+   "avg_db": -5.653510570526123,
+   "maxhold_over_floor_db": 12.5,
+   "avg_over_floor_db": 2.2
+  },
+  {
+   "freq_mhz": 127.85,
+   "maxhold_db": 4.468159198760986,
+   "avg_db": -5.490108013153076,
+   "maxhold_over_floor_db": 12.3,
+   "avg_over_floor_db": 2.4
+  },
+  {
+   "freq_mhz": 127.875,
+   "maxhold_db": 2.3307509422302246,
+   "avg_db": -7.071139812469482,
+   "maxhold_over_floor_db": 10.2,
+   "avg_over_floor_db": 0.8
+  },
+  {
+   "freq_mhz": 127.9,
+   "maxhold_db": 2.7318761348724365,
+   "avg_db": -7.3491010665893555,
+   "maxhold_over_floor_db": 10.6,
+   "avg_over_floor_db": 0.5
+  },
+  {
+   "freq_mhz": 127.925,
+   "maxhold_db": 6.429657459259033,
+   "avg_db": -6.581165790557861,
+   "maxhold_over_floor_db": 14.3,
+   "avg_over_floor_db": 1.3
+  },
+  {
+   "freq_mhz": 127.95,
+   "maxhold_db": 4.8386688232421875,
+   "avg_db": -6.068600654602051,
+   "maxhold_over_floor_db": 12.7,
+   "avg_over_floor_db": 1.8
+  },
+  {
+   "freq_mhz": 127.975,
+   "maxhold_db": 4.026238441467285,
+   "avg_db": -6.5583109855651855,
+   "maxhold_over_floor_db": 11.9,
+   "avg_over_floor_db": 1.3
+  },
+  {
+   "freq_mhz": 128.0,
+   "maxhold_db": 4.680217742919922,
+   "avg_db": -6.796888828277588,
+   "maxhold_over_floor_db": 12.5,
+   "avg_over_floor_db": 1.1
+  },
+  {
+   "freq_mhz": 128.025,
+   "maxhold_db": 4.744147777557373,
+   "avg_db": -6.874702453613281,
+   "maxhold_over_floor_db": 12.6,
+   "avg_over_floor_db": 1.0
+  },
+  {
+   "freq_mhz": 128.05,
+   "maxhold_db": 3.1938352584838867,
+   "avg_db": -6.665368556976318,
+   "maxhold_over_floor_db": 11.0,
+   "avg_over_floor_db": 1.2
+  },
+  {
+   "freq_mhz": 128.075,
+   "maxhold_db": 3.822141170501709,
+   "avg_db": -7.273898124694824,
+   "maxhold_over_floor_db": 11.7,
+   "avg_over_floor_db": 0.6
+  },
+  {
+   "freq_mhz": 128.1,
+   "maxhold_db": 3.2341361045837402,
+   "avg_db": -6.802635192871094,
+   "maxhold_over_floor_db": 11.1,
+   "avg_over_floor_db": 1.0
+  },
+  {
+   "freq_mhz": 128.125,
+   "maxhold_db": 3.734330177307129,
+   "avg_db": -6.566598892211914,
+   "maxhold_over_floor_db": 11.6,
+   "avg_over_floor_db": 1.3
+  },
+  {
+   "freq_mhz": 128.15,
+   "maxhold_db": 5.4629130363464355,
+   "avg_db": -5.839757919311523,
+   "maxhold_over_floor_db": 13.3,
+   "avg_over_floor_db": 2.0
+  },
+  {
+   "freq_mhz": 128.175,
+   "maxhold_db": 5.183308124542236,
+   "avg_db": -6.459836483001709,
+   "maxhold_over_floor_db": 13.0,
+   "avg_over_floor_db": 1.4
+  },
+  {
+   "freq_mhz": 128.2,
+   "maxhold_db": 4.794983386993408,
+   "avg_db": -6.632497310638428,
+   "maxhold_over_floor_db": 12.6,
+   "avg_over_floor_db": 1.2
+  },
+  {
+   "freq_mhz": 128.225,
+   "maxhold_db": 4.697523593902588,
+   "avg_db": -5.505645275115967,
+   "maxhold_over_floor_db": 12.5,
+   "avg_over_floor_db": 2.3
+  },
+  {
+   "freq_mhz": 128.25,
+   "maxhold_db": 4.4617815017700195,
+   "avg_db": -5.84733247756958,
+   "maxhold_over_floor_db": 12.3,
+   "avg_over_floor_db": 2.0
+  },
+  {
+   "freq_mhz": 128.275,
+   "maxhold_db": 3.8066563606262207,
+   "avg_db": -7.3084821701049805,
+   "maxhold_over_floor_db": 11.7,
+   "avg_over_floor_db": 0.5
+  },
+  {
+   "freq_mhz": 128.3,
+   "maxhold_db": 2.9279134273529053,
+   "avg_db": -7.533345699310303,
+   "maxhold_over_floor_db": 10.8,
+   "avg_over_floor_db": 0.3
+  },
+  {
+   "freq_mhz": 128.325,
+   "maxhold_db": 3.730964183807373,
+   "avg_db": -7.051508903503418,
+   "maxhold_over_floor_db": 11.6,
+   "avg_over_floor_db": 0.8
+  },
+  {
+   "freq_mhz": 128.35,
+   "maxhold_db": 3.9276270866394043,
+   "avg_db": -6.119784355163574,
+   "maxhold_over_floor_db": 11.8,
+   "avg_over_floor_db": 1.7
+  },
+  {
+   "freq_mhz": 128.375,
+   "maxhold_db": 2.763845682144165,
+   "avg_db": -6.924715518951416,
+   "maxhold_over_floor_db": 10.6,
+   "avg_over_floor_db": 0.9
+  },
+  {
+   "freq_mhz": 128.4,
+   "maxhold_db": 4.026368618011475,
+   "avg_db": -7.60002326965332,
+   "maxhold_over_floor_db": 11.9,
+   "avg_over_floor_db": 0.3
+  },
+  {
+   "freq_mhz": 128.425,
+   "maxhold_db": 1.985347032546997,
+   "avg_db": -7.25655460357666,
+   "maxhold_over_floor_db": 9.8,
+   "avg_over_floor_db": 0.6
+  },
+  {
+   "freq_mhz": 128.45,
+   "maxhold_db": 3.7853899002075195,
+   "avg_db": -7.117949485778809,
+   "maxhold_over_floor_db": 11.6,
+   "avg_over_floor_db": 0.7
+  },
+  {
+   "freq_mhz": 128.475,
+   "maxhold_db": 4.507795333862305,
+   "avg_db": -7.110395908355713,
+   "maxhold_over_floor_db": 12.4,
+   "avg_over_floor_db": 0.7
+  },
+  {
+   "freq_mhz": 128.5,
+   "maxhold_db": 4.446657180786133,
+   "avg_db": -8.230122566223145,
+   "maxhold_over_floor_db": 12.3,
+   "avg_over_floor_db": -0.4
+  },
+  {
+   "freq_mhz": 128.525,
+   "maxhold_db": 2.9594926834106445,
+   "avg_db": -7.63810920715332,
+   "maxhold_over_floor_db": 10.8,
+   "avg_over_floor_db": 0.2
+  },
+  {
+   "freq_mhz": 128.55,
+   "maxhold_db": 2.21553897857666,
+   "avg_db": -7.035255432128906,
+   "maxhold_over_floor_db": 10.1,
+   "avg_over_floor_db": 0.8
+  },
+  {
+   "freq_mhz": 128.575,
+   "maxhold_db": 2.1147468090057373,
+   "avg_db": -7.474460601806641,
+   "maxhold_over_floor_db": 10.0,
+   "avg_over_floor_db": 0.4
+  },
+  {
+   "freq_mhz": 128.6,
+   "maxhold_db": 2.7885355949401855,
+   "avg_db": -7.32049036026001,
+   "maxhold_over_floor_db": 10.6,
+   "avg_over_floor_db": 0.5
+  },
+  {
+   "freq_mhz": 128.625,
+   "maxhold_db": 4.947294235229492,
+   "avg_db": -6.0355024337768555,
+   "maxhold_over_floor_db": 12.8,
+   "avg_over_floor_db": 1.8
+  },
+  {
+   "freq_mhz": 128.65,
+   "maxhold_db": 3.9152348041534424,
+   "avg_db": -6.786385536193848,
+   "maxhold_over_floor_db": 11.8,
+   "avg_over_floor_db": 1.1
+  },
+  {
+   "freq_mhz": 128.675,
+   "maxhold_db": 3.242250680923462,
+   "avg_db": -7.729394912719727,
+   "maxhold_over_floor_db": 11.1,
+   "avg_over_floor_db": 0.1
+  },
+  {
+   "freq_mhz": 128.7,
+   "maxhold_db": 3.278209686279297,
+   "avg_db": -7.721221446990967,
+   "maxhold_over_floor_db": 11.1,
+   "avg_over_floor_db": 0.1
+  },
+  {
+   "freq_mhz": 128.725,
+   "maxhold_db": 4.014780044555664,
+   "avg_db": -6.859613418579102,
+   "maxhold_over_floor_db": 11.9,
+   "avg_over_floor_db": 1.0
+  },
+  {
+   "freq_mhz": 128.75,
+   "maxhold_db": 4.999186038970947,
+   "avg_db": -5.6590681076049805,
+   "maxhold_over_floor_db": 12.8,
+   "avg_over_floor_db": 2.2
+  },
+  {
+   "freq_mhz": 128.775,
+   "maxhold_db": 3.5364415645599365,
+   "avg_db": -6.2234296798706055,
+   "maxhold_over_floor_db": 11.4,
+   "avg_over_floor_db": 1.6
+  },
+  {
+   "freq_mhz": 128.8,
+   "maxhold_db": 2.873883008956909,
+   "avg_db": -6.754624366760254,
+   "maxhold_over_floor_db": 10.7,
+   "avg_over_floor_db": 1.1
+  },
+  {
+   "freq_mhz": 128.825,
+   "maxhold_db": 3.3975281715393066,
+   "avg_db": -6.422056674957275,
+   "maxhold_over_floor_db": 11.2,
+   "avg_over_floor_db": 1.4
+  },
+  {
+   "freq_mhz": 128.85,
+   "maxhold_db": 3.41917085647583,
+   "avg_db": -6.42821741104126,
+   "maxhold_over_floor_db": 11.3,
+   "avg_over_floor_db": 1.4
+  },
+  {
+   "freq_mhz": 128.875,
+   "maxhold_db": 3.9961533546447754,
+   "avg_db": -6.105103492736816,
+   "maxhold_over_floor_db": 11.8,
+   "avg_over_floor_db": 1.7
+  },
+  {
+   "freq_mhz": 128.9,
+   "maxhold_db": 5.154766082763672,
+   "avg_db": -6.368810653686523,
+   "maxhold_over_floor_db": 13.0,
+   "avg_over_floor_db": 1.5
+  },
+  {
+   "freq_mhz": 128.925,
+   "maxhold_db": 6.171645164489746,
+   "avg_db": -5.794747352600098,
+   "maxhold_over_floor_db": 14.0,
+   "avg_over_floor_db": 2.1
+  },
+  {
+   "freq_mhz": 128.95,
+   "maxhold_db": 5.588561058044434,
+   "avg_db": -5.984574317932129,
+   "maxhold_over_floor_db": 13.4,
+   "avg_over_floor_db": 1.9
+  },
+  {
+   "freq_mhz": 128.975,
+   "maxhold_db": 4.897631645202637,
+   "avg_db": -6.345689296722412,
+   "maxhold_over_floor_db": 12.7,
+   "avg_over_floor_db": 1.5
+  },
+  {
+   "freq_mhz": 129.0,
+   "maxhold_db": 4.402792930603027,
+   "avg_db": -6.178255081176758,
+   "maxhold_over_floor_db": 12.3,
+   "avg_over_floor_db": 1.7
+  },
+  {
+   "freq_mhz": 129.025,
+   "maxhold_db": 4.468861103057861,
+   "avg_db": -5.500856399536133,
+   "maxhold_over_floor_db": 12.3,
+   "avg_over_floor_db": 2.3
+  },
+  {
+   "freq_mhz": 129.05,
+   "maxhold_db": 4.505402565002441,
+   "avg_db": -6.700186252593994,
+   "maxhold_over_floor_db": 12.4,
+   "avg_over_floor_db": 1.2
+  },
+  {
+   "freq_mhz": 129.075,
+   "maxhold_db": 5.836060523986816,
+   "avg_db": -7.067774772644043,
+   "maxhold_over_floor_db": 13.7,
+   "avg_over_floor_db": 0.8
+  },
+  {
+   "freq_mhz": 129.1,
+   "maxhold_db": 3.8342180252075195,
+   "avg_db": -6.9268269538879395,
+   "maxhold_over_floor_db": 11.7,
+   "avg_over_floor_db": 0.9
+  },
+  {
+   "freq_mhz": 129.125,
+   "maxhold_db": 2.6220133304595947,
+   "avg_db": -6.528200149536133,
+   "maxhold_over_floor_db": 10.5,
+   "avg_over_floor_db": 1.3
+  },
+  {
+   "freq_mhz": 129.15,
+   "maxhold_db": 5.044361114501953,
+   "avg_db": -5.8385539054870605,
+   "maxhold_over_floor_db": 12.9,
+   "avg_over_floor_db": 2.0
+  },
+  {
+   "freq_mhz": 129.175,
+   "maxhold_db": 3.273695707321167,
+   "avg_db": -6.497509002685547,
+   "maxhold_over_floor_db": 11.1,
+   "avg_over_floor_db": 1.4
+  },
+  {
+   "freq_mhz": 129.2,
+   "maxhold_db": 3.59818434715271,
+   "avg_db": -6.814777374267578,
+   "maxhold_over_floor_db": 11.4,
+   "avg_over_floor_db": 1.0
+  },
+  {
+   "freq_mhz": 129.225,
+   "maxhold_db": 3.681107759475708,
+   "avg_db": -6.9736738204956055,
+   "maxhold_over_floor_db": 11.5,
+   "avg_over_floor_db": 0.9
+  },
+  {
+   "freq_mhz": 129.25,
+   "maxhold_db": 3.6251306533813477,
+   "avg_db": -6.576281547546387,
+   "maxhold_over_floor_db": 11.5,
+   "avg_over_floor_db": 1.3
+  },
+  {
+   "freq_mhz": 129.275,
+   "maxhold_db": 3.906888008117676,
+   "avg_db": -6.742311477661133,
+   "maxhold_over_floor_db": 11.8,
+   "avg_over_floor_db": 1.1
+  },
+  {
+   "freq_mhz": 129.3,
+   "maxhold_db": 4.083227634429932,
+   "avg_db": -6.780632972717285,
+   "maxhold_over_floor_db": 11.9,
+   "avg_over_floor_db": 1.1
+  },
+  {
+   "freq_mhz": 129.325,
+   "maxhold_db": 4.101614952087402,
+   "avg_db": -6.557039260864258,
+   "maxhold_over_floor_db": 12.0,
+   "avg_over_floor_db": 1.3
+  },
+  {
+   "freq_mhz": 129.35,
+   "maxhold_db": 4.298121929168701,
+   "avg_db": -6.730226516723633,
+   "maxhold_over_floor_db": 12.1,
+   "avg_over_floor_db": 1.1
+  },
+  {
+   "freq_mhz": 129.375,
+   "maxhold_db": 3.815290689468384,
+   "avg_db": -6.644892692565918,
+   "maxhold_over_floor_db": 11.7,
+   "avg_over_floor_db": 1.2
+  },
+  {
+   "freq_mhz": 129.4,
+   "maxhold_db": 4.754519939422607,
+   "avg_db": -5.825934886932373,
+   "maxhold_over_floor_db": 12.6,
+   "avg_over_floor_db": 2.0
+  },
+  {
+   "freq_mhz": 129.425,
+   "maxhold_db": 4.06609582901001,
+   "avg_db": -6.081886291503906,
+   "maxhold_over_floor_db": 11.9,
+   "avg_over_floor_db": 1.8
+  },
+  {
+   "freq_mhz": 129.45,
+   "maxhold_db": 3.331761121749878,
+   "avg_db": -7.20427131652832,
+   "maxhold_over_floor_db": 11.2,
+   "avg_over_floor_db": 0.6
+  },
+  {
+   "freq_mhz": 129.475,
+   "maxhold_db": 3.3925275802612305,
+   "avg_db": -7.334394931793213,
+   "maxhold_over_floor_db": 11.2,
+   "avg_over_floor_db": 0.5
+  },
+  {
+   "freq_mhz": 129.5,
+   "maxhold_db": 4.911109924316406,
+   "avg_db": -7.0787506103515625,
+   "maxhold_over_floor_db": 12.8,
+   "avg_over_floor_db": 0.8
+  },
+  {
+   "freq_mhz": 129.525,
+   "maxhold_db": 5.082240104675293,
+   "avg_db": -6.325902938842773,
+   "maxhold_over_floor_db": 12.9,
+   "avg_over_floor_db": 1.5
+  },
+  {
+   "freq_mhz": 129.55,
+   "maxhold_db": 6.03016471862793,
+   "avg_db": -5.738837718963623,
+   "maxhold_over_floor_db": 13.9,
+   "avg_over_floor_db": 2.1
+  },
+  {
+   "freq_mhz": 129.575,
+   "maxhold_db": 5.001931667327881,
+   "avg_db": -6.373691082000732,
+   "maxhold_over_floor_db": 12.9,
+   "avg_over_floor_db": 1.5
+  },
+  {
+   "freq_mhz": 129.6,
+   "maxhold_db": 4.668163299560547,
+   "avg_db": -6.820685386657715,
+   "maxhold_over_floor_db": 12.5,
+   "avg_over_floor_db": 1.0
+  },
+  {
+   "freq_mhz": 129.625,
+   "maxhold_db": 4.423409461975098,
+   "avg_db": -6.658420562744141,
+   "maxhold_over_floor_db": 12.3,
+   "avg_over_floor_db": 1.2
+  },
+  {
+   "freq_mhz": 129.65,
+   "maxhold_db": 3.3620009422302246,
+   "avg_db": -6.603633880615234,
+   "maxhold_over_floor_db": 11.2,
+   "avg_over_floor_db": 1.2
+  },
+  {
+   "freq_mhz": 129.675,
+   "maxhold_db": 4.093082427978516,
+   "avg_db": -6.785886287689209,
+   "maxhold_over_floor_db": 11.9,
+   "avg_over_floor_db": 1.1
+  },
+  {
+   "freq_mhz": 129.7,
+   "maxhold_db": 4.085744380950928,
+   "avg_db": -6.381956100463867,
+   "maxhold_over_floor_db": 11.9,
+   "avg_over_floor_db": 1.5
+  },
+  {
+   "freq_mhz": 129.725,
+   "maxhold_db": 4.01242733001709,
+   "avg_db": -6.61513090133667,
+   "maxhold_over_floor_db": 11.9,
+   "avg_over_floor_db": 1.2
+  },
+  {
+   "freq_mhz": 129.75,
+   "maxhold_db": 4.24075984954834,
+   "avg_db": -6.451294422149658,
+   "maxhold_over_floor_db": 12.1,
+   "avg_over_floor_db": 1.4
+  },
+  {
+   "freq_mhz": 129.775,
+   "maxhold_db": 4.657286643981934,
+   "avg_db": -6.545931816101074,
+   "maxhold_over_floor_db": 12.5,
+   "avg_over_floor_db": 1.3
+  },
+  {
+   "freq_mhz": 129.8,
+   "maxhold_db": 5.4680070877075195,
+   "avg_db": -5.64537239074707,
+   "maxhold_over_floor_db": 13.3,
+   "avg_over_floor_db": 2.2
+  },
+  {
+   "freq_mhz": 129.825,
+   "maxhold_db": 4.022859573364258,
+   "avg_db": -6.276541709899902,
+   "maxhold_over_floor_db": 11.9,
+   "avg_over_floor_db": 1.6
+  },
+  {
+   "freq_mhz": 129.85,
+   "maxhold_db": 3.5804200172424316,
+   "avg_db": -6.862807750701904,
+   "maxhold_over_floor_db": 11.4,
+   "avg_over_floor_db": 1.0
+  },
+  {
+   "freq_mhz": 129.875,
+   "maxhold_db": 6.055602073669434,
+   "avg_db": -6.713507652282715,
+   "maxhold_over_floor_db": 13.9,
+   "avg_over_floor_db": 1.1
+  },
+  {
+   "freq_mhz": 129.9,
+   "maxhold_db": 4.663886070251465,
+   "avg_db": -6.289387226104736,
+   "maxhold_over_floor_db": 12.5,
+   "avg_over_floor_db": 1.6
+  },
+  {
+   "freq_mhz": 129.925,
+   "maxhold_db": 4.247509002685547,
+   "avg_db": -5.911293983459473,
+   "maxhold_over_floor_db": 12.1,
+   "avg_over_floor_db": 1.9
+  },
+  {
+   "freq_mhz": 129.95,
+   "maxhold_db": 4.400211334228516,
+   "avg_db": -5.502954483032227,
+   "maxhold_over_floor_db": 12.3,
+   "avg_over_floor_db": 2.3
+  },
+  {
+   "freq_mhz": 129.975,
+   "maxhold_db": 5.046050071716309,
+   "avg_db": -6.017716407775879,
+   "maxhold_over_floor_db": 12.9,
+   "avg_over_floor_db": 1.8
+  },
+  {
+   "freq_mhz": 130.0,
+   "maxhold_db": 3.5972654819488525,
+   "avg_db": -7.2193708419799805,
+   "maxhold_over_floor_db": 11.4,
+   "avg_over_floor_db": 0.6
+  },
+  {
+   "freq_mhz": 130.025,
+   "maxhold_db": 4.772495269775391,
+   "avg_db": -6.86698055267334,
+   "maxhold_over_floor_db": 12.6,
+   "avg_over_floor_db": 1.0
+  },
+  {
+   "freq_mhz": 130.05,
+   "maxhold_db": 2.890333652496338,
+   "avg_db": -7.20263671875,
+   "maxhold_over_floor_db": 10.7,
+   "avg_over_floor_db": 0.6
+  },
+  {
+   "freq_mhz": 130.075,
+   "maxhold_db": 2.583836078643799,
+   "avg_db": -7.258654594421387,
+   "maxhold_over_floor_db": 10.4,
+   "avg_over_floor_db": 0.6
+  },
+  {
+   "freq_mhz": 130.1,
+   "maxhold_db": 3.329418897628784,
+   "avg_db": -7.21782112121582,
+   "maxhold_over_floor_db": 11.2,
+   "avg_over_floor_db": 0.6
+  },
+  {
+   "freq_mhz": 130.125,
+   "maxhold_db": 2.957244396209717,
+   "avg_db": -7.091794013977051,
+   "maxhold_over_floor_db": 10.8,
+   "avg_over_floor_db": 0.8
+  },
+  {
+   "freq_mhz": 130.15,
+   "maxhold_db": 3.758115530014038,
+   "avg_db": -7.029223918914795,
+   "maxhold_over_floor_db": 11.6,
+   "avg_over_floor_db": 0.8
+  },
+  {
+   "freq_mhz": 130.175,
+   "maxhold_db": 4.309321403503418,
+   "avg_db": -6.831023216247559,
+   "maxhold_over_floor_db": 12.2,
+   "avg_over_floor_db": 1.0
+  },
+  {
+   "freq_mhz": 130.2,
+   "maxhold_db": 4.416182518005371,
+   "avg_db": -5.8885955810546875,
+   "maxhold_over_floor_db": 12.3,
+   "avg_over_floor_db": 2.0
+  },
+  {
+   "freq_mhz": 130.225,
+   "maxhold_db": 4.097891807556152,
+   "avg_db": -6.3962531089782715,
+   "maxhold_over_floor_db": 11.9,
+   "avg_over_floor_db": 1.5
+  },
+  {
+   "freq_mhz": 130.25,
+   "maxhold_db": 3.5823724269866943,
+   "avg_db": -6.880836486816406,
+   "maxhold_over_floor_db": 11.4,
+   "avg_over_floor_db": 1.0
+  },
+  {
+   "freq_mhz": 130.275,
+   "maxhold_db": 4.138160228729248,
+   "avg_db": -6.37002420425415,
+   "maxhold_over_floor_db": 12.0,
+   "avg_over_floor_db": 1.5
+  },
+  {
+   "freq_mhz": 130.3,
+   "maxhold_db": 5.453117370605469,
+   "avg_db": -6.119379997253418,
+   "maxhold_over_floor_db": 13.3,
+   "avg_over_floor_db": 1.7
+  },
+  {
+   "freq_mhz": 130.325,
+   "maxhold_db": 4.799413681030273,
+   "avg_db": -5.554485321044922,
+   "maxhold_over_floor_db": 12.7,
+   "avg_over_floor_db": 2.3
+  },
+  {
+   "freq_mhz": 130.35,
+   "maxhold_db": 5.185605049133301,
+   "avg_db": -5.7125163078308105,
+   "maxhold_over_floor_db": 13.0,
+   "avg_over_floor_db": 2.1
+  },
+  {
+   "freq_mhz": 130.375,
+   "maxhold_db": 4.027988433837891,
+   "avg_db": -6.286060810089111,
+   "maxhold_over_floor_db": 11.9,
+   "avg_over_floor_db": 1.6
+  },
+  {
+   "freq_mhz": 130.4,
+   "maxhold_db": 5.652389049530029,
+   "avg_db": -6.088161945343018,
+   "maxhold_over_floor_db": 13.5,
+   "avg_over_floor_db": 1.8
+  },
+  {
+   "freq_mhz": 130.425,
+   "maxhold_db": 4.725052833557129,
+   "avg_db": -6.047632217407227,
+   "maxhold_over_floor_db": 12.6,
+   "avg_over_floor_db": 1.8
+  },
+  {
+   "freq_mhz": 130.45,
+   "maxhold_db": 3.769763469696045,
+   "avg_db": -6.474024772644043,
+   "maxhold_over_floor_db": 11.6,
+   "avg_over_floor_db": 1.4
+  },
+  {
+   "freq_mhz": 130.475,
+   "maxhold_db": 6.133248805999756,
+   "avg_db": -6.4103169441223145,
+   "maxhold_over_floor_db": 14.0,
+   "avg_over_floor_db": 1.4
+  },
+  {
+   "freq_mhz": 130.5,
+   "maxhold_db": 5.545237064361572,
+   "avg_db": -6.409177780151367,
+   "maxhold_over_floor_db": 13.4,
+   "avg_over_floor_db": 1.4
+  },
+  {
+   "freq_mhz": 130.525,
+   "maxhold_db": 5.168130397796631,
+   "avg_db": -6.162400722503662,
+   "maxhold_over_floor_db": 13.0,
+   "avg_over_floor_db": 1.7
+  },
+  {
+   "freq_mhz": 130.55,
+   "maxhold_db": 4.10927677154541,
+   "avg_db": -6.601681709289551,
+   "maxhold_over_floor_db": 12.0,
+   "avg_over_floor_db": 1.2
+  },
+  {
+   "freq_mhz": 130.575,
+   "maxhold_db": 4.545159339904785,
+   "avg_db": -6.178672790527344,
+   "maxhold_over_floor_db": 12.4,
+   "avg_over_floor_db": 1.7
+  },
+  {
+   "freq_mhz": 130.6,
+   "maxhold_db": 5.279106616973877,
+   "avg_db": -5.9364914894104,
+   "maxhold_over_floor_db": 13.1,
+   "avg_over_floor_db": 1.9
+  },
+  {
+   "freq_mhz": 130.625,
+   "maxhold_db": 4.7757182121276855,
+   "avg_db": -6.393383979797363,
+   "maxhold_over_floor_db": 12.6,
+   "avg_over_floor_db": 1.5
+  },
+  {
+   "freq_mhz": 130.65,
+   "maxhold_db": 3.3462822437286377,
+   "avg_db": -6.722827434539795,
+   "maxhold_over_floor_db": 11.2,
+   "avg_over_floor_db": 1.1
+  },
+  {
+   "freq_mhz": 130.675,
+   "maxhold_db": 4.073130130767822,
+   "avg_db": -6.580693244934082,
+   "maxhold_over_floor_db": 11.9,
+   "avg_over_floor_db": 1.3
+  },
+  {
+   "freq_mhz": 130.7,
+   "maxhold_db": 4.874425888061523,
+   "avg_db": -6.4720869064331055,
+   "maxhold_over_floor_db": 12.7,
+   "avg_over_floor_db": 1.4
+  },
+  {
+   "freq_mhz": 130.725,
+   "maxhold_db": 4.710536479949951,
+   "avg_db": -5.6638641357421875,
+   "maxhold_over_floor_db": 12.6,
+   "avg_over_floor_db": 2.2
+  },
+  {
+   "freq_mhz": 130.75,
+   "maxhold_db": 5.279817581176758,
+   "avg_db": -5.716958522796631,
+   "maxhold_over_floor_db": 13.1,
+   "avg_over_floor_db": 2.1
+  },
+  {
+   "freq_mhz": 130.775,
+   "maxhold_db": 4.561193943023682,
+   "avg_db": -6.237752914428711,
+   "maxhold_over_floor_db": 12.4,
+   "avg_over_floor_db": 1.6
+  },
+  {
+   "freq_mhz": 130.8,
+   "maxhold_db": 5.224950313568115,
+   "avg_db": -5.984959602355957,
+   "maxhold_over_floor_db": 13.1,
+   "avg_over_floor_db": 1.9
+  },
+  {
+   "freq_mhz": 130.825,
+   "maxhold_db": 4.687172889709473,
+   "avg_db": -5.765142917633057,
+   "maxhold_over_floor_db": 12.5,
+   "avg_over_floor_db": 2.1
+  },
+  {
+   "freq_mhz": 130.85,
+   "maxhold_db": 4.976807594299316,
+   "avg_db": -6.088742733001709,
+   "maxhold_over_floor_db": 12.8,
+   "avg_over_floor_db": 1.8
+  },
+  {
+   "freq_mhz": 130.875,
+   "maxhold_db": 4.767049789428711,
+   "avg_db": -6.244424819946289,
+   "maxhold_over_floor_db": 12.6,
+   "avg_over_floor_db": 1.6
+  },
+  {
+   "freq_mhz": 130.9,
+   "maxhold_db": 5.023432731628418,
+   "avg_db": -6.075263500213623,
+   "maxhold_over_floor_db": 12.9,
+   "avg_over_floor_db": 1.8
+  },
+  {
+   "freq_mhz": 130.925,
+   "maxhold_db": 4.798542022705078,
+   "avg_db": -5.525554656982422,
+   "maxhold_over_floor_db": 12.6,
+   "avg_over_floor_db": 2.3
+  },
+  {
+   "freq_mhz": 130.95,
+   "maxhold_db": 4.156691074371338,
+   "avg_db": -5.765041351318359,
+   "maxhold_over_floor_db": 12.0,
+   "avg_over_floor_db": 2.1
+  },
+  {
+   "freq_mhz": 130.975,
+   "maxhold_db": 5.394563674926758,
+   "avg_db": -5.253905296325684,
+   "maxhold_over_floor_db": 13.2,
+   "avg_over_floor_db": 2.6
+  },
+  {
+   "freq_mhz": 131.0,
+   "maxhold_db": 5.101279258728027,
+   "avg_db": -5.20831823348999,
+   "maxhold_over_floor_db": 13.0,
+   "avg_over_floor_db": 2.6
+  },
+  {
+   "freq_mhz": 131.025,
+   "maxhold_db": 6.919961452484131,
+   "avg_db": -5.052900791168213,
+   "maxhold_over_floor_db": 14.8,
+   "avg_over_floor_db": 2.8
+  },
+  {
+   "freq_mhz": 131.05,
+   "maxhold_db": 4.7077836990356445,
+   "avg_db": -5.3376264572143555,
+   "maxhold_over_floor_db": 12.6,
+   "avg_over_floor_db": 2.5
+  },
+  {
+   "freq_mhz": 131.075,
+   "maxhold_db": 5.067938804626465,
+   "avg_db": -5.640149116516113,
+   "maxhold_over_floor_db": 12.9,
+   "avg_over_floor_db": 2.2
+  },
+  {
+   "freq_mhz": 131.1,
+   "maxhold_db": 4.970677375793457,
+   "avg_db": -5.803861141204834,
+   "maxhold_over_floor_db": 12.8,
+   "avg_over_floor_db": 2.0
+  },
+  {
+   "freq_mhz": 131.125,
+   "maxhold_db": 6.080450057983398,
+   "avg_db": -5.291688442230225,
+   "maxhold_over_floor_db": 13.9,
+   "avg_over_floor_db": 2.6
+  },
+  {
+   "freq_mhz": 131.15,
+   "maxhold_db": 5.411306381225586,
+   "avg_db": -5.50875186920166,
+   "maxhold_over_floor_db": 13.3,
+   "avg_over_floor_db": 2.3
+  },
+  {
+   "freq_mhz": 131.175,
+   "maxhold_db": 4.903347969055176,
+   "avg_db": -5.9065680503845215,
+   "maxhold_over_floor_db": 12.8,
+   "avg_over_floor_db": 1.9
+  },
+  {
+   "freq_mhz": 131.2,
+   "maxhold_db": 4.929811477661133,
+   "avg_db": -6.206486225128174,
+   "maxhold_over_floor_db": 12.8,
+   "avg_over_floor_db": 1.6
+  },
+  {
+   "freq_mhz": 131.225,
+   "maxhold_db": 5.034785747528076,
+   "avg_db": -6.127026081085205,
+   "maxhold_over_floor_db": 12.9,
+   "avg_over_floor_db": 1.7
+  },
+  {
+   "freq_mhz": 131.25,
+   "maxhold_db": 3.802457809448242,
+   "avg_db": -6.47550630569458,
+   "maxhold_over_floor_db": 11.7,
+   "avg_over_floor_db": 1.4
+  },
+  {
+   "freq_mhz": 131.275,
+   "maxhold_db": 5.118730068206787,
+   "avg_db": -6.922053813934326,
+   "maxhold_over_floor_db": 13.0,
+   "avg_over_floor_db": 0.9
+  },
+  {
+   "freq_mhz": 131.3,
+   "maxhold_db": 4.724695205688477,
+   "avg_db": -6.940089225769043,
+   "maxhold_over_floor_db": 12.6,
+   "avg_over_floor_db": 0.9
+  },
+  {
+   "freq_mhz": 131.325,
+   "maxhold_db": 4.618000507354736,
+   "avg_db": -6.765499114990234,
+   "maxhold_over_floor_db": 12.5,
+   "avg_over_floor_db": 1.1
+  },
+  {
+   "freq_mhz": 131.35,
+   "maxhold_db": 2.8823020458221436,
+   "avg_db": -7.0356011390686035,
+   "maxhold_over_floor_db": 10.7,
+   "avg_over_floor_db": 0.8
+  },
+  {
+   "freq_mhz": 131.375,
+   "maxhold_db": 4.996945381164551,
+   "avg_db": -6.627640247344971,
+   "maxhold_over_floor_db": 12.8,
+   "avg_over_floor_db": 1.2
+  },
+  {
+   "freq_mhz": 131.4,
+   "maxhold_db": 3.833125114440918,
+   "avg_db": -7.1334428787231445,
+   "maxhold_over_floor_db": 11.7,
+   "avg_over_floor_db": 0.7
+  },
+  {
+   "freq_mhz": 131.425,
+   "maxhold_db": 3.083127975463867,
+   "avg_db": -7.229276657104492,
+   "maxhold_over_floor_db": 10.9,
+   "avg_over_floor_db": 0.6
+  },
+  {
+   "freq_mhz": 131.45,
+   "maxhold_db": 4.128815650939941,
+   "avg_db": -7.442313194274902,
+   "maxhold_over_floor_db": 12.0,
+   "avg_over_floor_db": 0.4
+  },
+  {
+   "freq_mhz": 131.475,
+   "maxhold_db": 3.3501698970794678,
+   "avg_db": -7.445913314819336,
+   "maxhold_over_floor_db": 11.2,
+   "avg_over_floor_db": 0.4
+  },
+  {
+   "freq_mhz": 131.5,
+   "maxhold_db": 2.0666840076446533,
+   "avg_db": -8.895729064941406,
+   "maxhold_over_floor_db": 9.9,
+   "avg_over_floor_db": -1.0
+  },
+  {
+   "freq_mhz": 131.525,
+   "maxhold_db": 2.4252917766571045,
+   "avg_db": -7.752499580383301,
+   "maxhold_over_floor_db": 10.3,
+   "avg_over_floor_db": 0.1
+  },
+  {
+   "freq_mhz": 131.55,
+   "maxhold_db": 5.334839344024658,
+   "avg_db": -7.2563886642456055,
+   "maxhold_over_floor_db": 13.2,
+   "avg_over_floor_db": 0.6
+  },
+  {
+   "freq_mhz": 131.575,
+   "maxhold_db": 3.166107177734375,
+   "avg_db": -7.761373996734619,
+   "maxhold_over_floor_db": 11.0,
+   "avg_over_floor_db": 0.1
+  },
+  {
+   "freq_mhz": 131.6,
+   "maxhold_db": 3.747856855392456,
+   "avg_db": -7.971634864807129,
+   "maxhold_over_floor_db": 11.6,
+   "avg_over_floor_db": -0.1
+  },
+  {
+   "freq_mhz": 131.625,
+   "maxhold_db": 2.9690051078796387,
+   "avg_db": -7.70086669921875,
+   "maxhold_over_floor_db": 10.8,
+   "avg_over_floor_db": 0.1
+  },
+  {
+   "freq_mhz": 131.65,
+   "maxhold_db": 2.142739772796631,
+   "avg_db": -7.614492416381836,
+   "maxhold_over_floor_db": 10.0,
+   "avg_over_floor_db": 0.2
+  },
+  {
+   "freq_mhz": 131.675,
+   "maxhold_db": 3.3774046897888184,
+   "avg_db": -7.776885032653809,
+   "maxhold_over_floor_db": 11.2,
+   "avg_over_floor_db": 0.1
+  },
+  {
+   "freq_mhz": 131.7,
+   "maxhold_db": 3.8186004161834717,
+   "avg_db": -7.802389144897461,
+   "maxhold_over_floor_db": 11.7,
+   "avg_over_floor_db": 0.0
+  },
+  {
+   "freq_mhz": 131.725,
+   "maxhold_db": 4.022472381591797,
+   "avg_db": -7.6565351486206055,
+   "maxhold_over_floor_db": 11.9,
+   "avg_over_floor_db": 0.2
+  },
+  {
+   "freq_mhz": 131.75,
+   "maxhold_db": 3.207644462585449,
+   "avg_db": -7.311255931854248,
+   "maxhold_over_floor_db": 11.1,
+   "avg_over_floor_db": 0.5
+  },
+  {
+   "freq_mhz": 131.775,
+   "maxhold_db": 2.909693717956543,
+   "avg_db": -6.937549114227295,
+   "maxhold_over_floor_db": 10.8,
+   "avg_over_floor_db": 0.9
+  },
+  {
+   "freq_mhz": 131.8,
+   "maxhold_db": 4.813918590545654,
+   "avg_db": -7.434056282043457,
+   "maxhold_over_floor_db": 12.7,
+   "avg_over_floor_db": 0.4
+  },
+  {
+   "freq_mhz": 131.825,
+   "maxhold_db": 4.085085868835449,
+   "avg_db": -7.4593586921691895,
+   "maxhold_over_floor_db": 11.9,
+   "avg_over_floor_db": 0.4
+  },
+  {
+   "freq_mhz": 131.85,
+   "maxhold_db": 4.0453972816467285,
+   "avg_db": -7.621006488800049,
+   "maxhold_over_floor_db": 11.9,
+   "avg_over_floor_db": 0.2
+  },
+  {
+   "freq_mhz": 131.875,
+   "maxhold_db": 4.220030307769775,
+   "avg_db": -7.547810077667236,
+   "maxhold_over_floor_db": 12.1,
+   "avg_over_floor_db": 0.3
+  },
+  {
+   "freq_mhz": 131.9,
+   "maxhold_db": 4.910580635070801,
+   "avg_db": -7.388338565826416,
+   "maxhold_over_floor_db": 12.8,
+   "avg_over_floor_db": 0.5
+  },
+  {
+   "freq_mhz": 131.925,
+   "maxhold_db": 3.275956153869629,
+   "avg_db": -6.934370994567871,
+   "maxhold_over_floor_db": 11.1,
+   "avg_over_floor_db": 0.9
+  },
+  {
+   "freq_mhz": 131.95,
+   "maxhold_db": 6.0091423988342285,
+   "avg_db": -6.673691272735596,
+   "maxhold_over_floor_db": 13.9,
+   "avg_over_floor_db": 1.2
+  },
+  {
+   "freq_mhz": 131.975,
+   "maxhold_db": 3.230205535888672,
+   "avg_db": -7.037465572357178,
+   "maxhold_over_floor_db": 11.1,
+   "avg_over_floor_db": 0.8
+  },
+  {
+   "freq_mhz": 132.0,
+   "maxhold_db": 16.497577667236328,
+   "avg_db": 2.4692423343658447,
+   "maxhold_over_floor_db": 24.3,
+   "avg_over_floor_db": 10.3
+  },
+  {
+   "freq_mhz": 132.025,
+   "maxhold_db": 5.495116233825684,
+   "avg_db": -7.089243412017822,
+   "maxhold_over_floor_db": 13.3,
+   "avg_over_floor_db": 0.8
+  },
+  {
+   "freq_mhz": 132.05,
+   "maxhold_db": 4.200990200042725,
+   "avg_db": -7.10801362991333,
+   "maxhold_over_floor_db": 12.1,
+   "avg_over_floor_db": 0.7
+  },
+  {
+   "freq_mhz": 132.075,
+   "maxhold_db": 4.660876750946045,
+   "avg_db": -6.891788959503174,
+   "maxhold_over_floor_db": 12.5,
+   "avg_over_floor_db": 1.0
+  },
+  {
+   "freq_mhz": 132.1,
+   "maxhold_db": 4.917635917663574,
+   "avg_db": -6.9272379875183105,
+   "maxhold_over_floor_db": 12.8,
+   "avg_over_floor_db": 0.9
+  },
+  {
+   "freq_mhz": 132.125,
+   "maxhold_db": 4.3714375495910645,
+   "avg_db": -7.024507999420166,
+   "maxhold_over_floor_db": 12.2,
+   "avg_over_floor_db": 0.8
+  },
+  {
+   "freq_mhz": 132.15,
+   "maxhold_db": 6.344114303588867,
+   "avg_db": -6.804169654846191,
+   "maxhold_over_floor_db": 14.2,
+   "avg_over_floor_db": 1.0
+  },
+  {
+   "freq_mhz": 132.175,
+   "maxhold_db": 3.6795756816864014,
+   "avg_db": -7.045664310455322,
+   "maxhold_over_floor_db": 11.5,
+   "avg_over_floor_db": 0.8
+  },
+  {
+   "freq_mhz": 132.2,
+   "maxhold_db": 3.7662265300750732,
+   "avg_db": -7.553981781005859,
+   "maxhold_over_floor_db": 11.6,
+   "avg_over_floor_db": 0.3
+  },
+  {
+   "freq_mhz": 132.225,
+   "maxhold_db": 2.2737975120544434,
+   "avg_db": -7.79810905456543,
+   "maxhold_over_floor_db": 10.1,
+   "avg_over_floor_db": 0.1
+  },
+  {
+   "freq_mhz": 132.25,
+   "maxhold_db": 3.2493419647216797,
+   "avg_db": -7.910459041595459,
+   "maxhold_over_floor_db": 11.1,
+   "avg_over_floor_db": -0.1
+  },
+  {
+   "freq_mhz": 132.275,
+   "maxhold_db": 4.522101402282715,
+   "avg_db": -7.8612799644470215,
+   "maxhold_over_floor_db": 12.4,
+   "avg_over_floor_db": -0.0
+  },
+  {
+   "freq_mhz": 132.3,
+   "maxhold_db": 3.1253433227539062,
+   "avg_db": -7.538049697875977,
+   "maxhold_over_floor_db": 11.0,
+   "avg_over_floor_db": 0.3
+  },
+  {
+   "freq_mhz": 132.325,
+   "maxhold_db": 6.012237548828125,
+   "avg_db": -7.187643527984619,
+   "maxhold_over_floor_db": 13.9,
+   "avg_over_floor_db": 0.7
+  },
+  {
+   "freq_mhz": 132.35,
+   "maxhold_db": 3.24296236038208,
+   "avg_db": -7.141078948974609,
+   "maxhold_over_floor_db": 11.1,
+   "avg_over_floor_db": 0.7
+  },
+  {
+   "freq_mhz": 132.375,
+   "maxhold_db": 3.868522882461548,
+   "avg_db": -7.697793006896973,
+   "maxhold_over_floor_db": 11.7,
+   "avg_over_floor_db": 0.2
+  },
+  {
+   "freq_mhz": 132.4,
+   "maxhold_db": 3.764376640319824,
+   "avg_db": -7.550220012664795,
+   "maxhold_over_floor_db": 11.6,
+   "avg_over_floor_db": 0.3
+  },
+  {
+   "freq_mhz": 132.425,
+   "maxhold_db": 4.713745594024658,
+   "avg_db": -7.568058013916016,
+   "maxhold_over_floor_db": 12.6,
+   "avg_over_floor_db": 0.3
+  },
+  {
+   "freq_mhz": 132.45,
+   "maxhold_db": 2.505749225616455,
+   "avg_db": -7.9413981437683105,
+   "maxhold_over_floor_db": 10.4,
+   "avg_over_floor_db": -0.1
+  },
+  {
+   "freq_mhz": 132.475,
+   "maxhold_db": 2.4670941829681396,
+   "avg_db": -8.146458625793457,
+   "maxhold_over_floor_db": 10.3,
+   "avg_over_floor_db": -0.3
+  },
+  {
+   "freq_mhz": 132.5,
+   "maxhold_db": 4.3928985595703125,
+   "avg_db": -8.099946022033691,
+   "maxhold_over_floor_db": 12.2,
+   "avg_over_floor_db": -0.2
+  },
+  {
+   "freq_mhz": 132.525,
+   "maxhold_db": 2.996762275695801,
+   "avg_db": -7.866630554199219,
+   "maxhold_over_floor_db": 10.8,
+   "avg_over_floor_db": -0.0
+  },
+  {
+   "freq_mhz": 132.55,
+   "maxhold_db": 3.5978004932403564,
+   "avg_db": -7.590778350830078,
+   "maxhold_over_floor_db": 11.4,
+   "avg_over_floor_db": 0.3
+  },
+  {
+   "freq_mhz": 132.575,
+   "maxhold_db": 5.074605941772461,
+   "avg_db": -8.014165878295898,
+   "maxhold_over_floor_db": 12.9,
+   "avg_over_floor_db": -0.2
+  },
+  {
+   "freq_mhz": 132.6,
+   "maxhold_db": 4.093508243560791,
+   "avg_db": -8.133715629577637,
+   "maxhold_over_floor_db": 11.9,
+   "avg_over_floor_db": -0.3
+  },
+  {
+   "freq_mhz": 132.625,
+   "maxhold_db": 4.726306915283203,
+   "avg_db": -8.231081008911133,
+   "maxhold_over_floor_db": 12.6,
+   "avg_over_floor_db": -0.4
+  },
+  {
+   "freq_mhz": 132.65,
+   "maxhold_db": 2.1704134941101074,
+   "avg_db": -8.089797019958496,
+   "maxhold_over_floor_db": 10.0,
+   "avg_over_floor_db": -0.2
+  },
+  {
+   "freq_mhz": 132.675,
+   "maxhold_db": 3.2119131088256836,
+   "avg_db": -8.152568817138672,
+   "maxhold_over_floor_db": 11.1,
+   "avg_over_floor_db": -0.3
+  },
+  {
+   "freq_mhz": 132.7,
+   "maxhold_db": 3.130580186843872,
+   "avg_db": -7.943241596221924,
+   "maxhold_over_floor_db": 11.0,
+   "avg_over_floor_db": -0.1
+  },
+  {
+   "freq_mhz": 132.725,
+   "maxhold_db": 2.853339910507202,
+   "avg_db": -7.549569129943848,
+   "maxhold_over_floor_db": 10.7,
+   "avg_over_floor_db": 0.3
+  },
+  {
+   "freq_mhz": 132.75,
+   "maxhold_db": 2.6340599060058594,
+   "avg_db": -7.63319730758667,
+   "maxhold_over_floor_db": 10.5,
+   "avg_over_floor_db": 0.2
+  },
+  {
+   "freq_mhz": 132.775,
+   "maxhold_db": 3.45534348487854,
+   "avg_db": -7.957580089569092,
+   "maxhold_over_floor_db": 11.3,
+   "avg_over_floor_db": -0.1
+  },
+  {
+   "freq_mhz": 132.8,
+   "maxhold_db": 3.6028125286102295,
+   "avg_db": -8.258857727050781,
+   "maxhold_over_floor_db": 11.5,
+   "avg_over_floor_db": -0.4
+  },
+  {
+   "freq_mhz": 132.825,
+   "maxhold_db": 4.107586860656738,
+   "avg_db": -8.188482284545898,
+   "maxhold_over_floor_db": 12.0,
+   "avg_over_floor_db": -0.3
+  },
+  {
+   "freq_mhz": 132.85,
+   "maxhold_db": 1.9398930072784424,
+   "avg_db": -8.278573989868164,
+   "maxhold_over_floor_db": 9.8,
+   "avg_over_floor_db": -0.4
+  },
+  {
+   "freq_mhz": 132.875,
+   "maxhold_db": 1.4623262882232666,
+   "avg_db": -8.710261344909668,
+   "maxhold_over_floor_db": 9.3,
+   "avg_over_floor_db": -0.9
+  },
+  {
+   "freq_mhz": 132.9,
+   "maxhold_db": 3.496417760848999,
+   "avg_db": -8.584397315979004,
+   "maxhold_over_floor_db": 11.3,
+   "avg_over_floor_db": -0.7
+  },
+  {
+   "freq_mhz": 132.925,
+   "maxhold_db": 3.448364496231079,
+   "avg_db": -8.21888256072998,
+   "maxhold_over_floor_db": 11.3,
+   "avg_over_floor_db": -0.4
+  },
+  {
+   "freq_mhz": 132.95,
+   "maxhold_db": 4.295644760131836,
+   "avg_db": -8.073121070861816,
+   "maxhold_over_floor_db": 12.1,
+   "avg_over_floor_db": -0.2
+  },
+  {
+   "freq_mhz": 132.975,
+   "maxhold_db": 1.4398303031921387,
+   "avg_db": -8.521369934082031,
+   "maxhold_over_floor_db": 9.3,
+   "avg_over_floor_db": -0.7
+  },
+  {
+   "freq_mhz": 133.0,
+   "maxhold_db": 2.6957292556762695,
+   "avg_db": -9.689178466796875,
+   "maxhold_over_floor_db": 10.5,
+   "avg_over_floor_db": -1.8
+  },
+  {
+   "freq_mhz": 133.025,
+   "maxhold_db": 2.4650464057922363,
+   "avg_db": -8.733105659484863,
+   "maxhold_over_floor_db": 10.3,
+   "avg_over_floor_db": -0.9
+  },
+  {
+   "freq_mhz": 133.05,
+   "maxhold_db": 1.8505330085754395,
+   "avg_db": -9.0952787399292,
+   "maxhold_over_floor_db": 9.7,
+   "avg_over_floor_db": -1.2
+  },
+  {
+   "freq_mhz": 133.075,
+   "maxhold_db": 1.7360163927078247,
+   "avg_db": -8.849721908569336,
+   "maxhold_over_floor_db": 9.6,
+   "avg_over_floor_db": -1.0
+  },
+  {
+   "freq_mhz": 133.1,
+   "maxhold_db": 1.8422597646713257,
+   "avg_db": -8.733246803283691,
+   "maxhold_over_floor_db": 9.7,
+   "avg_over_floor_db": -0.9
+  },
+  {
+   "freq_mhz": 133.125,
+   "maxhold_db": 2.227898120880127,
+   "avg_db": -8.170843124389648,
+   "maxhold_over_floor_db": 10.1,
+   "avg_over_floor_db": -0.3
+  },
+  {
+   "freq_mhz": 133.15,
+   "maxhold_db": 1.5843440294265747,
+   "avg_db": -8.482443809509277,
+   "maxhold_over_floor_db": 9.4,
+   "avg_over_floor_db": -0.6
+  },
+  {
+   "freq_mhz": 133.175,
+   "maxhold_db": 2.0692713260650635,
+   "avg_db": -8.457466125488281,
+   "maxhold_over_floor_db": 9.9,
+   "avg_over_floor_db": -0.6
+  },
+  {
+   "freq_mhz": 133.2,
+   "maxhold_db": 1.339627742767334,
+   "avg_db": -8.542926788330078,
+   "maxhold_over_floor_db": 9.2,
+   "avg_over_floor_db": -0.7
+  },
+  {
+   "freq_mhz": 133.225,
+   "maxhold_db": 1.8199999332427979,
+   "avg_db": -8.28614616394043,
+   "maxhold_over_floor_db": 9.7,
+   "avg_over_floor_db": -0.4
+  },
+  {
+   "freq_mhz": 133.25,
+   "maxhold_db": 2.6656363010406494,
+   "avg_db": -8.484920501708984,
+   "maxhold_over_floor_db": 10.5,
+   "avg_over_floor_db": -0.6
+  },
+  {
+   "freq_mhz": 133.275,
+   "maxhold_db": 1.8194299936294556,
+   "avg_db": -8.346029281616211,
+   "maxhold_over_floor_db": 9.7,
+   "avg_over_floor_db": -0.5
+  },
+  {
+   "freq_mhz": 133.3,
+   "maxhold_db": 2.159283399581909,
+   "avg_db": -8.15369701385498,
+   "maxhold_over_floor_db": 10.0,
+   "avg_over_floor_db": -0.3
+  },
+  {
+   "freq_mhz": 133.325,
+   "maxhold_db": 2.492940902709961,
+   "avg_db": -7.733152389526367,
+   "maxhold_over_floor_db": 10.3,
+   "avg_over_floor_db": 0.1
+  },
+  {
+   "freq_mhz": 133.35,
+   "maxhold_db": 1.79508638381958,
+   "avg_db": -8.1442232131958,
+   "maxhold_over_floor_db": 9.6,
+   "avg_over_floor_db": -0.3
+  },
+  {
+   "freq_mhz": 133.375,
+   "maxhold_db": 1.493706464767456,
+   "avg_db": -8.653855323791504,
+   "maxhold_over_floor_db": 9.3,
+   "avg_over_floor_db": -0.8
+  },
+  {
+   "freq_mhz": 133.4,
+   "maxhold_db": 2.0110716819763184,
+   "avg_db": -8.411592483520508,
+   "maxhold_over_floor_db": 9.9,
+   "avg_over_floor_db": -0.6
+  },
+  {
+   "freq_mhz": 133.425,
+   "maxhold_db": 3.543348789215088,
+   "avg_db": -8.366251945495605,
+   "maxhold_over_floor_db": 11.4,
+   "avg_over_floor_db": -0.5
+  },
+  {
+   "freq_mhz": 133.45,
+   "maxhold_db": 1.3205994367599487,
+   "avg_db": -8.711661338806152,
+   "maxhold_over_floor_db": 9.2,
+   "avg_over_floor_db": -0.9
+  },
+  {
+   "freq_mhz": 133.475,
+   "maxhold_db": 0.9355134963989258,
+   "avg_db": -8.811971664428711,
+   "maxhold_over_floor_db": 8.8,
+   "avg_over_floor_db": -1.0
+  },
+  {
+   "freq_mhz": 133.5,
+   "maxhold_db": 0.8663893342018127,
+   "avg_db": -8.56166934967041,
+   "maxhold_over_floor_db": 8.7,
+   "avg_over_floor_db": -0.7
+  },
+  {
+   "freq_mhz": 133.525,
+   "maxhold_db": 2.2454934120178223,
+   "avg_db": -7.849128246307373,
+   "maxhold_over_floor_db": 10.1,
+   "avg_over_floor_db": 0.0
+  },
+  {
+   "freq_mhz": 133.55,
+   "maxhold_db": 2.346463203430176,
+   "avg_db": -8.417762756347656,
+   "maxhold_over_floor_db": 10.2,
+   "avg_over_floor_db": -0.6
+  },
+  {
+   "freq_mhz": 133.575,
+   "maxhold_db": 1.9984923601150513,
+   "avg_db": -8.846930503845215,
+   "maxhold_over_floor_db": 9.8,
+   "avg_over_floor_db": -1.0
+  },
+  {
+   "freq_mhz": 133.6,
+   "maxhold_db": 1.8474833965301514,
+   "avg_db": -8.796586036682129,
+   "maxhold_over_floor_db": 9.7,
+   "avg_over_floor_db": -0.9
+  },
+  {
+   "freq_mhz": 133.625,
+   "maxhold_db": 1.5048918724060059,
+   "avg_db": -8.689422607421875,
+   "maxhold_over_floor_db": 9.4,
+   "avg_over_floor_db": -0.8
+  },
+  {
+   "freq_mhz": 133.65,
+   "maxhold_db": 2.854980230331421,
+   "avg_db": -8.650043487548828,
+   "maxhold_over_floor_db": 10.7,
+   "avg_over_floor_db": -0.8
+  },
+  {
+   "freq_mhz": 133.675,
+   "maxhold_db": 2.2307424545288086,
+   "avg_db": -8.720030784606934,
+   "maxhold_over_floor_db": 10.1,
+   "avg_over_floor_db": -0.9
+  },
+  {
+   "freq_mhz": 133.7,
+   "maxhold_db": 1.5477155447006226,
+   "avg_db": -8.83708667755127,
+   "maxhold_over_floor_db": 9.4,
+   "avg_over_floor_db": -1.0
+  },
+  {
+   "freq_mhz": 133.725,
+   "maxhold_db": 3.3587570190429688,
+   "avg_db": -8.210206985473633,
+   "maxhold_over_floor_db": 11.2,
+   "avg_over_floor_db": -0.4
+  },
+  {
+   "freq_mhz": 133.75,
+   "maxhold_db": 1.3971196413040161,
+   "avg_db": -8.700729370117188,
+   "maxhold_over_floor_db": 9.2,
+   "avg_over_floor_db": -0.9
+  },
+  {
+   "freq_mhz": 133.775,
+   "maxhold_db": 1.0773160457611084,
+   "avg_db": -9.121871948242188,
+   "maxhold_over_floor_db": 8.9,
+   "avg_over_floor_db": -1.3
+  },
+  {
+   "freq_mhz": 133.8,
+   "maxhold_db": 2.106580972671509,
+   "avg_db": -9.164520263671875,
+   "maxhold_over_floor_db": 10.0,
+   "avg_over_floor_db": -1.3
+  },
+  {
+   "freq_mhz": 133.825,
+   "maxhold_db": 2.0329322814941406,
+   "avg_db": -8.83564281463623,
+   "maxhold_over_floor_db": 9.9,
+   "avg_over_floor_db": -1.0
+  },
+  {
+   "freq_mhz": 133.85,
+   "maxhold_db": 3.9092941284179688,
+   "avg_db": -8.79199504852295,
+   "maxhold_over_floor_db": 11.8,
+   "avg_over_floor_db": -0.9
+  },
+  {
+   "freq_mhz": 133.875,
+   "maxhold_db": 1.3947890996932983,
+   "avg_db": -8.77332878112793,
+   "maxhold_over_floor_db": 9.2,
+   "avg_over_floor_db": -0.9
+  },
+  {
+   "freq_mhz": 133.9,
+   "maxhold_db": 1.472513198852539,
+   "avg_db": -8.415864944458008,
+   "maxhold_over_floor_db": 9.3,
+   "avg_over_floor_db": -0.6
+  },
+  {
+   "freq_mhz": 133.925,
+   "maxhold_db": 2.888223648071289,
+   "avg_db": -7.895872116088867,
+   "maxhold_over_floor_db": 10.7,
+   "avg_over_floor_db": -0.0
+  },
+  {
+   "freq_mhz": 133.95,
+   "maxhold_db": 1.6091725826263428,
+   "avg_db": -8.519146919250488,
+   "maxhold_over_floor_db": 9.5,
+   "avg_over_floor_db": -0.7
+  },
+  {
+   "freq_mhz": 133.975,
+   "maxhold_db": 2.385592222213745,
+   "avg_db": -8.892584800720215,
+   "maxhold_over_floor_db": 10.2,
+   "avg_over_floor_db": -1.0
+  },
+  {
+   "freq_mhz": 134.0,
+   "maxhold_db": 0.4557570815086365,
+   "avg_db": -9.10749340057373,
+   "maxhold_over_floor_db": 8.3,
+   "avg_over_floor_db": -1.3
+  },
+  {
+   "freq_mhz": 134.025,
+   "maxhold_db": 1.3171241283416748,
+   "avg_db": -8.759078025817871,
+   "maxhold_over_floor_db": 9.2,
+   "avg_over_floor_db": -0.9
+  },
+  {
+   "freq_mhz": 134.05,
+   "maxhold_db": 1.0469173192977905,
+   "avg_db": -9.000648498535156,
+   "maxhold_over_floor_db": 8.9,
+   "avg_over_floor_db": -1.1
+  },
+  {
+   "freq_mhz": 134.075,
+   "maxhold_db": 1.2740575075149536,
+   "avg_db": -9.072972297668457,
+   "maxhold_over_floor_db": 9.1,
+   "avg_over_floor_db": -1.2
+  },
+  {
+   "freq_mhz": 134.1,
+   "maxhold_db": 1.2318565845489502,
+   "avg_db": -8.747235298156738,
+   "maxhold_over_floor_db": 9.1,
+   "avg_over_floor_db": -0.9
+  },
+  {
+   "freq_mhz": 134.125,
+   "maxhold_db": 1.5795817375183105,
+   "avg_db": -8.450309753417969,
+   "maxhold_over_floor_db": 9.4,
+   "avg_over_floor_db": -0.6
+  },
+  {
+   "freq_mhz": 134.15,
+   "maxhold_db": 2.6014184951782227,
+   "avg_db": -8.62959098815918,
+   "maxhold_over_floor_db": 10.5,
+   "avg_over_floor_db": -0.8
+  },
+  {
+   "freq_mhz": 134.175,
+   "maxhold_db": 1.2326312065124512,
+   "avg_db": -8.665343284606934,
+   "maxhold_over_floor_db": 9.1,
+   "avg_over_floor_db": -0.8
+  },
+  {
+   "freq_mhz": 134.2,
+   "maxhold_db": 1.6437492370605469,
+   "avg_db": -8.534111022949219,
+   "maxhold_over_floor_db": 9.5,
+   "avg_over_floor_db": -0.7
+  },
+  {
+   "freq_mhz": 134.225,
+   "maxhold_db": 2.8152589797973633,
+   "avg_db": -8.166178703308105,
+   "maxhold_over_floor_db": 10.7,
+   "avg_over_floor_db": -0.3
+  },
+  {
+   "freq_mhz": 134.25,
+   "maxhold_db": 1.7136704921722412,
+   "avg_db": -8.177947998046875,
+   "maxhold_over_floor_db": 9.6,
+   "avg_over_floor_db": -0.3
+  },
+  {
+   "freq_mhz": 134.275,
+   "maxhold_db": 1.447605013847351,
+   "avg_db": -8.20544147491455,
+   "maxhold_over_floor_db": 9.3,
+   "avg_over_floor_db": -0.4
+  },
+  {
+   "freq_mhz": 134.3,
+   "maxhold_db": 2.0338449478149414,
+   "avg_db": -8.213228225708008,
+   "maxhold_over_floor_db": 9.9,
+   "avg_over_floor_db": -0.4
+  },
+  {
+   "freq_mhz": 134.325,
+   "maxhold_db": 2.8051438331604004,
+   "avg_db": -8.047303199768066,
+   "maxhold_over_floor_db": 10.7,
+   "avg_over_floor_db": -0.2
+  },
+  {
+   "freq_mhz": 134.35,
+   "maxhold_db": 1.5655468702316284,
+   "avg_db": -8.848207473754883,
+   "maxhold_over_floor_db": 9.4,
+   "avg_over_floor_db": -1.0
+  },
+  {
+   "freq_mhz": 134.375,
+   "maxhold_db": 1.357163906097412,
+   "avg_db": -9.215069770812988,
+   "maxhold_over_floor_db": 9.2,
+   "avg_over_floor_db": -1.4
+  },
+  {
+   "freq_mhz": 134.4,
+   "maxhold_db": 0.8406999707221985,
+   "avg_db": -9.463942527770996,
+   "maxhold_over_floor_db": 8.7,
+   "avg_over_floor_db": -1.6
+  },
+  {
+   "freq_mhz": 134.425,
+   "maxhold_db": 1.2647764682769775,
+   "avg_db": -9.571334838867188,
+   "maxhold_over_floor_db": 9.1,
+   "avg_over_floor_db": -1.7
+  },
+  {
+   "freq_mhz": 134.45,
+   "maxhold_db": 0.7387955188751221,
+   "avg_db": -9.650588035583496,
+   "maxhold_over_floor_db": 8.6,
+   "avg_over_floor_db": -1.8
+  },
+  {
+   "freq_mhz": 134.475,
+   "maxhold_db": 1.0574262142181396,
+   "avg_db": -9.56302261352539,
+   "maxhold_over_floor_db": 8.9,
+   "avg_over_floor_db": -1.7
+  },
+  {
+   "freq_mhz": 134.5,
+   "maxhold_db": 0.26687467098236084,
+   "avg_db": -10.385261535644531,
+   "maxhold_over_floor_db": 8.1,
+   "avg_over_floor_db": -2.5
+  },
+  {
+   "freq_mhz": 134.525,
+   "maxhold_db": -0.260420560836792,
+   "avg_db": -9.932442665100098,
+   "maxhold_over_floor_db": 7.6,
+   "avg_over_floor_db": -2.1
+  },
+  {
+   "freq_mhz": 134.55,
+   "maxhold_db": 0.4374822676181793,
+   "avg_db": -10.062174797058105,
+   "maxhold_over_floor_db": 8.3,
+   "avg_over_floor_db": -2.2
+  },
+  {
+   "freq_mhz": 134.575,
+   "maxhold_db": 1.6672967672348022,
+   "avg_db": -10.115408897399902,
+   "maxhold_over_floor_db": 9.5,
+   "avg_over_floor_db": -2.3
+  },
+  {
+   "freq_mhz": 134.6,
+   "maxhold_db": 0.037871237844228745,
+   "avg_db": -10.010034561157227,
+   "maxhold_over_floor_db": 7.9,
+   "avg_over_floor_db": -2.2
+  },
+  {
+   "freq_mhz": 134.625,
+   "maxhold_db": 2.1797728538513184,
+   "avg_db": -9.860316276550293,
+   "maxhold_over_floor_db": 10.0,
+   "avg_over_floor_db": -2.0
+  },
+  {
+   "freq_mhz": 134.65,
+   "maxhold_db": 0.5703670978546143,
+   "avg_db": -9.727388381958008,
+   "maxhold_over_floor_db": 8.4,
+   "avg_over_floor_db": -1.9
+  },
+  {
+   "freq_mhz": 134.675,
+   "maxhold_db": 0.8980917930603027,
+   "avg_db": -9.640706062316895,
+   "maxhold_over_floor_db": 8.7,
+   "avg_over_floor_db": -1.8
+  },
+  {
+   "freq_mhz": 134.7,
+   "maxhold_db": 0.8037567734718323,
+   "avg_db": -9.296529769897461,
+   "maxhold_over_floor_db": 8.7,
+   "avg_over_floor_db": -1.4
+  },
+  {
+   "freq_mhz": 134.725,
+   "maxhold_db": 1.8479539155960083,
+   "avg_db": -8.595357894897461,
+   "maxhold_over_floor_db": 9.7,
+   "avg_over_floor_db": -0.7
+  },
+  {
+   "freq_mhz": 134.75,
+   "maxhold_db": 0.6093177795410156,
+   "avg_db": -9.164360046386719,
+   "maxhold_over_floor_db": 8.5,
+   "avg_over_floor_db": -1.3
+  },
+  {
+   "freq_mhz": 134.775,
+   "maxhold_db": 0.7713273763656616,
+   "avg_db": -9.383529663085938,
+   "maxhold_over_floor_db": 8.6,
+   "avg_over_floor_db": -1.5
+  },
+  {
+   "freq_mhz": 134.8,
+   "maxhold_db": 1.3399772644042969,
+   "avg_db": -9.194062232971191,
+   "maxhold_over_floor_db": 9.2,
+   "avg_over_floor_db": -1.3
+  },
+  {
+   "freq_mhz": 134.825,
+   "maxhold_db": 1.5841155052185059,
+   "avg_db": -9.229050636291504,
+   "maxhold_over_floor_db": 9.4,
+   "avg_over_floor_db": -1.4
+  },
+  {
+   "freq_mhz": 134.85,
+   "maxhold_db": 1.1423702239990234,
+   "avg_db": -9.125789642333984,
+   "maxhold_over_floor_db": 9.0,
+   "avg_over_floor_db": -1.3
+  },
+  {
+   "freq_mhz": 134.875,
+   "maxhold_db": 0.8026212453842163,
+   "avg_db": -9.192121505737305,
+   "maxhold_over_floor_db": 8.7,
+   "avg_over_floor_db": -1.3
+  },
+  {
+   "freq_mhz": 134.9,
+   "maxhold_db": 1.50497305393219,
+   "avg_db": -8.923626899719238,
+   "maxhold_over_floor_db": 9.4,
+   "avg_over_floor_db": -1.1
+  },
+  {
+   "freq_mhz": 134.925,
+   "maxhold_db": 0.8423283696174622,
+   "avg_db": -9.110185623168945,
+   "maxhold_over_floor_db": 8.7,
+   "avg_over_floor_db": -1.3
+  },
+  {
+   "freq_mhz": 134.95,
+   "maxhold_db": -0.08767946809530258,
+   "avg_db": -9.611837387084961,
+   "maxhold_over_floor_db": 7.8,
+   "avg_over_floor_db": -1.8
+  },
+  {
+   "freq_mhz": 134.975,
+   "maxhold_db": -0.08698008209466934,
+   "avg_db": -9.709613800048828,
+   "maxhold_over_floor_db": 7.8,
+   "avg_over_floor_db": -1.9
+  },
+  {
+   "freq_mhz": 135.0,
+   "maxhold_db": 10.283051490783691,
+   "avg_db": -2.396291732788086,
+   "maxhold_over_floor_db": 18.1,
+   "avg_over_floor_db": 5.5
+  },
+  {
+   "freq_mhz": 135.025,
+   "maxhold_db": 0.3866148293018341,
+   "avg_db": -9.488717079162598,
+   "maxhold_over_floor_db": 8.2,
+   "avg_over_floor_db": -1.6
+  },
+  {
+   "freq_mhz": 135.05,
+   "maxhold_db": 1.6890811920166016,
+   "avg_db": -9.202194213867188,
+   "maxhold_over_floor_db": 9.5,
+   "avg_over_floor_db": -1.4
+  },
+  {
+   "freq_mhz": 135.075,
+   "maxhold_db": 0.7048906087875366,
+   "avg_db": -9.258323669433594,
+   "maxhold_over_floor_db": 8.6,
+   "avg_over_floor_db": -1.4
+  },
+  {
+   "freq_mhz": 135.1,
+   "maxhold_db": 1.8785293102264404,
+   "avg_db": -8.656509399414062,
+   "maxhold_over_floor_db": 9.7,
+   "avg_over_floor_db": -0.8
+  },
+  {
+   "freq_mhz": 135.125,
+   "maxhold_db": 2.0594260692596436,
+   "avg_db": -8.251808166503906,
+   "maxhold_over_floor_db": 9.9,
+   "avg_over_floor_db": -0.4
+  },
+  {
+   "freq_mhz": 135.15,
+   "maxhold_db": 1.6238701343536377,
+   "avg_db": -8.671860694885254,
+   "maxhold_over_floor_db": 9.5,
+   "avg_over_floor_db": -0.8
+  },
+  {
+   "freq_mhz": 135.175,
+   "maxhold_db": 0.884810745716095,
+   "avg_db": -8.781023979187012,
+   "maxhold_over_floor_db": 8.7,
+   "avg_over_floor_db": -0.9
+  },
+  {
+   "freq_mhz": 135.2,
+   "maxhold_db": 2.497252941131592,
+   "avg_db": -8.507241249084473,
+   "maxhold_over_floor_db": 10.3,
+   "avg_over_floor_db": -0.7
+  },
+  {
+   "freq_mhz": 135.225,
+   "maxhold_db": 1.990454077720642,
+   "avg_db": -8.119667053222656,
+   "maxhold_over_floor_db": 9.8,
+   "avg_over_floor_db": -0.3
+  },
+  {
+   "freq_mhz": 135.25,
+   "maxhold_db": 2.531651258468628,
+   "avg_db": -7.816769599914551,
+   "maxhold_over_floor_db": 10.4,
+   "avg_over_floor_db": 0.0
+  },
+  {
+   "freq_mhz": 135.275,
+   "maxhold_db": 2.583063840866089,
+   "avg_db": -7.705196380615234,
+   "maxhold_over_floor_db": 10.4,
+   "avg_over_floor_db": 0.1
+  },
+  {
+   "freq_mhz": 135.3,
+   "maxhold_db": 2.9477429389953613,
+   "avg_db": -7.064901351928711,
+   "maxhold_over_floor_db": 10.8,
+   "avg_over_floor_db": 0.8
+  },
+  {
+   "freq_mhz": 135.325,
+   "maxhold_db": 2.8334693908691406,
+   "avg_db": -7.474957466125488,
+   "maxhold_over_floor_db": 10.7,
+   "avg_over_floor_db": 0.4
+  },
+  {
+   "freq_mhz": 135.35,
+   "maxhold_db": 2.8564646244049072,
+   "avg_db": -7.742193222045898,
+   "maxhold_over_floor_db": 10.7,
+   "avg_over_floor_db": 0.1
+  },
+  {
+   "freq_mhz": 135.375,
+   "maxhold_db": 1.3621513843536377,
+   "avg_db": -8.002901077270508,
+   "maxhold_over_floor_db": 9.2,
+   "avg_over_floor_db": -0.2
+  },
+  {
+   "freq_mhz": 135.4,
+   "maxhold_db": 1.7317949533462524,
+   "avg_db": -8.373250007629395,
+   "maxhold_over_floor_db": 9.6,
+   "avg_over_floor_db": -0.5
+  },
+  {
+   "freq_mhz": 135.425,
+   "maxhold_db": 1.7208878993988037,
+   "avg_db": -8.527179718017578,
+   "maxhold_over_floor_db": 9.6,
+   "avg_over_floor_db": -0.7
+  },
+  {
+   "freq_mhz": 135.45,
+   "maxhold_db": 2.18017315864563,
+   "avg_db": -8.392157554626465,
+   "maxhold_over_floor_db": 10.0,
+   "avg_over_floor_db": -0.5
+  },
+  {
+   "freq_mhz": 135.475,
+   "maxhold_db": 1.4050484895706177,
+   "avg_db": -8.446517944335938,
+   "maxhold_over_floor_db": 9.3,
+   "avg_over_floor_db": -0.6
+  },
+  {
+   "freq_mhz": 135.5,
+   "maxhold_db": 1.3369481563568115,
+   "avg_db": -8.385141372680664,
+   "maxhold_over_floor_db": 9.2,
+   "avg_over_floor_db": -0.5
+  },
+  {
+   "freq_mhz": 135.525,
+   "maxhold_db": 3.9044699668884277,
+   "avg_db": -8.08793830871582,
+   "maxhold_over_floor_db": 11.8,
+   "avg_over_floor_db": -0.2
+  },
+  {
+   "freq_mhz": 135.55,
+   "maxhold_db": 1.607269287109375,
+   "avg_db": -8.798413276672363,
+   "maxhold_over_floor_db": 9.5,
+   "avg_over_floor_db": -0.9
+  },
+  {
+   "freq_mhz": 135.575,
+   "maxhold_db": 1.7982606887817383,
+   "avg_db": -9.00093936920166,
+   "maxhold_over_floor_db": 9.6,
+   "avg_over_floor_db": -1.2
+  },
+  {
+   "freq_mhz": 135.6,
+   "maxhold_db": 0.2484908103942871,
+   "avg_db": -8.997884750366211,
+   "maxhold_over_floor_db": 8.1,
+   "avg_over_floor_db": -1.1
+  },
+  {
+   "freq_mhz": 135.625,
+   "maxhold_db": 1.2581919431686401,
+   "avg_db": -8.841630935668945,
+   "maxhold_over_floor_db": 9.1,
+   "avg_over_floor_db": -1.0
+  },
+  {
+   "freq_mhz": 135.65,
+   "maxhold_db": 1.029664397239685,
+   "avg_db": -8.882247924804688,
+   "maxhold_over_floor_db": 8.9,
+   "avg_over_floor_db": -1.0
+  },
+  {
+   "freq_mhz": 135.675,
+   "maxhold_db": 0.7068247199058533,
+   "avg_db": -8.886509895324707,
+   "maxhold_over_floor_db": 8.6,
+   "avg_over_floor_db": -1.0
+  },
+  {
+   "freq_mhz": 135.7,
+   "maxhold_db": 2.0424888134002686,
+   "avg_db": -8.402709007263184,
+   "maxhold_over_floor_db": 9.9,
+   "avg_over_floor_db": -0.6
+  },
+  {
+   "freq_mhz": 135.725,
+   "maxhold_db": 1.6965454816818237,
+   "avg_db": -8.93515682220459,
+   "maxhold_over_floor_db": 9.5,
+   "avg_over_floor_db": -1.1
+  },
+  {
+   "freq_mhz": 135.75,
+   "maxhold_db": 1.5562198162078857,
+   "avg_db": -8.894964218139648,
+   "maxhold_over_floor_db": 9.4,
+   "avg_over_floor_db": -1.0
+  },
+  {
+   "freq_mhz": 135.775,
+   "maxhold_db": 1.0160653591156006,
+   "avg_db": -9.238282203674316,
+   "maxhold_over_floor_db": 8.9,
+   "avg_over_floor_db": -1.4
+  },
+  {
+   "freq_mhz": 135.8,
+   "maxhold_db": 0.628998875617981,
+   "avg_db": -9.393556594848633,
+   "maxhold_over_floor_db": 8.5,
+   "avg_over_floor_db": -1.5
+  },
+  {
+   "freq_mhz": 135.825,
+   "maxhold_db": 1.2160776853561401,
+   "avg_db": -9.27977466583252,
+   "maxhold_over_floor_db": 9.1,
+   "avg_over_floor_db": -1.4
+  },
+  {
+   "freq_mhz": 135.85,
+   "maxhold_db": 1.6984515190124512,
+   "avg_db": -9.235116004943848,
+   "maxhold_over_floor_db": 9.5,
+   "avg_over_floor_db": -1.4
+  },
+  {
+   "freq_mhz": 135.875,
+   "maxhold_db": 1.6444133520126343,
+   "avg_db": -9.219175338745117,
+   "maxhold_over_floor_db": 9.5,
+   "avg_over_floor_db": -1.4
+  },
+  {
+   "freq_mhz": 135.9,
+   "maxhold_db": 1.2017433643341064,
+   "avg_db": -8.711956024169922,
+   "maxhold_over_floor_db": 9.1,
+   "avg_over_floor_db": -0.9
+  },
+  {
+   "freq_mhz": 135.925,
+   "maxhold_db": 2.4853367805480957,
+   "avg_db": -8.89125919342041,
+   "maxhold_over_floor_db": 10.3,
+   "avg_over_floor_db": -1.0
+  },
+  {
+   "freq_mhz": 135.95,
+   "maxhold_db": 0.4039347469806671,
+   "avg_db": -9.389981269836426,
+   "maxhold_over_floor_db": 8.3,
+   "avg_over_floor_db": -1.5
+  },
+  {
+   "freq_mhz": 135.975,
+   "maxhold_db": 0.9513479471206665,
+   "avg_db": -9.356804847717285,
+   "maxhold_over_floor_db": 8.8,
+   "avg_over_floor_db": -1.5
+  },
+  {
+   "freq_mhz": 136.0,
+   "maxhold_db": 1.3037199974060059,
+   "avg_db": -10.093883514404297,
+   "maxhold_over_floor_db": 9.2,
+   "avg_over_floor_db": -2.2
+  },
+  {
+   "freq_mhz": 136.025,
+   "maxhold_db": -0.05056140571832657,
+   "avg_db": -9.844239234924316,
+   "maxhold_over_floor_db": 7.8,
+   "avg_over_floor_db": -2.0
+  },
+  {
+   "freq_mhz": 136.05,
+   "maxhold_db": 0.4008041322231293,
+   "avg_db": -9.772902488708496,
+   "maxhold_over_floor_db": 8.3,
+   "avg_over_floor_db": -1.9
+  },
+  {
+   "freq_mhz": 136.075,
+   "maxhold_db": 0.7590349912643433,
+   "avg_db": -9.530942916870117,
+   "maxhold_over_floor_db": 8.6,
+   "avg_over_floor_db": -1.7
+  },
+  {
+   "freq_mhz": 136.1,
+   "maxhold_db": 1.31529700756073,
+   "avg_db": -9.272625923156738,
+   "maxhold_over_floor_db": 9.2,
+   "avg_over_floor_db": -1.4
+  },
+  {
+   "freq_mhz": 136.125,
+   "maxhold_db": 0.3373165726661682,
+   "avg_db": -9.609827041625977,
+   "maxhold_over_floor_db": 8.2,
+   "avg_over_floor_db": -1.8
+  },
+  {
+   "freq_mhz": 136.15,
+   "maxhold_db": 1.9724900722503662,
+   "avg_db": -9.350813865661621,
+   "maxhold_over_floor_db": 9.8,
+   "avg_over_floor_db": -1.5
+  },
+  {
+   "freq_mhz": 136.175,
+   "maxhold_db": 1.792095422744751,
+   "avg_db": -9.398529052734375,
+   "maxhold_over_floor_db": 9.6,
+   "avg_over_floor_db": -1.5
+  },
+  {
+   "freq_mhz": 136.2,
+   "maxhold_db": 1.8502367734909058,
+   "avg_db": -9.320276260375977,
+   "maxhold_over_floor_db": 9.7,
+   "avg_over_floor_db": -1.5
+  },
+  {
+   "freq_mhz": 136.225,
+   "maxhold_db": 1.546865463256836,
+   "avg_db": -8.77196979522705,
+   "maxhold_over_floor_db": 9.4,
+   "avg_over_floor_db": -0.9
+  },
+  {
+   "freq_mhz": 136.25,
+   "maxhold_db": 1.7221555709838867,
+   "avg_db": -8.320840835571289,
+   "maxhold_over_floor_db": 9.6,
+   "avg_over_floor_db": -0.5
+  },
+  {
+   "freq_mhz": 136.275,
+   "maxhold_db": 2.1347100734710693,
+   "avg_db": -8.35116195678711,
+   "maxhold_over_floor_db": 10.0,
+   "avg_over_floor_db": -0.5
+  },
+  {
+   "freq_mhz": 136.3,
+   "maxhold_db": 3.5718882083892822,
+   "avg_db": -7.743637561798096,
+   "maxhold_over_floor_db": 11.4,
+   "avg_over_floor_db": 0.1
+  },
+  {
+   "freq_mhz": 136.325,
+   "maxhold_db": 2.4995195865631104,
+   "avg_db": -7.956181049346924,
+   "maxhold_over_floor_db": 10.4,
+   "avg_over_floor_db": -0.1
+  },
+  {
+   "freq_mhz": 136.35,
+   "maxhold_db": 1.9448766708374023,
+   "avg_db": -8.169290542602539,
+   "maxhold_over_floor_db": 9.8,
+   "avg_over_floor_db": -0.3
+  },
+  {
+   "freq_mhz": 136.375,
+   "maxhold_db": 1.448653221130371,
+   "avg_db": -8.220878601074219,
+   "maxhold_over_floor_db": 9.3,
+   "avg_over_floor_db": -0.4
+  },
+  {
+   "freq_mhz": 136.4,
+   "maxhold_db": 1.5785127878189087,
+   "avg_db": -8.335232734680176,
+   "maxhold_over_floor_db": 9.4,
+   "avg_over_floor_db": -0.5
+  },
+  {
+   "freq_mhz": 136.425,
+   "maxhold_db": 2.221348285675049,
+   "avg_db": -8.376791000366211,
+   "maxhold_over_floor_db": 10.1,
+   "avg_over_floor_db": -0.5
+  },
+  {
+   "freq_mhz": 136.45,
+   "maxhold_db": 2.2039694786071777,
+   "avg_db": -8.72636890411377,
+   "maxhold_over_floor_db": 10.1,
+   "avg_over_floor_db": -0.9
+  },
+  {
+   "freq_mhz": 136.475,
+   "maxhold_db": 2.7910327911376953,
+   "avg_db": -8.370330810546875,
+   "maxhold_over_floor_db": 10.6,
+   "avg_over_floor_db": -0.5
+  },
+  {
+   "freq_mhz": 136.5,
+   "maxhold_db": 2.1637825965881348,
+   "avg_db": -8.822694778442383,
+   "maxhold_over_floor_db": 10.0,
+   "avg_over_floor_db": -1.0
+  },
+  {
+   "freq_mhz": 136.525,
+   "maxhold_db": 1.122673511505127,
+   "avg_db": -8.879817962646484,
+   "maxhold_over_floor_db": 9.0,
+   "avg_over_floor_db": -1.0
+  },
+  {
+   "freq_mhz": 136.55,
+   "maxhold_db": 1.109439730644226,
+   "avg_db": -8.93737506866455,
+   "maxhold_over_floor_db": 9.0,
+   "avg_over_floor_db": -1.1
+  },
+  {
+   "freq_mhz": 136.575,
+   "maxhold_db": 1.6658935546875,
+   "avg_db": -9.353879928588867,
+   "maxhold_over_floor_db": 9.5,
+   "avg_over_floor_db": -1.5
+  },
+  {
+   "freq_mhz": 136.6,
+   "maxhold_db": 1.4392156600952148,
+   "avg_db": -9.206785202026367,
+   "maxhold_over_floor_db": 9.3,
+   "avg_over_floor_db": -1.4
+  },
+  {
+   "freq_mhz": 136.625,
+   "maxhold_db": 1.4533756971359253,
+   "avg_db": -9.005404472351074,
+   "maxhold_over_floor_db": 9.3,
+   "avg_over_floor_db": -1.2
+  },
+  {
+   "freq_mhz": 136.65,
+   "maxhold_db": 1.9866758584976196,
+   "avg_db": -8.534978866577148,
+   "maxhold_over_floor_db": 9.8,
+   "avg_over_floor_db": -0.7
+  },
+  {
+   "freq_mhz": 136.675,
+   "maxhold_db": 1.8483649492263794,
+   "avg_db": -8.459257125854492,
+   "maxhold_over_floor_db": 9.7,
+   "avg_over_floor_db": -0.6
+  },
+  {
+   "freq_mhz": 136.7,
+   "maxhold_db": 2.122405767440796,
+   "avg_db": -8.138785362243652,
+   "maxhold_over_floor_db": 10.0,
+   "avg_over_floor_db": -0.3
+  },
+  {
+   "freq_mhz": 136.725,
+   "maxhold_db": 2.0604724884033203,
+   "avg_db": -8.498981475830078,
+   "maxhold_over_floor_db": 9.9,
+   "avg_over_floor_db": -0.6
+  },
+  {
+   "freq_mhz": 136.75,
+   "maxhold_db": 0.8565887212753296,
+   "avg_db": -8.689709663391113,
+   "maxhold_over_floor_db": 8.7,
+   "avg_over_floor_db": -0.8
+  },
+  {
+   "freq_mhz": 136.775,
+   "maxhold_db": 1.2087067365646362,
+   "avg_db": -8.866677284240723,
+   "maxhold_over_floor_db": 9.1,
+   "avg_over_floor_db": -1.0
+  },
+  {
+   "freq_mhz": 136.8,
+   "maxhold_db": 1.118166446685791,
+   "avg_db": -8.893726348876953,
+   "maxhold_over_floor_db": 9.0,
+   "avg_over_floor_db": -1.0
+  },
+  {
+   "freq_mhz": 136.825,
+   "maxhold_db": 2.1956076622009277,
+   "avg_db": -9.03103256225586,
+   "maxhold_over_floor_db": 10.0,
+   "avg_over_floor_db": -1.2
+  },
+  {
+   "freq_mhz": 136.85,
+   "maxhold_db": 1.8850618600845337,
+   "avg_db": -8.8804349899292,
+   "maxhold_over_floor_db": 9.7,
+   "avg_over_floor_db": -1.0
+  },
+  {
+   "freq_mhz": 136.875,
+   "maxhold_db": 1.6405341625213623,
+   "avg_db": -8.512613296508789,
+   "maxhold_over_floor_db": 9.5,
+   "avg_over_floor_db": -0.7
+  },
+  {
+   "freq_mhz": 136.9,
+   "maxhold_db": 1.1995350122451782,
+   "avg_db": -8.943550109863281,
+   "maxhold_over_floor_db": 9.1,
+   "avg_over_floor_db": -1.1
+  },
+  {
+   "freq_mhz": 136.925,
+   "maxhold_db": 2.052370548248291,
+   "avg_db": -8.987399101257324,
+   "maxhold_over_floor_db": 9.9,
+   "avg_over_floor_db": -1.1
+  },
+  {
+   "freq_mhz": 136.95,
+   "maxhold_db": 0.7372462153434753,
+   "avg_db": -9.193161964416504,
+   "maxhold_over_floor_db": 8.6,
+   "avg_over_floor_db": -1.3
+  },
+  {
+   "freq_mhz": 136.975,
+   "maxhold_db": 1.2737696170806885,
+   "avg_db": -9.346729278564453,
+   "maxhold_over_floor_db": 9.1,
+   "avg_over_floor_db": -1.5
+  },
+  {
+   "freq_mhz": 137.0,
+   "maxhold_db": 1.48698091506958,
+   "avg_db": -9.242149353027344,
+   "maxhold_over_floor_db": 9.3,
+   "avg_over_floor_db": -1.4
+  },
+  {
+   "freq_mhz": 137.025,
+   "maxhold_db": 1.6776491403579712,
+   "avg_db": -8.758875846862793,
+   "maxhold_over_floor_db": 9.5,
+   "avg_over_floor_db": -0.9
+  },
+  {
+   "freq_mhz": 137.05,
+   "maxhold_db": 1.4034876823425293,
+   "avg_db": -8.695829391479492,
+   "maxhold_over_floor_db": 9.3,
+   "avg_over_floor_db": -0.8
+  },
+  {
+   "freq_mhz": 137.075,
+   "maxhold_db": 2.0258336067199707,
+   "avg_db": -8.535850524902344,
+   "maxhold_over_floor_db": 9.9,
+   "avg_over_floor_db": -0.7
+  },
+  {
+   "freq_mhz": 137.1,
+   "maxhold_db": 2.459409475326538,
+   "avg_db": -8.179685592651367,
+   "maxhold_over_floor_db": 10.3,
+   "avg_over_floor_db": -0.3
+  },
+  {
+   "freq_mhz": 137.125,
+   "maxhold_db": 2.0596189498901367,
+   "avg_db": -8.484925270080566,
+   "maxhold_over_floor_db": 9.9,
+   "avg_over_floor_db": -0.6
+  },
+  {
+   "freq_mhz": 137.15,
+   "maxhold_db": 3.4090590476989746,
+   "avg_db": -8.733675003051758,
+   "maxhold_over_floor_db": 11.3,
+   "avg_over_floor_db": -0.9
+  },
+  {
+   "freq_mhz": 137.175,
+   "maxhold_db": 2.1496620178222656,
+   "avg_db": -8.937521934509277,
+   "maxhold_over_floor_db": 10.0,
+   "avg_over_floor_db": -1.1
+  },
+  {
+   "freq_mhz": 137.2,
+   "maxhold_db": 1.0471386909484863,
+   "avg_db": -9.08087158203125,
+   "maxhold_over_floor_db": 8.9,
+   "avg_over_floor_db": -1.2
+  },
+  {
+   "freq_mhz": 137.225,
+   "maxhold_db": 0.8699833154678345,
+   "avg_db": -9.196511268615723,
+   "maxhold_over_floor_db": 8.7,
+   "avg_over_floor_db": -1.3
+  },
+  {
+   "freq_mhz": 137.25,
+   "maxhold_db": 0.871218740940094,
+   "avg_db": -8.71585464477539,
+   "maxhold_over_floor_db": 8.7,
+   "avg_over_floor_db": -0.9
+  },
+  {
+   "freq_mhz": 137.275,
+   "maxhold_db": 0.8760795593261719,
+   "avg_db": -8.532976150512695,
+   "maxhold_over_floor_db": 8.7,
+   "avg_over_floor_db": -0.7
+  },
+  {
+   "freq_mhz": 137.3,
+   "maxhold_db": 0.9956885576248169,
+   "avg_db": -9.1138916015625,
+   "maxhold_over_floor_db": 8.8,
+   "avg_over_floor_db": -1.3
+  },
+  {
+   "freq_mhz": 137.325,
+   "maxhold_db": 2.316911458969116,
+   "avg_db": -9.157333374023438,
+   "maxhold_over_floor_db": 10.2,
+   "avg_over_floor_db": -1.3
+  },
+  {
+   "freq_mhz": 137.35,
+   "maxhold_db": 1.5280927419662476,
+   "avg_db": -9.578760147094727,
+   "maxhold_over_floor_db": 9.4,
+   "avg_over_floor_db": -1.7
+  },
+  {
+   "freq_mhz": 137.375,
+   "maxhold_db": 0.52424156665802,
+   "avg_db": -9.471867561340332,
+   "maxhold_over_floor_db": 8.4,
+   "avg_over_floor_db": -1.6
+  },
+  {
+   "freq_mhz": 137.4,
+   "maxhold_db": 0.4889877140522003,
+   "avg_db": -9.173298835754395,
+   "maxhold_over_floor_db": 8.3,
+   "avg_over_floor_db": -1.3
+  },
+  {
+   "freq_mhz": 137.425,
+   "maxhold_db": 1.4887763261795044,
+   "avg_db": -8.987244606018066,
+   "maxhold_over_floor_db": 9.3,
+   "avg_over_floor_db": -1.1
+  },
+  {
+   "freq_mhz": 137.45,
+   "maxhold_db": 0.8025648593902588,
+   "avg_db": -8.791657447814941,
+   "maxhold_over_floor_db": 8.7,
+   "avg_over_floor_db": -0.9
+  },
+  {
+   "freq_mhz": 137.475,
+   "maxhold_db": 1.993212103843689,
+   "avg_db": -8.641739845275879,
+   "maxhold_over_floor_db": 9.8,
+   "avg_over_floor_db": -0.8
+  }
+ ],
+ "top": [
+  {
+   "freq_mhz": 120.0,
+   "maxhold_db": 32.394020080566406,
+   "avg_db": 19.707897186279297,
+   "maxhold_over_floor_db": 40.2,
+   "avg_over_floor_db": 27.6
+  },
+  {
+   "freq_mhz": 132.0,
+   "maxhold_db": 16.497577667236328,
+   "avg_db": 2.4692423343658447,
+   "maxhold_over_floor_db": 24.3,
+   "avg_over_floor_db": 10.3
+  },
+  {
+   "freq_mhz": 124.725,
+   "maxhold_db": 15.295137405395508,
+   "avg_db": 0.9411608576774597,
+   "maxhold_over_floor_db": 23.1,
+   "avg_over_floor_db": 8.8
+  },
+  {
+   "freq_mhz": 126.275,
+   "maxhold_db": 14.958748817443848,
+   "avg_db": -0.13091398775577545,
+   "maxhold_over_floor_db": 22.8,
+   "avg_over_floor_db": 7.7
+  },
+  {
+   "freq_mhz": 124.6,
+   "maxhold_db": 14.734434127807617,
+   "avg_db": 0.6512091159820557,
+   "maxhold_over_floor_db": 22.6,
+   "avg_over_floor_db": 8.5
+  },
+  {
+   "freq_mhz": 124.7,
+   "maxhold_db": 14.440910339355469,
+   "avg_db": 0.1916269212961197,
+   "maxhold_over_floor_db": 22.3,
+   "avg_over_floor_db": 8.0
+  },
+  {
+   "freq_mhz": 124.95,
+   "maxhold_db": 14.061473846435547,
+   "avg_db": -0.9204401969909668,
+   "maxhold_over_floor_db": 21.9,
+   "avg_over_floor_db": 6.9
+  },
+  {
+   "freq_mhz": 124.825,
+   "maxhold_db": 13.62459945678711,
+   "avg_db": -0.7585116624832153,
+   "maxhold_over_floor_db": 21.5,
+   "avg_over_floor_db": 7.1
+  },
+  {
+   "freq_mhz": 124.575,
+   "maxhold_db": 13.189286231994629,
+   "avg_db": -0.9505777955055237,
+   "maxhold_over_floor_db": 21.0,
+   "avg_over_floor_db": 6.9
+  },
+  {
+   "freq_mhz": 124.975,
+   "maxhold_db": 10.683088302612305,
+   "avg_db": -3.312763214111328,
+   "maxhold_over_floor_db": 18.5,
+   "avg_over_floor_db": 4.5
+  },
+  {
+   "freq_mhz": 121.6,
+   "maxhold_db": 10.491741180419922,
+   "avg_db": -4.917632102966309,
+   "maxhold_over_floor_db": 18.3,
+   "avg_over_floor_db": 2.9
+  },
+  {
+   "freq_mhz": 135.0,
+   "maxhold_db": 10.283051490783691,
+   "avg_db": -2.396291732788086,
+   "maxhold_over_floor_db": 18.1,
+   "avg_over_floor_db": 5.5
+  },
+  {
+   "freq_mhz": 120.775,
+   "maxhold_db": 9.311982154846191,
+   "avg_db": -3.7022175788879395,
+   "maxhold_over_floor_db": 17.2,
+   "avg_over_floor_db": 4.1
+  },
+  {
+   "freq_mhz": 124.85,
+   "maxhold_db": 9.249236106872559,
+   "avg_db": -4.0554423332214355,
+   "maxhold_over_floor_db": 17.1,
+   "avg_over_floor_db": 3.8
+  },
+  {
+   "freq_mhz": 123.2,
+   "maxhold_db": 8.470047950744629,
+   "avg_db": -5.603909015655518,
+   "maxhold_over_floor_db": 16.3,
+   "avg_over_floor_db": 2.2
+  }
+ ]
+}

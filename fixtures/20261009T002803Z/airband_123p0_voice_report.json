@@ -1,0 +1,25 @@
+{
+  "audio_rate": 16000.0,
+  "channels": {
+    "AIR_123p100MHz_SAR": {
+      "freq_hz": 123100000.0,
+      "mode": "am",
+      "wav": "/tmp/ab/AIR_123p100MHz_SAR_am_16k.wav",
+      "duration_s": 120.0,
+      "noise_floor_dbfs": -63.8,
+      "peak_dbfs": -62.9,
+      "peak_over_noise_db": 0.9,
+      "openings_ge_0p3s_8db": []
+    },
+    "AIR_122p800MHz": {
+      "freq_hz": 122800000.0,
+      "mode": "am",
+      "wav": "/tmp/ab/AIR_122p800MHz_am_16k.wav",
+      "duration_s": 120.0,
+      "noise_floor_dbfs": -65.9,
+      "peak_dbfs": -64.9,
+      "peak_over_noise_db": 1.0,
+      "openings_ge_0p3s_8db": []
+    }
+  }
+}

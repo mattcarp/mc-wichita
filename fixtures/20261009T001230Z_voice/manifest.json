@@ -1,0 +1,96 @@
+{
+  "files": {
+    "AIR_121p500MHz_distress_am_16k.wav": {
+      "bytes": 1440044,
+      "sha256": "96013128b5b5ea0901a4012d76de05607054dd3a7adf96caafc25bc5b991ce0e"
+    },
+    "AIR_121p900MHz_am_16k.wav": {
+      "bytes": 1440044,
+      "sha256": "d4e360f52438c1753617653d820d114aeaf4cc99cc66a3ce21e31c1d3794e76e"
+    },
+    "AIR_122p800MHz_am_16k.wav": {
+      "bytes": 1440044,
+      "sha256": "939ab9a6feee9e7ac0ab5f18e1955aad2c2ca059d193664a7fd478bbf146e42a"
+    },
+    "AIR_123p100MHz_SAR_am_16k.wav": {
+      "bytes": 1440044,
+      "sha256": "4a6c3c3c34f3d31f8e6cd36f44e0798cf1b52ccf4442e685065482bc3a297fb0"
+    },
+    "CH09_156p450MHz_nfm_16k.wav": {
+      "bytes": 1920042,
+      "sha256": "1125865d8f4ddd18115c523ed930deaabb51a634d77fe37e5d84968b04be7aa7"
+    },
+    "CH16_156p800MHz_nfm_16k.wav": {
+      "bytes": 1920042,
+      "sha256": "a18e3ab2618d50f2c208f83d1719617a06e57c3b3b94196a660118edd8705961"
+    },
+    "airband_121p700MHz.capture_settings.json": {
+      "bytes": 2007,
+      "sha256": "f650a448e2e3b3794464e74e17bf7cdd31170a0507b4d71e86293667282c27ac"
+    },
+    "airband_121p700MHz.capture_stdout.log": {
+      "bytes": 2878,
+      "sha256": "e4404b013e8edbdc2cf6cc66c028d20605146e36ee6c5c82473c9661e935fd18"
+    },
+    "airband_121p700MHz.sigmf-data": {
+      "bytes": 360000000,
+      "sha256": "877b399e2b8ac866a497bbb8fa612b1bcd051743838181135bd8f54b17cf6f68"
+    },
+    "airband_121p7_voice_report.json": {
+      "bytes": 629,
+      "sha256": "05541de4886de177029ba9100b5370a6b768fda5ae1d9b81dab33c1a93355743"
+    },
+    "airband_123p000MHz.capture_settings.json": {
+      "bytes": 2006,
+      "sha256": "a4c4f68313386b9e1b015127289376eb32a13acd39cbb86d7f710b0b6caf6652"
+    },
+    "airband_123p000MHz.capture_stdout.log": {
+      "bytes": 2877,
+      "sha256": "dcd4342997e548c91fd069c5ab17e8d14e0af945345fa3e9c6f7d5f7ce970d0b"
+    },
+    "airband_123p000MHz.sigmf-data": {
+      "bytes": 360000000,
+      "sha256": "40a444ee3cb5ef49a957b8805e56cc3ad6520293ed6776240d1072138438b950"
+    },
+    "airband_123p0_voice_report.json": {
+      "bytes": 619,
+      "sha256": "1a2f3455a386dee1d1dbc3e3a54528d3cccc2d389b2fe8daf8a9fdb47399e0f0"
+    },
+    "airband_scan_118_137.json": {
+      "bytes": 130467,
+      "sha256": "6701b0699b4733639f502a111428db83214834d0b78325792a4215370143991c"
+    },
+    "marine_156p625MHz.capture_settings.json": {
+      "bytes": 2006,
+      "sha256": "c0206e546f2fbd323d18186168d0897d3c54c6d0ce6aca7930e75f08e7d5b79f"
+    },
+    "marine_156p625MHz.capture_stdout.log": {
+      "bytes": 2877,
+      "sha256": "ae03fd0e6b91e2a087d8694e63fa4964bd5d55b8ad5a75a4c8fc257961f38086"
+    },
+    "marine_156p625MHz.sigmf-data": {
+      "bytes": 480000000,
+      "sha256": "aeccfcf921ae584dc6857ea051d4928c21df805572fe11431e10f72ae5b87849"
+    },
+    "marine_156p625MHz.sigmf-meta": {
+      "bytes": 2175,
+      "sha256": "f3ef6d2b3a8da804d2f1df590846c2aecae7516910bcc372cee0342ffb65bcfc"
+    },
+    "marine_voice_report.json": {
+      "bytes": 2321,
+      "sha256": "7d3b47dab4c2108a3bdaac89f709d45ae18af82dcdec6952d077b6e4f2bbcc4f"
+    },
+    "airband_121p700MHz.sigmf-meta": {
+      "bytes": 2168,
+      "sha256": "0fd63cfeeccc990dc831009af794e6cda6635598cbb307d4a8ef32247e1bb9a3"
+    },
+    "airband_123p000MHz.sigmf-meta": {
+      "bytes": 2161,
+      "sha256": "358e917fdbb56d48873465d373bfe574dcd6341b2bd3c7e5e4f2e60b14bae6c5"
+    }
+  },
+  "location": "Indoor, lower floor, Valletta, Malta (not the rooftop install)",
+  "capture_context": "first indoor test, telescopic antenna",
+  "provenance_status": "genuine",
+  "provenance_basis": "verified_origin"
+}

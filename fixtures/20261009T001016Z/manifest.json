@@ -1,0 +1,44 @@
+{
+  "files": {
+    "ais_decoded.nmea": {
+      "bytes": 564,
+      "sha256": "07104eabc629200cbd114a2f555bdbb6dc8a325e5978194f9644ac84a7490154"
+    },
+    "analysis_report.json": {
+      "bytes": 5141,
+      "sha256": "52578d8e81c30659ee46688985f448c2a11af9e2febc98deee6ada16c5aa0bb7"
+    },
+    "analysis_stdout.log": {
+      "bytes": 3891,
+      "sha256": "adc034d10aaee5a0c4ed6c9f1dde4601811a442e85f820439b069ede814f0637"
+    },
+    "capture_settings.json": {
+      "bytes": 1990,
+      "sha256": "79086d56f2b13b20770eec6d96265bd4acdc7269e5162def5e8718ea37a4b761"
+    },
+    "capture_stdout.log": {
+      "bytes": 2862,
+      "sha256": "11668ec4bab133356ea43ebf2bbfdf89112966d8448987b744e0061cd88fd23b"
+    },
+    "ch16_156p800MHz_nfm_48k.wav": {
+      "bytes": 9600042,
+      "sha256": "121c87fef94ae94ae9f1ba99b669ee6f99e83b0a31b44fdf0dc7f3bad15de7fd"
+    },
+    "wichita_vhf_159p4125MHz_6Msps.sigmf-data": {
+      "bytes": 2400000000,
+      "sha256": "71e96940363441f9add288efb811e21db1f8cfa4e0e3bd2d3eef74cd8a2c2f5b"
+    },
+    "wichita_vhf_159p4125MHz_6Msps.sigmf-meta": {
+      "bytes": 5673,
+      "sha256": "31f1f5fcaa5a2e2a5f32882ad4b0296f9914d2c46dd446ac4b51c3df29897122"
+    },
+    "wideband_psd.csv": {
+      "bytes": 155669,
+      "sha256": "be2af612d412cfabed6382497d02ae60ab309f629afbf819e841c71816f5f909"
+    }
+  },
+  "location": "Indoor, lower floor, Valletta, Malta (not the rooftop install)",
+  "capture_context": "first indoor test, telescopic antenna",
+  "provenance_status": "genuine",
+  "provenance_basis": "verified_origin"
+}

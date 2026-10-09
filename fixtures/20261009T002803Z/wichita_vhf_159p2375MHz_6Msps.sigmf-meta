@@ -1,0 +1,616 @@
+{
+  "global": {
+    "core:datatype": "ci16_le",
+    "core:sample_rate": 6000000.0,
+    "core:version": "1.0.0",
+    "core:hw": "SDRplay RSPdx-R2",
+    "core:author": "Wichita (Mattie)",
+    "core:description": "Wideband VHF IQ 156.45-162.025 MHz (CH09, CH16, AIS 1/2), centre 159.2375 MHz, 600 s, receive-only",
+    "core:recorder": "wichita_iq_capture_v2.py (SoapySDR CS16, writer-thread, outside repo)",
+    "wichita:source": "wichita-sdr",
+    "wichita:device_serial": "2403090170",
+    "wichita:antenna_port": "Antenna A",
+    "wichita:antenna": "telescopic dipole/scanner antenna via SO-239-to-SMA",
+    "wichita:biasT_readback": {
+      "pre_stream": "false",
+      "during_stream": "false",
+      "post_stream": "false"
+    },
+    "wichita:gain": {
+      "agc": false,
+      "RFGR_lna_state": 4.0,
+      "IFGR_db": 35.0,
+      "soapy_total_gain_db": 19.0
+    },
+    "wichita:other_settings": {
+      "rfnotch_ctrl": "true",
+      "dabnotch_ctrl": "false",
+      "iqcorr_ctrl": "true",
+      "hdr_ctrl": "false",
+      "bandwidth": 6000000.0,
+      "num_tx_channels": 0
+    },
+    "wichita:software": {
+      "SoapySDR": "0.8.1-release",
+      "SoapySDRPlay3": "0.5.2-8ef31b2",
+      "SDRplay_API": "3.15.1 (driver reports 3.15)",
+      "python": "3.13 (Homebrew)"
+    },
+    "wichita:data_sha256": "a4497836909ed2e50f0b9788c1b0c611637328bb0fb8f14feb97668a69749951",
+    "wichita:location": "Stairwell balcony, Valletta, Malta (not the rooftop install)",
+    "wichita:capture_context": "second test, antenna moved from indoor lower floor to stairwell balcony",
+    "wichita:provenance_status": "genuine",
+    "wichita:provenance_basis": "verified_origin: captured live by Wichita with settings read back from the device",
+    "wichita:stream_stats": {
+      "samples": 3600000000,
+      "wall_seconds": 602.568,
+      "overflow_events": 0,
+      "stream_errors": {},
+      "peak_dbfs": -17.07,
+      "rms_dbfs": -39.26,
+      "clipped_values": 0
+    },
+    "wichita:transmit": "none (receive-only; no TX stream opened; device reports 0 TX channels)"
+  },
+  "captures": [
+    {
+      "core:sample_start": 0,
+      "core:frequency": 159237500.0,
+      "core:datetime": "2026-10-09T00:29:49.130591Z"
+    }
+  ],
+  "annotations": [
+    {
+      "core:sample_start": 33576000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 24 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,H023QvAH4hhEA@4000000000000,2*37"
+    },
+    {
+      "core:sample_start": 48138000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 24 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,H023QvAH4hhEA@4000000000000,2*34"
+    },
+    {
+      "core:sample_start": 68136000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,4023QvAvbTPN0Q2LBpDRaP70041p,0*53"
+    },
+    {
+      "core:sample_start": 73578000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 20 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,D023Qv@5dN?b<`N00l4v000,2*7B"
+    },
+    {
+      "core:sample_start": 73578000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 20 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,D023Qv@5dN?b<`N00l4v000,2*7B"
+    },
+    {
+      "core:sample_start": 128136000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,4023QvAvbTPN:Q2LBpDRaP700<8k,0*40"
+    },
+    {
+      "core:sample_start": 165402000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 20 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,D023QvAVTN?b<`N01sDv000,2*44"
+    },
+    {
+      "core:sample_start": 165402000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 20 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,D023QvAVTN?b<`N01sDv000,2*44"
+    },
+    {
+      "core:sample_start": 247770000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,4023QvAvbTPNNQ2LBpDRaP7008Aq,0*53"
+    },
+    {
+      "core:sample_start": 307590000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,4023QvAvbTPN`Q2LBpDRaP700HGh,0*11"
+    },
+    {
+      "core:sample_start": 427320000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,4023QvAvbTPO0Q2LBpDRaP7000S:,0*7E"
+    },
+    {
+      "core:sample_start": 486930000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,4023QvAvbTPO:Q2LBpDRaP70086;,0*1B"
+    },
+    {
+      "core:sample_start": 524016000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 20 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,D023QvAVTN?b<`N01sDv000,2*44"
+    },
+    {
+      "core:sample_start": 605790000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,4023QvAvbTPONQ2LBpDRaP70041t,0*2B"
+    },
+    {
+      "core:sample_start": 665610000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,4023QvAvbTPO`Q2LBpDRaP700D8j,0*61"
+    },
+    {
+      "core:sample_start": 725478000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,4023QvAvbTPOjQ2LBpDRaP700<8g,0*1D"
+    },
+    {
+      "core:sample_start": 845303999,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,4023QvAvbTPP:Q2LBpDRaP700420,0*07"
+    },
+    {
+      "core:sample_start": 882744000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 20 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,D023QvAVTN?b<`N01sDv000,2*44"
+    },
+    {
+      "core:sample_start": 905142000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,4023QvAvbTPPDQ2LBpDRaP700420,0*7A"
+    },
+    {
+      "core:sample_start": 964733999,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,4023QvAvbTPPNQ2LBpDRaP7000S:,0*1C"
+    },
+    {
+      "core:sample_start": 1023936000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,4023QvAvbTPP`Q2LBpDRaP700@Gh,0*07"
+    },
+    {
+      "core:sample_start": 1083468000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,4023QvAvbTPPjQ2LBpDRaP7008MW,0*43"
+    },
+    {
+      "core:sample_start": 1143468000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,4023QvAvbTPQ0Q2LBpDRaP700D8d,0*21"
+    },
+    {
+      "core:sample_start": 1203264000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,4023QvAvbTPQ:Q2LBpDRaP7000S:,0*69"
+    },
+    {
+      "core:sample_start": 1240704000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 20 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,D023QvAVTN?b<`N01sDv000,2*44"
+    },
+    {
+      "core:sample_start": 1240704000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 20 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,D023QvAVTN?b<`N01sDv000,2*44"
+    },
+    {
+      "core:sample_start": 1263090000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,4023QvAvbTPQDQ2LBpDRaP7000S:,0*14"
+    },
+    {
+      "core:sample_start": 1322712000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,4023QvAvbTPQNQ2LBpDRaP700D8d,0*5C"
+    },
+    {
+      "core:sample_start": 1382514000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,4023QvAvbTPQ`Q2LBpDRaP700<8`,0*0D"
+    },
+    {
+      "core:sample_start": 1442514000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,4023QvAvbTPQjQ2LBpDRaP700424,0*52"
+    },
+    {
+      "core:sample_start": 1507566000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 20 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,D023Qv@5dN?b<`N00l4v000,2*7B"
+    },
+    {
+      "core:sample_start": 1562130000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,4023QvAvbTPR:Q2LBpDRaP700@6;,0*7E"
+    },
+    {
+      "core:sample_start": 1599372000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 20 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,D023QvAVTN?b<`N01sDv000,2*44"
+    },
+    {
+      "core:sample_start": 1599372000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 20 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,D023QvAVTN?b<`N01sDv000,2*44"
+    },
+    {
+      "core:sample_start": 1599378000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 20 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,D023QvAVTN?b<`N01sDv000,2*44"
+    },
+    {
+      "core:sample_start": 1681217999,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,4023QvAvbTPRNQ2LBpDRaP700@Aq,0*37"
+    },
+    {
+      "core:sample_start": 1800336000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,4023QvAvbTPRjQ2LBpDRaP7000S:,0*3A"
+    },
+    {
+      "core:sample_start": 1859130000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,4023QvAvbTPS0Q2LBpDRaP700<8N,0*71"
+    },
+    {
+      "core:sample_start": 1864572000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 20 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,D023Qv@5dN?b<`N00l4v000,2*7B"
+    },
+    {
+      "core:sample_start": 1864572000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 20 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,D023Qv@5dN?b<`N00l4v000,2*7B"
+    },
+    {
+      "core:sample_start": 1918950000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,4023QvAvbTPS:Q2LBpDRaP700<8M,0*7B"
+    },
+    {
+      "core:sample_start": 1956216000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 20 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,D023QvAVTN?b<`N01sDv000,2*44"
+    },
+    {
+      "core:sample_start": 2038145999,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,4023QvAvbTPSNQ2LBpDRaP700<8K,0*09"
+    },
+    {
+      "core:sample_start": 2098128000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,4023QvAvbTPS`Q2LBpDRaP70042<,0*51"
+    },
+    {
+      "core:sample_start": 2157792000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,4023QvAvbTPSjQ2LBpDRaP700@MW,0*38"
+    },
+    {
+      "core:sample_start": 2222742000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 20 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,D023Qv@5dN?b<`N00l4v000,2*7B"
+    },
+    {
+      "core:sample_start": 2277054000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,4023QvAvbTPT:Q2LBpDRaP70086;,0*00"
+    },
+    {
+      "core:sample_start": 2314494000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 20 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,D023QvAVTN?b<`N01sDv000,2*44"
+    },
+    {
+      "core:sample_start": 2314494000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 20 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,D023QvAVTN?b<`N01sDv000,2*44"
+    },
+    {
+      "core:sample_start": 2337054000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,4023QvAvbTPTDQ2LBpDRaP70042@,0*0E"
+    },
+    {
+      "core:sample_start": 2396694000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,4023QvAvbTPTNQ2LBpDRaP7008Aq,0*49"
+    },
+    {
+      "core:sample_start": 2672982000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 20 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,D023QvAVTN?b<`N01sDv000,2*44"
+    },
+    {
+      "core:sample_start": 2672982000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 20 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,D023QvAVTN?b<`N01sDv000,2*44"
+    },
+    {
+      "core:sample_start": 2695368000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,4023QvAvbTPUDQ2LBpDRaP7000S:,0*10"
+    },
+    {
+      "core:sample_start": 2755002000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,4023QvAvbTPUNQ2LBpDRaP70042D,0*02"
+    },
+    {
+      "core:sample_start": 2934462000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,4023QvAvbTPV0Q2LBpDRaP7000S:,0*67"
+    },
+    {
+      "core:sample_start": 2939904000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 20 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,D023Qv@5dN?b<`N00l4v000,2*7B"
+    },
+    {
+      "core:sample_start": 3031692000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 20 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,D023QvAVTN?b<`N01sDv000,2*44"
+    },
+    {
+      "core:sample_start": 3031692000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 20 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,D023QvAVTN?b<`N01sDv000,2*44"
+    },
+    {
+      "core:sample_start": 3114071999,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,4023QvAvbTPVNQ2LBpDRaP7000S:,0*1A"
+    },
+    {
+      "core:sample_start": 3173766000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,4023QvAvbTPV`Q2LBpDRaP700@Gh,0*01"
+    },
+    {
+      "core:sample_start": 3233634000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,4023QvAvbTPVjQ2LBpDRaP70042H,0*29"
+    },
+    {
+      "core:sample_start": 3293286000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,4023QvAvbTPW0Q2LBpDRaP700D8V,0*15"
+    },
+    {
+      "core:sample_start": 3298722000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 20 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,D023Qv@5dN?b<`N00l4v000,2*7B"
+    },
+    {
+      "core:sample_start": 3353010000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,4023QvAvbTPW:Q2LBpDRaP700@6;,0*7B"
+    },
+    {
+      "core:sample_start": 3390384000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 20 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,D023QvAVTN?b<`N01sDv000,2*44"
+    },
+    {
+      "core:sample_start": 3412943999,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,4023QvAvbTPWDQ2LBpDRaP700<8`,0*2F"
+    },
+    {
+      "core:sample_start": 3472943999,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,4023QvAvbTPWNQ2LBpDRaP700<8S,0*15"
+    },
+    {
+      "core:sample_start": 3532943999,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,4023QvAvbTPW`Q2LBpDRaP700<8Q,0*3A"
+    }
+  ]
+}

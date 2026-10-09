@@ -1,0 +1,138 @@
+{
+  "location": "Stairwell balcony, Valletta, Malta (not the rooftop install)",
+  "capture_context": "second test, antenna moved from indoor lower floor to stairwell balcony",
+  "provenance_status": "genuine",
+  "provenance_basis": "verified_origin",
+  "files": {
+    "AIR_121p500MHz_distress_am_16k.wav": {
+      "bytes": 3840044,
+      "sha256": "cb45b2b42f0631b9c7ea7ff7fe617e0f09d85115634fce5eea94dbb9aedb492a",
+      "sha256_source": "computed"
+    },
+    "AIR_121p900MHz_am_16k.wav": {
+      "bytes": 3840044,
+      "sha256": "45af2fa69ef647609e27cac3640815ffb85124d26065d6e12fe56b99e8a4cfb0",
+      "sha256_source": "computed"
+    },
+    "AIR_122p800MHz_am_16k.wav": {
+      "bytes": 3840044,
+      "sha256": "ea5f9a301add4e515298cdf6771006dda86dabfcd7c7322c19ed47d485820a7d",
+      "sha256_source": "computed"
+    },
+    "AIR_123p100MHz_SAR_am_16k.wav": {
+      "bytes": 3840044,
+      "sha256": "6f4f155c420feca6520ed8c2b214d1c40327619da6769b6d5b1ac644193e35a5",
+      "sha256_source": "computed"
+    },
+    "airband_121p700MHz.capture_settings.json": {
+      "bytes": 2079,
+      "sha256": "5fdd76d7358873da0ea4706c5d3f6a1f3253a38342c55106615d2262f425173b",
+      "sha256_source": "computed"
+    },
+    "airband_121p700MHz.capture_stdout.log": {
+      "bytes": 2946,
+      "sha256": "07f04eac5b9e36d3aa471c79b86b60316343cefd3e8f117b38cb71bc767e7f94",
+      "sha256_source": "computed"
+    },
+    "airband_121p700MHz.sigmf-data": {
+      "bytes": 960000000,
+      "sha256": "4b5a3ff1b0f9a08017800a32b35b15f4d6953386a540b8129f359e1dca71aebd",
+      "sha256_source": "sidecar"
+    },
+    "airband_121p700MHz.sigmf-meta": {
+      "bytes": 2220,
+      "sha256": "ce13861fb48839124f9ab2526246378b1840483a790ef098ae99cec5ade2a969",
+      "sha256_source": "computed"
+    },
+    "airband_121p7_voice_report.json": {
+      "bytes": 631,
+      "sha256": "054085551ea5882fb3e025c07e02a644a5eeaa2500d285facb3d49a4b56c4bb8",
+      "sha256_source": "computed"
+    },
+    "airband_123p000MHz.capture_settings.json": {
+      "bytes": 2080,
+      "sha256": "df2a546c308d9b8fd6a7ba6a665e4cee93c4e205d8d64bb758f333f16e501bbd",
+      "sha256_source": "computed"
+    },
+    "airband_123p000MHz.capture_stdout.log": {
+      "bytes": 2947,
+      "sha256": "52317c868f82b2b503b372ff9c174e35e25afc97536b9d3ef1390873179f5eb9",
+      "sha256_source": "computed"
+    },
+    "airband_123p000MHz.sigmf-data": {
+      "bytes": 960000000,
+      "sha256": "53569d82a0e40118a8d2cf991e6bc7abe9882f6c28f66c5e4bd1102997f44697",
+      "sha256_source": "sidecar"
+    },
+    "airband_123p000MHz.sigmf-meta": {
+      "bytes": 2216,
+      "sha256": "7f88ae208aa526a626205a9afa10976b87a725b401ee39693f83531f4527d8dd",
+      "sha256_source": "computed"
+    },
+    "airband_123p0_voice_report.json": {
+      "bytes": 621,
+      "sha256": "4d60b59d593f6a1210e8a3f8d375371b27e249eb8e06f2c03914b72802f49ea8",
+      "sha256_source": "computed"
+    },
+    "airband_scan_118_137.json": {
+      "bytes": 130581,
+      "sha256": "dd0804f3a3cbda813fd6af32ad16ef4c35b5f874617a817edb75336943b25a4d",
+      "sha256_source": "computed"
+    },
+    "airband_scan_stdout.log": {
+      "bytes": 2927,
+      "sha256": "a9bb70cb3be9dfe4d7de5d33ab60c3ea62b87828e0ab6f94d85ef855cccfe74b",
+      "sha256_source": "computed"
+    },
+    "ais_decoded.nmea": {
+      "bytes": 3185,
+      "sha256": "87d5cf6fd2d713fd48fbd0f35cecee4cdd7b15bfb31dbbaa75d3933ed1db37ad",
+      "sha256_source": "computed"
+    },
+    "analysis_report.json": {
+      "bytes": 25498,
+      "sha256": "6815b1f219e5484b878f9cbafe7ad22e4ddfe1b12e7cfffd43e8650455df27b5",
+      "sha256_source": "computed"
+    },
+    "analysis_stdout.log": {
+      "bytes": 8385,
+      "sha256": "9b07f39313846e1a360e6a0e2fe9e829815b7cdd42f332f9ec4a58496f855be0",
+      "sha256_source": "computed"
+    },
+    "ch09_156p450MHz_nfm_48k.wav": {
+      "bytes": 57600042,
+      "sha256": "9bf4100b732a5ecaac4fcec028f61e6aefd6307e3e394c2dc668f9f1c055a0c7",
+      "sha256_source": "computed"
+    },
+    "ch16_156p800MHz_nfm_48k.wav": {
+      "bytes": 57600042,
+      "sha256": "a24f6ee6c4d82d33e92f8c8e9b80fa84b3f87bbf91e92b5d7f1af4384131025e",
+      "sha256_source": "computed"
+    },
+    "wichita_vhf_159p2375MHz_6Msps.capture_settings.json": {
+      "bytes": 2048,
+      "sha256": "90cc22544afeb93972b4f4ac9dcce6384181a43a0001df79d5c68d9fc4bac2a0",
+      "sha256_source": "computed"
+    },
+    "wichita_vhf_159p2375MHz_6Msps.capture_stdout.log": {
+      "bytes": 2915,
+      "sha256": "4e8584f86ef627515e37e9169f45cd4c1debbdedac8b9a21419a17c1cc352071",
+      "sha256_source": "computed"
+    },
+    "wichita_vhf_159p2375MHz_6Msps.sigmf-data": {
+      "bytes": 14400000000,
+      "sha256": "a4497836909ed2e50f0b9788c1b0c611637328bb0fb8f14feb97668a69749951",
+      "sha256_source": "sidecar"
+    },
+    "wichita_vhf_159p2375MHz_6Msps.sigmf-meta": {
+      "bytes": 22398,
+      "sha256": "1ca52f6b6c5dce1c27ce7a33b9cdd1a286d41ea83f563e347d96a9720bbfc047",
+      "sha256_source": "computed"
+    },
+    "wideband_psd.csv": {
+      "bytes": 155666,
+      "sha256": "3f1cb96f0e9e0bfb183b6054e06d6cf92b005691f8da0d0a7dffa7d020ae431a",
+      "sha256_source": "computed"
+    }
+  }
+}

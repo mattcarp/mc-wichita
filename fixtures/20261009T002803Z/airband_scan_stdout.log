@@ -1,0 +1,23 @@
+[INFO] devIdx: 0
+[INFO] SerNo: 2403090170
+[INFO] hwVer: 7
+[INFO] rspDuoMode: 0
+[INFO] tuner: 1
+[INFO] rspDuoSampleFreq: 0.000000
+[INFO] Using format CF32.
+READBACK {'biasT_ctrl': 'false', 'antenna': 'Antenna A', 'RFGR': 4.0, 'IFGR': 35.0, 'agc': False}
+{'freq_mhz': np.float64(120.0), 'maxhold_db': 32.394020080566406, 'avg_db': 19.707897186279297, 'maxhold_over_floor_db': np.float64(40.2), 'avg_over_floor_db': np.float64(27.6)}
+{'freq_mhz': np.float64(132.0), 'maxhold_db': 16.497577667236328, 'avg_db': 2.4692423343658447, 'maxhold_over_floor_db': np.float64(24.3), 'avg_over_floor_db': np.float64(10.3)}
+{'freq_mhz': np.float64(124.725), 'maxhold_db': 15.295137405395508, 'avg_db': 0.9411608576774597, 'maxhold_over_floor_db': np.float64(23.1), 'avg_over_floor_db': np.float64(8.8)}
+{'freq_mhz': np.float64(126.275), 'maxhold_db': 14.958748817443848, 'avg_db': -0.13091398775577545, 'maxhold_over_floor_db': np.float64(22.8), 'avg_over_floor_db': np.float64(7.7)}
+{'freq_mhz': np.float64(124.6), 'maxhold_db': 14.734434127807617, 'avg_db': 0.6512091159820557, 'maxhold_over_floor_db': np.float64(22.6), 'avg_over_floor_db': np.float64(8.5)}
+{'freq_mhz': np.float64(124.7), 'maxhold_db': 14.440910339355469, 'avg_db': 0.1916269212961197, 'maxhold_over_floor_db': np.float64(22.3), 'avg_over_floor_db': np.float64(8.0)}
+{'freq_mhz': np.float64(124.95), 'maxhold_db': 14.061473846435547, 'avg_db': -0.9204401969909668, 'maxhold_over_floor_db': np.float64(21.9), 'avg_over_floor_db': np.float64(6.9)}
+{'freq_mhz': np.float64(124.825), 'maxhold_db': 13.62459945678711, 'avg_db': -0.7585116624832153, 'maxhold_over_floor_db': np.float64(21.5), 'avg_over_floor_db': np.float64(7.1)}
+{'freq_mhz': np.float64(124.575), 'maxhold_db': 13.189286231994629, 'avg_db': -0.9505777955055237, 'maxhold_over_floor_db': np.float64(21.0), 'avg_over_floor_db': np.float64(6.9)}
+{'freq_mhz': np.float64(124.975), 'maxhold_db': 10.683088302612305, 'avg_db': -3.312763214111328, 'maxhold_over_floor_db': np.float64(18.5), 'avg_over_floor_db': np.float64(4.5)}
+{'freq_mhz': np.float64(121.6), 'maxhold_db': 10.491741180419922, 'avg_db': -4.917632102966309, 'maxhold_over_floor_db': np.float64(18.3), 'avg_over_floor_db': np.float64(2.9)}
+{'freq_mhz': np.float64(135.0), 'maxhold_db': 10.283051490783691, 'avg_db': -2.396291732788086, 'maxhold_over_floor_db': np.float64(18.1), 'avg_over_floor_db': np.float64(5.5)}
+{'freq_mhz': np.float64(120.775), 'maxhold_db': 9.311982154846191, 'avg_db': -3.7022175788879395, 'maxhold_over_floor_db': np.float64(17.2), 'avg_over_floor_db': np.float64(4.1)}
+{'freq_mhz': np.float64(124.85), 'maxhold_db': 9.249236106872559, 'avg_db': -4.0554423332214355, 'maxhold_over_floor_db': np.float64(17.1), 'avg_over_floor_db': np.float64(3.8)}
+{'freq_mhz': np.float64(123.2), 'maxhold_db': 8.470047950744629, 'avg_db': -5.603909015655518, 'maxhold_over_floor_db': np.float64(16.3), 'avg_over_floor_db': np.float64(2.2)}
