@@ -256,8 +256,14 @@ function drawBurstWaterfall(analysis, psd, colorBlind, durationSec) {
   const { ctx, w, h } = fitCanvas(canvas, 180, true);
   const duration = Math.max(30, durationSec || 600);
   const grid = new Float32Array(w * h);
-  const minV = psd?.psd_db_per_hz ? Math.min(...psd.psd_db_per_hz) : -120;
-  const maxV = psd?.psd_db_per_hz ? Math.max(...psd.psd_db_per_hz) : -90;
+  const psdVals = psd?.psd_db_per_hz || [];
+  const sortedPsd = [...psdVals].sort((a, b) => a - b);
+  const minV = sortedPsd.length
+    ? sortedPsd[Math.floor(sortedPsd.length * 0.05)]
+    : -120;
+  const maxV = sortedPsd.length
+    ? sortedPsd[Math.floor(sortedPsd.length * 0.98)]
+    : -90;
 
   if (psd?.available) {
     for (let y = 0; y < h; y++) {
@@ -266,9 +272,7 @@ function drawBurstWaterfall(analysis, psd, colorBlind, durationSec) {
         const val = samplePsdAtMhz(psd, mhz);
         if (val == null) continue;
         const norm = Math.min(1, Math.max(0, (val - minV) / (maxV - minV + 1e-6)));
-        const grain = ((x * 17 + y * 31) % 89) / 89;
-        const ripple = 0.03 * Math.sin(x * 0.11 + y * 0.07);
-        grid[y * w + x] = Math.min(0.45, norm * 0.16 + grain * 0.05 + ripple + 0.04);
+        grid[y * w + x] = norm * 0.22;
       }
     }
   }
