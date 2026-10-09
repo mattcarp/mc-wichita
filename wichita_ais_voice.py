@@ -48,9 +48,9 @@ def voice_channel_tiles(
             "title": title,
             "freq": freq,
             "mode": "not_monitored",
-            "badge": "RECORDED",
+            "badge": "OFF AIR",
             "headline": "Not monitored now",
-            "detail": "Receiver busy with AIS · " + rec["detail"],
+            "detail": f"Receiver busy with AIS. Last recording ({rec['headline']}): {rec['detail']}",
             "recorded": rec,
         }
 

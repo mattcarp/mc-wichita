@@ -814,6 +814,10 @@ canvas {
 .badge-recorded {
   color: var(--spur);
 }
+.badge-offair {
+  color: var(--review);
+  border-color: rgba(224, 164, 88, 0.45);
+}
 .harbour-layout {
   display: grid;
   gap: 0.75rem;

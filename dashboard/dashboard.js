@@ -592,7 +592,12 @@ async function renderVoiceTiles() {
     const data = await fetchJson("/api/live-ais/voice-watch");
     grid.innerHTML = (data.channels || [])
       .map((ch) => {
-        const badge = ch.badge === "LIVE" ? "badge-live" : "badge-recorded";
+        const badge =
+          ch.badge === "LIVE"
+            ? "badge-live"
+            : ch.mode === "not_monitored"
+              ? "badge-offair"
+              : "badge-recorded";
         const modeClass = ch.mode === "not_monitored" ? "voice-not-monitored" : "voice-live";
         return `<article class="voice-tile ${modeClass}">
           <h3><span class="badge ${badge}">${ch.badge}</span> ${ch.title}</h3>
