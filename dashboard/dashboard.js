@@ -168,6 +168,13 @@ function updateWaterfallAxisLabels(psd) {
   }
 }
 
+function updateLiveBandHeading(psd) {
+  const h2 = $("#live-heading");
+  if (!h2 || !psd?.available) return;
+  const { minF, maxF } = psdSpan(psd);
+  h2.textContent = `${minF.toFixed(3)}–${maxF.toFixed(3)} MHz`;
+}
+
 const MARKER_FONT = "10px Geist Mono, monospace";
 const MARKER_ROW_STEP = 12;
 
@@ -211,9 +218,13 @@ function layoutSpectrumMarkerRows(items, w, ctx) {
 }
 
 function renderSpectrumMarkersHtml(w, h, ctx, span) {
-  const { minF, maxF } = span;
+  const { minF, maxF, drawMin, drawMax } = span;
   const items = BOOKMARKS.filter(
-    (bm) => bm.mhz >= minF - 0.001 && bm.mhz <= maxF + 0.001,
+    (bm) =>
+      bm.mhz >= minF - 0.001 &&
+      bm.mhz <= maxF + 0.001 &&
+      bm.mhz >= drawMin - 0.001 &&
+      bm.mhz <= drawMax + 0.001,
   ).map((bm) => ({
     key: bm.key,
     bm,
@@ -317,7 +328,15 @@ function drawSpectrum(psd) {
   }
   for (const key of labelKeys) {
     const bm = BOOKMARKS.find((b) => b.key === key);
-    if (!bm || bm.mhz < axisMinF - 0.001 || bm.mhz > axisMaxF + 0.001) continue;
+    if (
+      !bm ||
+      bm.mhz < axisMinF - 0.001 ||
+      bm.mhz > axisMaxF + 0.001 ||
+      bm.mhz < drawMin - 0.001 ||
+      bm.mhz > drawMax + 0.001
+    ) {
+      continue;
+    }
     const x = freqToPlotX(bm.mhz, w, span);
     ctx.strokeStyle = bm.color;
     ctx.setLineDash([4, 4]);
@@ -658,6 +677,7 @@ function captureDurationSec(detail) {
 
 function redrawCharts() {
   if (!state.lastPsd || !state.lastAnalysis) return;
+  updateLiveBandHeading(state.lastPsd);
   updateWaterfallAxisLabels(state.lastPsd);
   drawSpectrum(state.lastPsd);
   drawBurstWaterfall(state.lastAnalysis, state.lastPsd, state.colorBlind, state.lastDuration);

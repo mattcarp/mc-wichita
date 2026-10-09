@@ -281,7 +281,10 @@ select {
 .spectrum-markers span {
   position: absolute;
   transform: translateX(-50%);
-  text-shadow: 0 0 6px #08090c, 0 0 3px #08090c;
+  padding: 0 3px;
+  border-radius: 2px;
+  background: rgba(8, 9, 12, 0.9);
+  text-shadow: none;
 }
 
 @media (max-width: 899px) {

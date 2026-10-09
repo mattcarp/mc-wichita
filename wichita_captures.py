@@ -36,6 +36,7 @@ PSD_EDGE_MARGIN_BINS = 4
 IQ_PLOT_HALF_FRAC = 0.5
 IQ_USABLE_HALF_FRAC = 0.45
 AIS2_MHZ = MARINE_BOOKMARKS_MHZ["AIS2"]
+CH09_MHZ = MARINE_BOOKMARKS_MHZ["CH09"]
 AIRBAND_WATCH_MHZ = {
     "121.5_distress": 121.5,
     "123.1_SAR": 123.1,
@@ -206,6 +207,39 @@ def _right_rolloff_draw_index(
     return i_lo
 
 
+def _left_rolloff_draw_index(
+    freqs: List[float],
+    psd: List[float],
+    i_lo: int,
+    i_hi: int,
+    floor_mhz: float,
+) -> int:
+    """First index at or after the left filter roll-off (climb from DC toward centre)."""
+    core = [
+        psd[j]
+        for j in range(i_lo, i_hi + 1)
+        if freqs[j] > freqs[i_lo] + 0.12
+    ]
+    if not core:
+        return i_lo
+    med = sorted(core)[len(core) // 2]
+    start = i_lo
+    for j in range(i_lo, i_hi + 1):
+        if freqs[j] >= floor_mhz - 1e-6:
+            start = j
+            break
+    for i in range(start, i_hi):
+        if psd[i] < med - 25:
+            continue
+        seg = psd[i_lo : i + 1]
+        if len(seg) < 8:
+            continue
+        rise_per_bin = (seg[-1] - seg[0]) / max(1, len(seg) - 1)
+        if rise_per_bin < 0.35:
+            return i
+    return i_hi
+
+
 def compute_psd_plot_span(
     freqs: List[float],
     psd: List[float],
@@ -233,11 +267,14 @@ def compute_psd_plot_span(
     usable_lo = cf_mhz - usable_half
     usable_hi = cf_mhz + usable_half
     i_lo, i_hi = _index_span(freqs, plot_lo, plot_hi)
-    draw_lo_mhz = plot_lo
+    draw_lo_idx = _left_rolloff_draw_index(freqs, psd, i_lo, i_hi, usable_lo)
+    draw_lo_mhz = max(freqs[draw_lo_idx], usable_lo, plot_lo)
     draw_hi_idx = _right_rolloff_draw_index(freqs, psd, i_lo, i_hi)
     draw_hi_mhz = freqs[draw_hi_idx]
 
     notes: List[str] = []
+    if CH09_MHZ < draw_lo_mhz - 0.001:
+        notes.append("CH09 at band edge, not measurable in this capture")
     if AIS2_MHZ > usable_hi + 0.001:
         notes.append("AIS2 near band edge, levels understated")
     elif AIS2_MHZ > draw_hi_mhz - 0.02:
@@ -248,8 +285,17 @@ def compute_psd_plot_span(
         f"(IQ centre {cf_mhz:.4f} MHz at {fs_mhz:.1f} Msps; "
         f"~±{IQ_USABLE_HALF_FRAC:.2f}× sample rate usable)"
     )
+    trace_bits: List[str] = []
+    if draw_lo_mhz > plot_lo + 0.01:
+        trace_bits.append(
+            f"trace starts {draw_lo_mhz:.3f} MHz where filter roll-off ends"
+        )
     if draw_hi_mhz < plot_hi - 0.01:
-        span_caption += f"; trace ends {draw_hi_mhz:.3f} MHz where filter roll-off begins"
+        trace_bits.append(
+            f"trace ends {draw_hi_mhz:.3f} MHz where filter roll-off begins"
+        )
+    if trace_bits:
+        span_caption += "; " + "; ".join(trace_bits)
 
     return {
         "plot_min_mhz": plot_lo,

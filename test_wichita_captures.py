@@ -135,7 +135,10 @@ def test_psd_plot_span_from_sigmf():
     assert psd["plot_max_mhz"] > 162.2
     assert psd["freq_mhz"][0] >= psd["plot_min_mhz"] - 0.001
     assert psd["draw_max_mhz"] < psd["plot_max_mhz"]
+    assert psd["draw_min_mhz"] > psd["plot_min_mhz"] + 0.2
+    assert "CH09 at band edge" in " ".join(psd.get("span_notes") or [])
     assert "AIS2 near band edge" in " ".join(psd.get("span_notes") or [])
+    assert "trace starts" in psd.get("span_caption", "")
     assert psd.get("span_caption")
 
     indoor = wc.resolve_capture("20261009T001016Z")
