@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="color-scheme" content="dark" />
-  <title>Wichita · Signal evidence</title>
+  <title>Wichita · Valletta listener</title>
   <link rel="icon" href="data:," />
   <link rel="stylesheet" href="/dashboard/vendor/leaflet.css" />
   <link rel="stylesheet" href="/dashboard/dashboard.css" />
@@ -12,43 +12,115 @@
   <script type="module" src="/dashboard/dashboard.js"></script>
 </head>
 <body>
-  <a class="skip-link" href="#workspace">Skip to evidence workspace</a>
-  <main class="wrap">
-    <header class="topbar">
-      <div class="identity"><span class="brand-mark" aria-hidden="true">W</span><div><h1>Wichita</h1><p>RF evidence · Malta maritime &amp; aviation</p></div></div>
-      <div class="controls"><label class="mode-control">Data source <select id="dataMode"><option value="live">Local API</option><option value="replay">Historical samples</option></select></label><button id="refreshNow" type="button">Refresh</button><label class="toggle"><input id="autoRefreshToggle" type="checkbox" checked /> Auto-refresh</label></div>
-    </header>
-    <section class="mission border-border" aria-label="Mission"><p>Detect bad actors. Help those in distress.</p><span>Listen. Inspect the evidence. Decide.</span></section>
-    <div class="feed-summary"><span id="overallState" class="state">Connecting</span><span id="updatedAt" role="status">Checking the local API…</span></div>
-    <aside id="replayNotice" class="notice border-border" hidden>Historical samples · March 2026 · Provenance unverified. Some references are labelled SIM. These are not live observations or validated distress events.</aside>
-    <section class="health-grid" aria-label="Source delivery health" id="sourceHealth"></section>
-    <section class="workspace" id="workspace" aria-label="Evidence workspace">
-      <article class="panel queue-panel border-border">
-        <div class="panel-heading"><div><p class="eyebrow">Review queue</p><h2>Signal events</h2></div><span class="count" id="eventCount">0</span></div>
-        <div class="queue-controls"><label for="eventSearch" class="sr-only">Filter events</label><input type="search" id="eventSearch" placeholder="Filter by title, frequency or language" /><label for="eventKind" class="sr-only">Event type</label><select id="eventKind"><option value="all">All events</option><option value="alert">Alerts</option><option value="capture">Captures</option></select></div>
-        <div class="feed-notes" id="queueFeedNotes"></div>
-        <div id="eventList" class="event-list"><p class="empty">Waiting for source records.</p></div>
-      </article>
-      <article class="panel evidence-panel border-border">
-        <div class="panel-heading"><div><p class="eyebrow">Selected event</p><h2 id="evidenceTitle">Inspect the evidence</h2></div><span id="evidenceOrigin" class="state">No selection</span></div>
-        <div id="evidenceBody"><div class="selection-empty"><span class="empty-symbol" aria-hidden="true">⌁</span><h3>Every signal needs context.</h3><p>Select an event to inspect its recording, original transcript, source and timing.</p><p class="muted">No location, measurement or conclusion is filled in when evidence is missing.</p></div></div>
-      </article>
-      <article class="panel map-panel border-border">
-        <div class="panel-heading"><div><p class="eyebrow">Geographic context</p><h2 id="mapTitle">Malta overview</h2></div><button id="showBasemap" type="button">Show basemap</button></div>
-        <p class="panel-subtitle" id="mapSummary">Select an event to see whether it has recorded coordinates.</p>
-        <div id="evidenceMap" aria-label="Geographic context map"></div>
-        <div class="map-footer"><span id="mapCoordinates">35.9000° N · 14.5100° E · overview only</span><button type="button" id="resetMap">Reset view</button></div>
-        <p class="source-note" id="mapSource">Coordinate grid only. Show basemap loads OpenStreetMap tiles for the visible area.</p>
-        <div class="association border-border"><h3>Vessel association</h3><p id="associationNote">No verified, time-aligned vessel feed is connected. Nearby vessels cannot identify the speaker.</p></div>
-      </article>
-      <article class="panel question-panel border-border">
-        <div class="panel-heading"><div><p class="eyebrow">Ask the evidence</p><h2>What do we actually know?</h2></div></div>
-        <p class="panel-subtitle">Answers use recorded fields only. No generated conclusions or radio controls.</p>
-        <div class="question-buttons" id="questionButtons"></div>
-        <div class="answer border-border" id="answerBox" aria-live="polite"><p>Select an event, then choose a question.</p></div>
-      </article>
+  <a class="skip-link" href="#main">Skip to dashboard</a>
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand-glyph" aria-hidden="true">W</span>
+      <div>
+        <h1>Wichita</h1>
+        <p class="tagline">Listen · notice · review</p>
+      </div>
+    </div>
+    <div class="header-meta">
+      <span id="listenState" class="pill pill-listen">Checking library…</span>
+      <time id="maltaClock" class="mono" datetime="">—</time>
+    </div>
+  </header>
+
+  <main id="main" class="app">
+    <p id="feedBanner" class="feed-banner" role="status" hidden></p>
+
+    <section id="panel-live" class="panel tab-panel" data-tab="live" aria-labelledby="live-heading">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow marine">Live band</p>
+          <h2 id="live-heading">156–162.5 MHz</h2>
+        </div>
+        <div class="panel-actions">
+          <label class="select-wrap">
+            <span class="sr-only">Capture</span>
+            <select id="captureSelect" aria-label="Capture folder"></select>
+          </label>
+          <label class="toggle-chip">
+            <input type="checkbox" id="colorBlindMap" />
+            Colour-blind waterfall
+          </label>
+        </div>
+      </div>
+      <div class="subtabs" role="tablist" aria-label="Band view">
+        <button type="button" class="subtab active" data-subtab="marine" role="tab" aria-selected="true">Marine VHF</button>
+        <button type="button" class="subtab" data-subtab="airband" role="tab" aria-selected="false">Airband 118–137</button>
+      </div>
+      <div id="marineBandView" class="subpanel">
+        <canvas id="spectrumCanvas" width="1200" height="220" role="img" aria-label="Wideband spectrum from capture PSD"></canvas>
+        <canvas id="waterfallCanvas" width="1200" height="160" role="img" aria-label="AIS burst timeline waterfall"></canvas>
+        <ul class="bookmark-legend mono" id="bookmarkLegend"></ul>
+      </div>
+      <div id="airbandView" class="subpanel hidden" hidden>
+        <canvas id="airbandCanvas" width="1200" height="200" role="img" aria-label="Airband scan"></canvas>
+        <p id="airbandNote" class="muted"></p>
+      </div>
     </section>
-    <footer class="footer"><span>Local evidence workspace</span><span>Experimental scores support review. They do not establish distress or intent.</span></footer>
+
+    <section id="panel-harbour" class="panel tab-panel" data-tab="harbour" aria-labelledby="harbour-heading">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow marine">Harbour</p>
+          <h2 id="harbour-heading">AIS</h2>
+        </div>
+        <span id="aisCounts" class="mono counts"></span>
+      </div>
+      <div class="harbour-grid">
+        <div id="harbourMap" class="map" aria-label="AIS map"></div>
+        <div class="ais-side">
+          <div id="aisSpark" class="spark" aria-hidden="true"></div>
+          <ul id="aisFeed" class="ais-feed"></ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel-watch" class="panel tab-panel" data-tab="heard" aria-labelledby="watch-heading">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow marine">Watch</p>
+          <h2 id="watch-heading">Voice channels</h2>
+        </div>
+      </div>
+      <div id="voiceTiles" class="voice-grid"></div>
+    </section>
+
+    <section id="panel-heard" class="panel tab-panel" data-tab="heard" aria-labelledby="heard-heading">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Heard</p>
+          <h2 id="heard-heading">What we heard</h2>
+        </div>
+      </div>
+      <ol id="timeline" class="timeline"></ol>
+    </section>
+
+    <section id="panel-station" class="panel tab-panel" data-tab="station" aria-labelledby="station-heading">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Station</p>
+          <h2 id="station-heading">Health &amp; provenance</h2>
+        </div>
+      </div>
+      <dl id="stationStrip" class="station-strip mono"></dl>
+      <div id="captureCompare" class="compare"></div>
+    </section>
   </main>
+
+  <footer class="site-footer">
+    <p>Wichita listens on receive-only equipment in Valletta. It cannot rescue anyone, does not contact authorities on its own, and is not a substitute for the Malta RCC or coast guard. Do not rely on this dashboard for emergency response.</p>
+    <p class="muted">All times Europe/Malta. Machine-generated labels may be wrong — human review required.</p>
+  </footer>
+
+  <nav class="tab-bar" aria-label="Primary">
+    <button type="button" class="tab-btn active" data-tab-target="live">Live</button>
+    <button type="button" class="tab-btn" data-tab-target="harbour">Harbour</button>
+    <button type="button" class="tab-btn" data-tab-target="heard">Heard</button>
+    <button type="button" class="tab-btn" data-tab-target="station">Station</button>
+  </nav>
 </body>
 </html>

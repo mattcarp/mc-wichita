@@ -1,0 +1,117 @@
+{
+  "audio_rate": 16000.0,
+  "channels": {
+    "CH16_156p800MHz": {
+      "freq_hz": 156800000.0,
+      "mode": "nfm",
+      "wav": "/tmp/vm/CH16_156p800MHz_nfm_16k.wav",
+      "duration_s": 60.0,
+      "noise_floor_dbfs": -65.1,
+      "peak_dbfs": -52.6,
+      "peak_over_noise_db": 12.5,
+      "openings_ge_0p3s_8db": [
+        {
+          "t_s": 12.8,
+          "dur_s": 0.4,
+          "snr_db": 11.8
+        },
+        {
+          "t_s": 14.6,
+          "dur_s": 0.6,
+          "snr_db": 11.9
+        },
+        {
+          "t_s": 15.85,
+          "dur_s": 1.5,
+          "snr_db": 12.2
+        },
+        {
+          "t_s": 31.6,
+          "dur_s": 1.15,
+          "snr_db": 12.1
+        },
+        {
+          "t_s": 33.4,
+          "dur_s": 0.65,
+          "snr_db": 11.9
+        },
+        {
+          "t_s": 34.7,
+          "dur_s": 1.45,
+          "snr_db": 12.3
+        },
+        {
+          "t_s": 39.75,
+          "dur_s": 0.4,
+          "snr_db": 11.7
+        },
+        {
+          "t_s": 41.55,
+          "dur_s": 0.8,
+          "snr_db": 12.3
+        },
+        {
+          "t_s": 55.45,
+          "dur_s": 0.9,
+          "snr_db": 10.7
+        }
+      ]
+    },
+    "CH09_156p450MHz": {
+      "freq_hz": 156450000.0,
+      "mode": "nfm",
+      "wav": "/tmp/vm/CH09_156p450MHz_nfm_16k.wav",
+      "duration_s": 60.0,
+      "noise_floor_dbfs": -65.4,
+      "peak_dbfs": -53.1,
+      "peak_over_noise_db": 12.3,
+      "openings_ge_0p3s_8db": [
+        {
+          "t_s": 12.8,
+          "dur_s": 0.4,
+          "snr_db": 11.6
+        },
+        {
+          "t_s": 14.6,
+          "dur_s": 0.6,
+          "snr_db": 11.7
+        },
+        {
+          "t_s": 15.85,
+          "dur_s": 1.5,
+          "snr_db": 12.2
+        },
+        {
+          "t_s": 31.6,
+          "dur_s": 1.15,
+          "snr_db": 12.0
+        },
+        {
+          "t_s": 33.4,
+          "dur_s": 0.6,
+          "snr_db": 11.8
+        },
+        {
+          "t_s": 34.7,
+          "dur_s": 1.45,
+          "snr_db": 12.1
+        },
+        {
+          "t_s": 39.75,
+          "dur_s": 0.4,
+          "snr_db": 11.8
+        },
+        {
+          "t_s": 41.55,
+          "dur_s": 0.8,
+          "snr_db": 12.3
+        },
+        {
+          "t_s": 55.45,
+          "dur_s": 0.95,
+          "snr_db": 10.7
+        }
+      ]
+    }
+  }
+}

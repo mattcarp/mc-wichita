@@ -1,0 +1,160 @@
+{
+  "global": {
+    "core:datatype": "ci16_le",
+    "core:sample_rate": 6000000.0,
+    "core:version": "1.0.0",
+    "core:hw": "SDRplay RSPdx-R2",
+    "core:author": "Wichita (Mattie)",
+    "core:description": "Wideband VHF IQ 156.8-162.025 MHz: AIS 1/2 and marine ch16, 100 s, receive-only",
+    "core:recorder": "wichita_iq_capture.py (SoapySDR CS16, outside repo)",
+    "wichita:source": "wichita-sdr",
+    "wichita:device_serial": "2403090170",
+    "wichita:antenna_port": "Antenna A",
+    "wichita:antenna": "telescopic dipole/scanner antenna via SO-239-to-SMA",
+    "wichita:biasT_readback": {
+      "pre_stream": "false",
+      "during_stream": "false",
+      "post_stream": "false"
+    },
+    "wichita:gain": {
+      "agc": false,
+      "RFGR_lna_state": 4.0,
+      "IFGR_db": 35.0,
+      "soapy_total_gain_db": 19.0
+    },
+    "wichita:other_settings": {
+      "rfnotch_ctrl": "true",
+      "dabnotch_ctrl": "false",
+      "iqcorr_ctrl": "true",
+      "hdr_ctrl": "false",
+      "bandwidth": 6000000.0,
+      "num_tx_channels": 0
+    },
+    "wichita:software": {
+      "SoapySDR": "0.8.1-release",
+      "SoapySDRPlay3": "0.5.2-8ef31b2",
+      "SDRplay_API": "3.15.1 (driver reports 3.15)",
+      "python": "3.13 (Homebrew)"
+    },
+    "wichita:data_sha256": "71e96940363441f9add288efb811e21db1f8cfa4e0e3bd2d3eef74cd8a2c2f5b",
+    "wichita:location": "Indoor, lower floor, Valletta, Malta (not the rooftop install)",
+    "wichita:capture_context": "first indoor test, telescopic antenna",
+    "wichita:provenance_status": "genuine",
+    "wichita:provenance_basis": "verified_origin: captured live by Wichita with settings read back from the device",
+    "wichita:stream_stats": {
+      "samples": 600000000,
+      "wall_seconds": 100.155,
+      "overflow_events": 1,
+      "stream_errors": {},
+      "peak_dbfs": -18.52,
+      "rms_dbfs": -42.95,
+      "clipped_values": 0
+    },
+    "wichita:transmit": "none (receive-only; no TX stream opened; device reports 0 TX channels)"
+  },
+  "captures": [
+    {
+      "core:sample_start": 0,
+      "core:frequency": 159412500.0,
+      "core:datetime": "2026-10-09T00:10:17.662033Z"
+    }
+  ],
+  "annotations": [
+    {
+      "core:sample_start": 16824000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,4023QvAvbTP:DQ2LBpDRaP7008<2,0*10"
+    },
+    {
+      "core:sample_start": 76824000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,4023QvAvbTP:NQ2LBpDRaP700<8U,0*7E"
+    },
+    {
+      "core:sample_start": 136824000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,4023QvAvbTP:`Q2LBpDRaP70040`,0*66"
+    },
+    {
+      "core:sample_start": 196752000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,4023QvAvbTP:jQ2LBpDRaP7000S:,0*52"
+    },
+    {
+      "core:sample_start": 256752000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,4023QvAvbTP;0Q2LBpDRaP700@0D,0*67"
+    },
+    {
+      "core:sample_start": 262194000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 20 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,D023Qv@5dN?b<`N00l4v000,2*7B"
+    },
+    {
+      "core:sample_start": 315960000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,4023QvAvbTP;:Q2LBpDRaP700D8W,0*71"
+    },
+    {
+      "core:sample_start": 353400000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 20 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,D023QvAVTN?b<`N01sDv000,2*44"
+    },
+    {
+      "core:sample_start": 375960000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,4023QvAvbTP;DQ2LBpDRaP70040d,0*47"
+    },
+    {
+      "core:sample_start": 435960000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 4 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,4023QvAvbTP;NQ2LBpDRaP7008Aq,0*26"
+    },
+    {
+      "core:sample_start": 582036000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 161962500.0,
+      "core:freq_upper_edge": 161987500.0,
+      "core:label": "AIS type 24 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,A,H023QvAH4hhEA@4000000000000,2*37"
+    },
+    {
+      "core:sample_start": 595956000,
+      "core:sample_count": 162000,
+      "core:freq_lower_edge": 162012500.0,
+      "core:freq_upper_edge": 162037500.0,
+      "core:label": "AIS type 24 MMSI 002155001",
+      "core:comment": "!AIVDM,1,1,,B,H023QvAH4hhEA@4000000000000,2*34"
+    }
+  ]
+}

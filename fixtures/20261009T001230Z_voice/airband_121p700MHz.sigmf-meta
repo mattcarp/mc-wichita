@@ -1,0 +1,63 @@
+{
+  "global": {
+    "core:datatype": "ci16_le",
+    "core:sample_rate": 2000000.0,
+    "core:version": "1.0.0",
+    "core:hw": "SDRplay RSPdx-R2",
+    "core:author": "Wichita (Mattie)",
+    "core:description": "Airband IQ 121.7 MHz centre, covers 121.500 distress and 121.900, 45 s, receive-only",
+    "core:recorder": "wichita_iq_capture.py (SoapySDR CS16, outside repo)",
+    "wichita:source": "wichita-sdr",
+    "wichita:device_serial": "2403090170",
+    "wichita:antenna_port": "Antenna A",
+    "wichita:antenna": "telescopic dipole/scanner antenna via SO-239-to-SMA",
+    "wichita:biasT_readback": {
+      "pre_stream": "false",
+      "during_stream": "false",
+      "post_stream": "false"
+    },
+    "wichita:gain": {
+      "agc": false,
+      "RFGR_lna_state": 4.0,
+      "IFGR_db": 35.0,
+      "soapy_total_gain_db": 19.0
+    },
+    "wichita:other_settings": {
+      "rfnotch_ctrl": "true",
+      "dabnotch_ctrl": "false",
+      "iqcorr_ctrl": "true",
+      "hdr_ctrl": "false",
+      "bandwidth": 1536000.0,
+      "num_tx_channels": 0
+    },
+    "wichita:software": {
+      "SoapySDR": "0.8.1-release",
+      "SoapySDRPlay3": "0.5.2-8ef31b2",
+      "SDRplay_API": "3.15.1 (driver reports 3.15)",
+      "python": "3.13 (Homebrew)"
+    },
+    "wichita:data_sha256": "877b399e2b8ac866a497bbb8fa612b1bcd051743838181135bd8f54b17cf6f68",
+    "wichita:location": "Indoor, lower floor, Valletta, Malta (not the rooftop install)",
+    "wichita:capture_context": "first indoor test, telescopic antenna",
+    "wichita:provenance_status": "genuine",
+    "wichita:provenance_basis": "verified_origin: captured live by Wichita with settings read back from the device",
+    "wichita:stream_stats": {
+      "samples": 90000000,
+      "wall_seconds": 45.033,
+      "overflow_events": 0,
+      "stream_errors": {},
+      "peak_dbfs": -17.41,
+      "rms_dbfs": -39.14,
+      "clipped_values": 0
+    },
+    "wichita:transmit": "none (receive-only; no TX stream opened; device reports 0 TX channels)"
+  },
+  "captures": [
+    {
+      "core:sample_start": 0,
+      "core:frequency": 121700000.0,
+      "core:datetime": "2026-10-09T00:15:06.745340Z"
+    }
+  ],
+  "annotations": []
+}
