@@ -4,9 +4,9 @@ import {
   plotInnerWidth,
   psdSpan,
   samplePsdAtMhz,
-} from "./spectrum_geometry.mjs?v=20261009-16";
-import { initLiveAis, getLiveTimelineEvents } from "./live_ais.js?v=20261009-16";
-import { formatMalta } from "./time_malta.js?v=20261009-16";
+} from "./spectrum_geometry.mjs?v=20261009-21";
+import { initLiveAis } from "./live_ais.js?v=20261009-21";
+import { formatMalta } from "./time_malta.js?v=20261009-21";
 const VALLETTA = { lat: 35.8987, lon: 14.5145, span: 0.06 };
 
 const BOOKMARKS = [
@@ -120,10 +120,13 @@ function updateWaterfallAxisLabels(psd) {
 }
 
 function updateLiveBandHeading(psd) {
-  const h2 = $("#live-heading");
+  const h2 = $("#recordings-heading");
   if (!h2 || !psd?.available) return;
   const { minF, maxF } = psdSpan(psd);
-  h2.textContent = `${minF.toFixed(3)}–${maxF.toFixed(3)} MHz`;
+  const cap = $("#captureSelect")?.selectedOptions?.[0]?.textContent || "";
+  h2.textContent = cap
+    ? `Recorded band · ${cap} · ${minF.toFixed(3)}–${maxF.toFixed(3)} MHz`
+    : `Recorded band · ${minF.toFixed(3)}–${maxF.toFixed(3)} MHz`;
 }
 
 const MARKER_FONT = "10px Geist Mono, monospace";
@@ -383,7 +386,7 @@ function drawBurstWaterfall(analysis, psd, colorBlind, durationSec) {
   const canvas = $("#waterfallCanvas");
   const caption = $("#waterfallCaption");
   if (!canvas) return;
-  const { ctx, w, h } = fitCanvas(canvas, 180, true);
+  const { ctx, w, h } = fitCanvas(canvas, 110, true);
   const duration = Math.max(30, durationSec || 600);
   const grid = new Float32Array(w * h);
   const psdVals = psd?.psd_db_per_hz || [];
@@ -449,6 +452,7 @@ function drawBurstWaterfall(analysis, psd, colorBlind, durationSec) {
 function drawAirband(airband) {
   const canvas = $("#airbandCanvas");
   const note = $("#airbandNote");
+  const heading = $("#recordings-heading");
   if (!canvas) return;
   const { ctx, w, h } = fitCanvas(canvas, 200);
   ctx.fillStyle = "#08090c";
@@ -463,20 +467,30 @@ function drawAirband(airband) {
   const chans = airband.channels;
   const minF = chans[0].freq_mhz;
   const maxF = chans[chans.length - 1].freq_mhz;
+  if (heading) heading.textContent = `Recorded airband · ${minF.toFixed(1)}–${maxF.toFixed(1)} MHz`;
   const vals = chans.map((c) => c.maxhold_over_floor_db ?? 0);
   const maxV = Math.max(...vals, 1);
   const barW = Math.max(2, w / chans.length);
+  const padBottom = 28;
   for (let i = 0; i < chans.length; i++) {
     const c = chans[i];
-    const x = ((c.freq_mhz - minF) / (maxF - minF)) * w;
-    const barH = ((c.maxhold_over_floor_db ?? 0) / maxV) * (h - 20);
+    const x = ((c.freq_mhz - minF) / (maxF - minF)) * (w - 24) + 12;
+    const barH = ((c.maxhold_over_floor_db ?? 0) / maxV) * (h - padBottom - 8);
     const isSpur = c.tag?.includes("spur");
     ctx.fillStyle = isSpur ? "#8b93a7" : "#6bcf7f";
-    ctx.fillRect(x, h - barH - 10, barW, barH);
+    ctx.fillRect(x, h - barH - padBottom, barW, barH);
+    if (Math.abs(c.freq_mhz - 121.5) < 0.05 || Math.abs(c.freq_mhz - 123.1) < 0.05) {
+      ctx.fillStyle = "#e8eaef";
+      ctx.font = "9px Geist Mono, monospace";
+      ctx.fillText(c.freq_mhz.toFixed(1), x, h - 6);
+    }
   }
+  ctx.fillStyle = "#9aa3b2";
+  ctx.font = "10px Geist Mono, monospace";
+  ctx.fillText(`${minF.toFixed(1)}`, 8, h - 8);
+  ctx.fillText(`${maxF.toFixed(1)}`, w - 44, h - 8);
   if (note) {
-    note.textContent =
-      "120.000 and 132.000 MHz marked as known local spurs. 121.5 distress guard and 123.1 SAR labelled when present.";
+    note.textContent = "Grey bars: known local spurs at 120.0 and 132.0 MHz. Green: scan energy. Recorded capture only.";
   }
 }
 
@@ -571,78 +585,52 @@ function initHarbourSchematicMap(lat, lon) {
   </svg>`;
 }
 
-function renderVoiceTiles(detail) {
+async function renderVoiceTiles() {
   const grid = $("#voiceTiles");
   if (!grid) return;
-  const marine = detail?.marine_watch || {};
-  const air = detail?.airband?.watch || {};
-  const tiles = [];
-  const addTile = (title, freq, tile) => {
-    const quiet = tile?.quiet !== false;
-    const led = quiet ? "quiet" : "active";
-    const status = quiet ? "Quiet in this capture" : "Activity in capture (not confirmed distress)";
-    tiles.push(`
-      <article class="voice-tile">
-        <h3><span class="led ${led}" aria-hidden="true"></span>${title}</h3>
-        <p class="mono">${freq}</p>
-        <p class="muted">${status}</p>
-      </article>`);
-  };
-  addTile("Channel 16", "156.800 MHz", marine.ch16);
-  addTile("Channel 09", "156.450 MHz", marine.ch09);
-  const air1215 = air.AIR_121p500MHz_distress || Object.values(air).find((a) => a.freq_mhz === 121.5);
-  const air1231 = Object.values(air).find((a) => a.freq_mhz && Math.abs(a.freq_mhz - 123.1) < 0.05);
-  addTile("121.5 guard", "121.500 MHz", air1215 || { quiet: true });
-  addTile("123.1 SAR", "123.100 MHz", air1231 || { quiet: true });
-  grid.innerHTML = tiles.join("");
+  try {
+    const data = await fetchJson("/api/live-ais/voice-watch");
+    grid.innerHTML = (data.channels || [])
+      .map((ch) => {
+        const badge =
+          ch.badge === "LIVE"
+            ? "badge-live"
+            : ch.mode === "not_monitored"
+              ? "badge-offair"
+              : "badge-recorded";
+        const modeClass = ch.mode === "not_monitored" ? "voice-not-monitored" : "voice-live";
+        return `<article class="voice-tile ${modeClass}">
+          <h3><span class="badge ${badge}">${ch.badge}</span> ${ch.title}</h3>
+          <p class="mono">${ch.freq}</p>
+          <p class="voice-headline">${ch.headline}</p>
+          <p class="muted">${ch.detail}</p>
+        </article>`;
+      })
+      .join("");
+  } catch {
+    grid.innerHTML = "<p class='muted'>Voice watch status unavailable.</p>";
+  }
 }
 
-function renderTimeline(events) {
-  const ol = $("#timeline");
+function renderRecordedTimeline(events) {
+  const ol = $("#timelineRecorded");
   if (!ol) return;
-  const live = getLiveTimelineEvents();
-  const blocks = [];
-  if (live.length) {
-    blocks.push(
-      live
-        .map((e) => {
-          const time = e.time_utc ? formatMalta(e.time_utc) : "—";
-          return `<li class="timeline-live"><span class="timeline-source">Live</span><strong class="event-title">${e.title}</strong><span class="muted">${e.detail || ""}</span><span class="mono event-time">${time}</span></li>`;
-        })
-        .join(""),
-    );
-  }
-  if (events?.length) {
-    blocks.push(
-      events
-        .map((e) => {
-          const time = e.time_utc ? formatMalta(e.time_utc) : "—";
-          const caution = e.caution ? `<p class="caution">${e.caution}</p>` : "";
-          return `<li class="timeline-recorded"><span class="timeline-source">Recorded</span><strong class="event-title">${e.title}</strong><span class="muted">${e.detail || ""}</span><span class="mono event-time">${time}</span>${caution}</li>`;
-        })
-        .join(""),
-    );
-  }
-  if (!blocks.length) {
-    ol.innerHTML =
-      "<li class='muted'>No live or recorded events yet. Live AIS updates every few seconds when the receiver is running.</li>";
+  if (!events?.length) {
+    ol.innerHTML = "";
     return;
   }
-  ol.innerHTML = blocks.join("");
+  ol.innerHTML = events
+    .map((e) => {
+      const time = e.time_utc ? formatMalta(e.time_utc) : "—";
+      const caution = e.caution ? `<p class="caution">${e.caution}</p>` : "";
+      return `<li class="timeline-recorded"><span class="badge badge-recorded">Recorded</span> <span class="mono event-time">${time}</span> <strong>${e.title}</strong> <span class="muted">${e.detail || ""}</span>${caution}</li>`;
+    })
+    .join("");
 }
 
 function renderStation(station, comparison) {
   const dl = $("#stationStrip");
-  const panel = $("#panel-station");
   if (!dl) return;
-  const source = station?.source_label || "";
-  let sourceEl = panel?.querySelector(".station-source");
-  if (panel && !sourceEl) {
-    sourceEl = document.createElement("p");
-    sourceEl.className = "station-source mono";
-    panel.querySelector(".panel-head")?.after(sourceEl);
-  }
-  if (sourceEl) sourceEl.textContent = source ? `${source} (not live)` : "";
   const items = [
     ["Receiver", station?.receiver],
     ["Serial", station?.device_serial],
@@ -715,15 +703,13 @@ async function loadCapture(captureId) {
   redrawCharts();
   drawAirband(detail.airband);
   renderCaptureAisNote(detail.summary, detail.ais || []);
-  renderVoiceTiles(detail);
-  renderTimeline(detail.timeline);
+  renderRecordedTimeline(detail.timeline);
   renderStation(detail.station_snapshot, null);
   return detail;
 }
 
 async function refreshDashboard() {
   const banner = $("#feedBanner");
-  const listen = $("#listenState");
   try {
     const data = await fetchJson("/api/capture-feed/dashboard");
     state.dashboard = data;
@@ -732,11 +718,9 @@ async function refreshDashboard() {
         banner.hidden = false;
         banner.textContent = data.message;
       }
-      if (listen) listen.textContent = "No captures";
       return;
     }
     if (banner) banner.hidden = true;
-    if (listen) listen.textContent = `Library · ${data.recent_captures?.length || 0} folders`;
     populateCaptureSelect(data.recent_captures || [], state.captureId || data.primary_capture_id);
     const id = state.captureId || data.primary_capture_id;
     const detail = await loadCapture(id);
@@ -747,7 +731,6 @@ async function refreshDashboard() {
       banner.hidden = false;
       banner.textContent = `Could not load capture feed: ${err.message}. Set WICHITA_CAPTURES_DIRS and restart the API.`;
     }
-    if (listen) listen.textContent = "Offline";
   }
 }
 
@@ -766,7 +749,7 @@ function setupTabs() {
     requestAnimationFrame(() => redrawCharts());
   };
   buttons.forEach((b) => b.addEventListener("click", () => show(b.dataset.tabTarget)));
-  show("live");
+  show("harbour");
 }
 
 function setupSubtabs() {
@@ -802,8 +785,17 @@ function main() {
   setupSubtabs();
   tickClock();
   setInterval(tickClock, 30000);
-  initLiveAis(() => renderTimeline(state.dashboard?.primary?.timeline || []));
+  initLiveAis();
+  renderVoiceTiles();
+  setInterval(renderVoiceTiles, 60000);
   window.addEventListener("resize", onResize);
+  $("#settingsBtn")?.addEventListener("click", () => {
+    const menu = $("#settingsMenu");
+    if (!menu) return;
+    const open = menu.hidden;
+    menu.hidden = !open;
+    $("#settingsBtn")?.setAttribute("aria-expanded", open ? "true" : "false");
+  });
   $("#colorBlindMap")?.addEventListener("change", (e) => {
     state.colorBlind = e.target.checked;
     redrawCharts();

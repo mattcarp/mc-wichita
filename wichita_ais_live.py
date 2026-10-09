@@ -11,7 +11,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+from zoneinfo import ZoneInfo
+
+from wichita_ais_copy import count_freshness, enrich_ship_copy, harbour_summary, freshness_bucket, movement_counts
+from wichita_provenance import SOURCE_OUR_ANTENNA, provenance_fields
 from wichita_captures import VALLETTA_AIS_BASE_MMSIS, mmsi_label
+
+MALTA_TZ = ZoneInfo("Europe/Malta")
+RECEIVER_LAT = 35.898666
+RECEIVER_LON = 14.5145
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +58,8 @@ _SHIPTYPE_WORDS: Dict[int, str] = {
     74: "cargo (hazard D)",
     80: "tanker",
     90: "other",
+    40: "high-speed craft",
+    41: "high-speed craft",
 }
 
 
@@ -139,6 +149,60 @@ def format_eta(raw: Dict[str, Any]) -> Optional[str]:
         return None
 
 
+def format_eta_malta(raw: Dict[str, Any], now: Optional[datetime] = None) -> Tuple[Optional[str], bool]:
+    """Return (display string in Malta time, is_stale)."""
+    m, d, h, mi = raw.get("eta_month"), raw.get("eta_day"), raw.get("eta_hour"), raw.get("eta_minute")
+    if m is None or d is None:
+        return None, False
+    now = now or datetime.now(timezone.utc)
+    try:
+        eta_utc = datetime(
+            year=now.year,
+            month=int(m),
+            day=int(d),
+            hour=int(h or 0),
+            minute=int(mi or 0),
+            tzinfo=timezone.utc,
+        )
+        local = eta_utc.astimezone(MALTA_TZ)
+        label = local.strftime("%d %b %H:%M")
+        if eta_utc < now.astimezone(timezone.utc):
+            return f"{local.strftime('%d %b %H:%M')} (out of date)", True
+        return label, False
+    except (TypeError, ValueError):
+        return None, False
+
+
+def stable_sort_key(ship: Dict[str, Any]) -> Tuple[int, str, int]:
+    moving = 0 if (ship.get("speed_kn") or 0) >= 0.5 else 1
+    name = (ship.get("display_name") or "").upper()
+    return (moving, name, int(ship.get("mmsi") or 0))
+
+
+def receiver_health(stat: Optional[Dict[str, Any]], online: bool) -> Dict[str, Any]:
+    if not stat:
+        return {"available": online, "online": online}
+    run_s = stat.get("run_time")
+    try:
+        run_s = int(run_s) if run_s is not None else None
+    except (TypeError, ValueError):
+        run_s = None
+    return {
+        "available": True,
+        "online": online,
+        "hardware": stat.get("hardware"),
+        "build_version": stat.get("build_version"),
+        "run_time_sec": run_s,
+        "msg_rate": stat.get("msg_rate"),
+        "memory_bytes": stat.get("memory"),
+        "vessel_count": stat.get("vessel_count"),
+        "sample_rate": stat.get("sample_rate"),
+        "product": stat.get("product"),
+        "device_label": stat.get("device_label"),
+        "tcp_clients": stat.get("tcp_clients"),
+    }
+
+
 def normalize_ship(raw: Dict[str, Any], now: Optional[datetime] = None) -> Dict[str, Any]:
     now = now or datetime.now(timezone.utc)
     mmsi = int(raw.get("mmsi") or 0)
@@ -156,7 +220,8 @@ def normalize_ship(raw: Dict[str, Any], now: Optional[datetime] = None) -> Dict[
     speed = raw.get("speed")
     cog = raw.get("cog")
     heading = raw.get("heading")
-    return {
+    eta_malta, eta_stale = format_eta_malta(raw, now)
+    ship = {
         "mmsi": mmsi,
         "mmsi_display": f"{mmsi:09d}",
         "shipname": name or None,
@@ -167,6 +232,8 @@ def normalize_ship(raw: Dict[str, Any], now: Optional[datetime] = None) -> Dict[
         "shiptype_label": shiptype_label(raw.get("shiptype")),
         "destination": dest or None,
         "eta": format_eta(raw),
+        "eta_malta": eta_malta,
+        "eta_malta_stale": eta_stale,
         "imo": raw.get("imo"),
         "lat": raw.get("lat"),
         "lon": raw.get("lon"),
@@ -182,13 +249,18 @@ def normalize_ship(raw: Dict[str, Any], now: Optional[datetime] = None) -> Dict[
         if last_sig_s is not None
         else None,
         "is_base_station": mmsi in VALLETTA_AIS_BASE_MMSIS,
+        "nav_status": raw.get("status"),
+        "freshness": freshness_bucket(last_sig_s),
     }
+    ship.update(provenance_fields(SOURCE_OUR_ANTENNA, last_sig_s))
+    return enrich_ship_copy(ship, raw)
 
 
 def live_status_payload(stat: Optional[Dict[str, Any]], ships: List[Dict[str, Any]], online: bool, err: Optional[str]) -> Dict[str, Any]:
     now = datetime.now(timezone.utc)
     ships_norm = [normalize_ship(s, now) for s in ships]
-    last_hour = sum(1 for s in ships_norm if (s.get("last_signal_s") or 99999) < 3600)
+    vessels = [s for s in ships_norm if not s.get("is_base_station")]
+    last_hour = sum(1 for s in vessels if (s.get("last_signal_s") or 99999) < 3600)
     min_last = min((s["last_signal_s"] for s in ships_norm if s.get("last_signal_s") is not None), default=None)
     last_msg_utc = (now.timestamp() - min_last) if min_last is not None else None
     mpm = None
@@ -208,7 +280,9 @@ def live_status_payload(stat: Optional[Dict[str, Any]], ships: List[Dict[str, An
         "error": err,
         "messages_per_min": mpm,
         "ships_in_last_hour": last_hour,
-        "ship_count": len(ships_norm),
+        "ship_count": len(vessels),
+        "vessel_count": len(vessels),
+        "base_station_count": len(ships_norm) - len(vessels),
         "last_message_utc": datetime.fromtimestamp(last_msg_utc, tz=timezone.utc).isoformat()
         if last_msg_utc
         else None,
@@ -225,9 +299,26 @@ def live_dashboard_bundle() -> Dict[str, Any]:
     status = live_status_payload(stat_raw, ships, online, err)
     paths = paths_raw if isinstance(paths_raw, dict) else {"type": "FeatureCollection", "features": []}
     now = datetime.now(timezone.utc)
+    normalized = [normalize_ship(s, now) for s in ships]
+    vessels = [s for s in normalized if not s.get("is_base_station")]
+    bases = [s for s in normalized if s.get("is_base_station")]
+    vessels.sort(key=stable_sort_key)
+    fresh = count_freshness(vessels)
+    move = movement_counts(vessels)
+    voice_busy = os.environ.get("WICHITA_VOICE_LIVE", "0").strip() not in ("1", "true", "yes")
     return {
         **status,
-        "ships": [normalize_ship(s, now) for s in ships],
+        "ships": vessels,
+        "base_stations": bases,
+        "freshness_counts": fresh,
+        "movement_counts": move,
+        "summary": harbour_summary(vessels, online, voice_busy),
+        "receiver": {
+            "lat": RECEIVER_LAT,
+            "lon": RECEIVER_LON,
+            "label": "Valletta balcony (approx.)",
+        },
+        "receiver_health": receiver_health(stat_raw, online),
         "paths": paths,
         "paths_error": err_paths,
     }

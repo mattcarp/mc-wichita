@@ -1,0 +1,31 @@
+{
+  "_comment": "TEST FIXTURE ONLY — synthetic readsb-shaped JSON for pytest; not shown unless WICHITA_ADSB_FIXTURE_DIR points here.",
+  "now": 1728480000.0,
+  "messages": 42,
+  "aircraft": [
+    {
+      "hex": "4caabc",
+      "flight": "RYR82LT ",
+      "lat": 35.912,
+      "lon": 14.498,
+      "alt_baro": 12500,
+      "gs": 312,
+      "track": 245,
+      "squawk": "2000",
+      "seen_pos": 2.1,
+      "seen": 2.1
+    },
+    {
+      "hex": "4d20a2",
+      "flight": "TEST7700",
+      "lat": 35.905,
+      "lon": 14.52,
+      "alt_baro": 8000,
+      "gs": 180,
+      "track": 90,
+      "squawk": "7700",
+      "seen_pos": 1.0,
+      "seen": 1.0
+    }
+  ]
+}
