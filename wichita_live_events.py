@@ -7,12 +7,11 @@ import logging
 import os
 import threading
 import time
-from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 
-from wichita_ais_copy import enrich_ship_copy, freshness_bucket
+from wichita_ais_copy import enrich_ship_copy, first_heard_sentence, freshness_bucket
 
 logger = logging.getLogger(__name__)
 
@@ -94,21 +93,12 @@ class LiveEventEngine:
                 mmsi = int(s["mmsi"])
                 enriched = enrich_ship_copy(s)
                 name = enriched.get("display_name") or f"MMSI {mmsi:09d}"
-                st = enriched.get("shiptype_label")
                 if mmsi not in self._seen_mmsi:
                     self._seen_mmsi.add(mmsi)
-                    dest = enriched.get("destination_display") or enriched.get("destination_raw")
-                    bits = [name]
-                    if st and st != "not available":
-                        bits.append(f"({st})")
-                    if dest:
-                        bits.append(f"heading for {dest}")
-                    sentence = f"{name} heard for the first time today" + (
-                        f", {' '.join(bits[1:])}" if len(bits) > 1 else ""
-                    )
+                    sentence = first_heard_sentence(enriched)
                     append_event(
                         "ship_first_heard",
-                        sentence + ".",
+                        sentence,
                         mmsi=mmsi,
                         display_name=name,
                         first_heard_utc=enriched.get("last_heard_utc"),
@@ -153,18 +143,25 @@ class LiveEventEngine:
         return out
 
     def activity_hourly(self, hours: int = 24) -> List[Dict[str, Any]]:
-        events = self.read_events(hours=hours)
-        buckets: Dict[str, int] = defaultdict(int)
-        for ev in events:
-            if ev.get("kind") != "ship_first_heard":
-                continue
+        now = datetime.now(timezone.utc)
+        counts = [0] * hours
+        for ev in self.read_events(hours=hours):
             try:
                 ts = datetime.fromisoformat(ev["ts_utc"].replace("Z", "+00:00"))
             except (KeyError, ValueError):
                 continue
-            key = ts.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:00")
-            buckets[key] += 1
-        return [{"hour_utc": k, "new_ships": v} for k, v in sorted(buckets.items())]
+            age_h = (now - ts.astimezone(timezone.utc)).total_seconds() / 3600.0
+            if age_h < 0 or age_h >= hours:
+                continue
+            idx = hours - 1 - int(age_h)
+            counts[idx] += 1
+        return [
+            {
+                "hour_utc": (now - timedelta(hours=(hours - 1 - i))).strftime("%Y-%m-%dT%H:00"),
+                "events": counts[i],
+            }
+            for i in range(hours)
+        ]
 
 
 _engine: Optional[LiveEventEngine] = None

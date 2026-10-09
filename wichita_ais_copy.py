@@ -94,6 +94,42 @@ def decode_destination(raw: Optional[str]) -> Tuple[Optional[str], str, bool]:
     return None, text, False
 
 
+def shiptype_phrase(shiptype_label: str, shiptype_code: Any = None) -> str:
+    """Short type phrase for event sentences."""
+    cat = shiptype_category(shiptype_label, shiptype_code)
+    mapping = {
+        "passenger": "passenger ferry",
+        "pleasure": "pleasure craft",
+        "sailing": "sailing yacht",
+        "cargo": "cargo vessel",
+        "tanker": "tanker",
+        "pilot": "pilot boat",
+        "tender": "port tender",
+        "fishing": "fishing vessel",
+        "hsc": "high-speed craft",
+        "sar": "search and rescue vessel",
+        "tug": "tug",
+        "other": shiptype_label if shiptype_label not in ("not available", "unknown type") else "vessel",
+    }
+    return mapping.get(cat, shiptype_label or "vessel")
+
+
+def first_heard_sentence(ship: Dict[str, Any]) -> str:
+    name = ship.get("display_name") or ""
+    mmsi = ship.get("mmsi")
+    st = ship.get("shiptype_label")
+    phrase = shiptype_phrase(st, ship.get("shiptype_code"))
+    dest = ship.get("destination_display") or ship.get("destination_raw")
+    unnamed = name.startswith("Unnamed") or name.startswith("An unnamed")
+    if unnamed and mmsi:
+        base = f"An unnamed vessel (MMSI {ship.get('mmsi_display') or f'{int(mmsi):09d}'}, {phrase}) was heard for the first time today"
+    else:
+        base = f"{name} ({phrase}) heard for the first time today"
+    if dest:
+        base += f", heading for {dest}"
+    return base + "."
+
+
 def shiptype_category(shiptype_label: str, shiptype_code: Any = None) -> str:
     try:
         c = int(shiptype_code) if shiptype_code is not None else None

@@ -148,10 +148,11 @@ def format_eta(raw: Dict[str, Any]) -> Optional[str]:
         return None
 
 
-def format_eta_malta(raw: Dict[str, Any], now: Optional[datetime] = None) -> Optional[str]:
+def format_eta_malta(raw: Dict[str, Any], now: Optional[datetime] = None) -> Tuple[Optional[str], bool]:
+    """Return (display string in Malta time, is_stale)."""
     m, d, h, mi = raw.get("eta_month"), raw.get("eta_day"), raw.get("eta_hour"), raw.get("eta_minute")
     if m is None or d is None:
-        return None
+        return None, False
     now = now or datetime.now(timezone.utc)
     try:
         eta_utc = datetime(
@@ -163,9 +164,12 @@ def format_eta_malta(raw: Dict[str, Any], now: Optional[datetime] = None) -> Opt
             tzinfo=timezone.utc,
         )
         local = eta_utc.astimezone(MALTA_TZ)
-        return local.strftime("%d %b %H:%M")
+        label = local.strftime("%d %b %H:%M")
+        if eta_utc < now.astimezone(timezone.utc):
+            return f"{local.strftime('%d %b %H:%M')} (out of date)", True
+        return label, False
     except (TypeError, ValueError):
-        return None
+        return None, False
 
 
 def stable_sort_key(ship: Dict[str, Any]) -> Tuple[int, str, int]:
@@ -215,6 +219,7 @@ def normalize_ship(raw: Dict[str, Any], now: Optional[datetime] = None) -> Dict[
     speed = raw.get("speed")
     cog = raw.get("cog")
     heading = raw.get("heading")
+    eta_malta, eta_stale = format_eta_malta(raw, now)
     ship = {
         "mmsi": mmsi,
         "mmsi_display": f"{mmsi:09d}",
@@ -226,7 +231,8 @@ def normalize_ship(raw: Dict[str, Any], now: Optional[datetime] = None) -> Dict[
         "shiptype_label": shiptype_label(raw.get("shiptype")),
         "destination": dest or None,
         "eta": format_eta(raw),
-        "eta_malta": format_eta_malta(raw, now),
+        "eta_malta": eta_malta,
+        "eta_malta_stale": eta_stale,
         "imo": raw.get("imo"),
         "lat": raw.get("lat"),
         "lon": raw.get("lon"),

@@ -841,6 +841,35 @@ canvas {
   stroke: #2a3548;
   stroke-width: 0.6;
 }
+.map-water {
+  fill: #061018;
+  stroke: none;
+}
+.harbour-map-host {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+.harbour-map-inner {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+}
+.harbour-map-col {
+  min-width: 0;
+  max-width: 100%;
+}
+.activity-bar {
+  display: block;
+  min-height: 2px;
+}
+body.sheet-open {
+  overflow: hidden;
+}
+body.sheet-open .live-ship-list {
+  pointer-events: none;
+}
 .map-range {
   fill: none;
   stroke: rgba(62, 198, 201, 0.15);
@@ -876,8 +905,12 @@ canvas {
   position: absolute;
   top: 0.35rem;
   right: 0.35rem;
+  left: 0.35rem;
   display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 0.25rem;
+  max-width: calc(100% - 0.7rem);
 }
 .map-zoom-bar button {
   font: inherit;

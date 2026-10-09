@@ -23,6 +23,7 @@ const PLACES = [
 ];
 
 let coastCache = null;
+let waterCache = null;
 
 export function typeColor(category) {
   return TYPE_COLORS[category] || TYPE_COLORS.other;
@@ -63,10 +64,26 @@ async function loadCoastline() {
   return coastCache;
 }
 
+async function loadWater() {
+  if (waterCache) return waterCache;
+  const res = await fetch("/dashboard/data/malta_water.geojson");
+  waterCache = await res.json();
+  return waterCache;
+}
+
+function pathFromRing(ring, projectFn) {
+  return ring
+    .map(([lon, lat], i) => {
+      const { x, y } = projectFn(lat, lon);
+      return `${i ? "L" : "M"}${x.toFixed(1)},${y.toFixed(1)}`;
+    })
+    .join(" ");
+}
+
 export class HarbourMap {
   constructor(container) {
     this.container = container;
-    this.receiver = { lat: 35.898666, lon: 14.5145 };
+    this.receiver = { lat: 35.898666, lon: 14.5145, label: "Valletta balcony (approx.)" };
     this.ships = [];
     this.bases = [];
     this.paths = null;
@@ -77,7 +94,8 @@ export class HarbourMap {
     this._reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     this._onSelect = null;
     this._svg = null;
-    this._drag = null;
+    this._mapW = 400;
+    this._mapH = 220;
     this._init();
   }
 
@@ -86,22 +104,29 @@ export class HarbourMap {
   }
 
   async _init() {
-    await loadCoastline();
-    this.container.innerHTML = `<svg class="harbour-svg" role="img" aria-label="Malta coastline map with live ship positions"></svg>
+    await Promise.all([loadCoastline(), loadWater()]);
+    this.container.innerHTML = "";
+    this.container.classList.add("harbour-map-host");
+    const wrap = document.createElement("div");
+    wrap.className = "harbour-map-inner";
+    wrap.innerHTML = `<svg class="harbour-svg" role="img" aria-label="Malta coastline map with live ship positions"></svg>
       <div class="map-zoom-bar" role="toolbar" aria-label="Map zoom">
         <button type="button" data-zoom="harbour">Harbour</button>
         <button type="button" data-zoom="malta">Malta</button>
         <button type="button" data-zoom="all" class="active">All ships</button>
       </div>`;
-    this._svg = this.container.querySelector("svg");
-    this.container.querySelectorAll("[data-zoom]").forEach((btn) => {
+    this.container.appendChild(wrap);
+    this._svg = wrap.querySelector("svg");
+    wrap.querySelectorAll("[data-zoom]").forEach((btn) => {
       btn.addEventListener("click", () => {
         this.zoomMode = btn.getAttribute("data-zoom");
-        this.container.querySelectorAll("[data-zoom]").forEach((b) => b.classList.toggle("active", b === btn));
+        wrap.querySelectorAll("[data-zoom]").forEach((b) => b.classList.toggle("active", b === btn));
         this._fitView();
         this._draw();
       });
     });
+    this._resizeObserver = new ResizeObserver(() => this._draw());
+    this._resizeObserver.observe(this.container);
     this._fitView();
     this._draw();
   }
@@ -132,7 +157,7 @@ export class HarbourMap {
   focusShip(mmsi) {
     const s = this.ships.find((x) => x.mmsi === mmsi);
     if (!s || s.lat == null) return;
-    const pad = 0.02;
+    const pad = 0.018;
     this.view = {
       minLat: s.lat - pad,
       maxLat: s.lat + pad,
@@ -143,10 +168,7 @@ export class HarbourMap {
   }
 
   _fitView() {
-    const pts = [];
-    for (const s of this.ships) {
-      if (s.lat != null && s.lon != null) pts.push(s);
-    }
+    const pts = this.ships.filter((s) => s.lat != null && s.lon != null);
     if (this.zoomMode === "harbour") {
       this.view = { minLat: 35.86, maxLat: 35.94, minLon: 14.47, maxLon: 14.55 };
       return;
@@ -179,37 +201,60 @@ export class HarbourMap {
     };
   }
 
+  _measure() {
+    const inner = this.container.querySelector(".harbour-map-inner");
+    const cw = Math.floor(inner?.clientWidth || this.container.clientWidth || 320);
+    const w = Math.max(280, Math.min(cw, 1200));
+    const h = Math.round(w * 0.52);
+    this._mapW = w;
+    this._mapH = h;
+    return { w, h };
+  }
+
   _project(lat, lon, w, h) {
     const { minLat, maxLat, minLon, maxLon } = this.view;
-    const x = 12 + ((lon - minLon) / (maxLon - minLon)) * (w - 24);
-    const y = h - 12 - ((lat - minLat) / (maxLat - minLat)) * (h - 24);
+    const lonSpan = maxLon - minLon || 1e-6;
+    const latSpan = maxLat - minLat || 1e-6;
+    const x = 8 + ((lon - minLon) / lonSpan) * (w - 16);
+    const y = h - 8 - ((lat - minLat) / latSpan) * (h - 16);
     return { x, y };
+  }
+
+  _drawPolygons(geojson, className, w, h) {
+    const parts = [];
+    if (!geojson?.features) return parts;
+    const proj = (lat, lon) => this._project(lat, lon, w, h);
+    for (const f of geojson.features) {
+      const geom = f.geometry;
+      if (!geom) continue;
+      const polys = geom.type === "MultiPolygon" ? geom.coordinates : [geom.coordinates];
+      for (const poly of polys) {
+        if (!poly) continue;
+        for (const ring of poly) {
+          if (!ring?.length) continue;
+          parts.push(`<path d="${pathFromRing(ring, proj)} Z" class="${className}"/>`);
+        }
+      }
+    }
+    return parts;
   }
 
   _draw() {
     if (!this._svg) return;
-    const w = 800;
-    const h = 420;
+    const { w, h } = this._measure();
     this._svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+    this._svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+    this._svg.removeAttribute("width");
+    this._svg.style.width = "100%";
+    this._svg.style.height = "auto";
+    this._svg.style.maxWidth = "100%";
+    this._svg.style.display = "block";
+
     const parts = [];
     parts.push(`<rect width="${w}" height="${h}" class="map-sea"/>`);
-    if (coastCache?.features) {
-      for (const f of coastCache.features) {
-        const geom = f.geometry;
-        const polys = geom.type === "MultiPolygon" ? geom.coordinates : [geom.coordinates];
-        for (const poly of polys) {
-          for (const ring of poly) {
-            const d = ring
-              .map(([lon, lat], i) => {
-                const { x, y } = this._project(lat, lon, w, h);
-                return `${i ? "L" : "M"}${x.toFixed(1)},${y.toFixed(1)}`;
-              })
-              .join(" ");
-            parts.push(`<path d="${d} Z" class="map-land"/>`);
-          }
-        }
-      }
-    }
+    parts.push(...this._drawPolygons(coastCache, "map-land", w, h));
+    parts.push(...this._drawPolygons(waterCache, "map-water", w, h));
+
     for (const km of [5, 10, 20]) {
       const ring = ringCoords(this.receiver.lat, this.receiver.lon, km);
       const pts = ring
@@ -221,8 +266,12 @@ export class HarbourMap {
       parts.push(`<polyline points="${pts}" class="map-range" data-km="${km}"/>`);
     }
     const rx = this._project(this.receiver.lat, this.receiver.lon, w, h);
-    parts.push(`<polygon points="${rx.x},${rx.y - 7} ${rx.x + 6},${rx.y} ${rx.x},${rx.y + 7} ${rx.x - 6},${rx.y}" class="map-receiver"/>`);
-    parts.push(`<text x="${rx.x + 8}" y="${rx.y + 3}" class="map-label">${this.receiver.label || "Receiver (approx.)"}</text>`);
+    parts.push(
+      `<polygon points="${rx.x},${rx.y - 7} ${rx.x + 6},${rx.y} ${rx.x},${rx.y + 7} ${rx.x - 6},${rx.y}" class="map-receiver"/>`,
+    );
+    parts.push(
+      `<text x="${Math.min(w - 8, rx.x + 8)}" y="${rx.y + 3}" class="map-label">${this.receiver.label || "Receiver (approx.)"}</text>`,
+    );
     for (const p of PLACES) {
       const { x, y } = this._project(p.lat, p.lon, w, h);
       parts.push(`<text x="${x}" y="${y}" class="map-place">${p.name}</text>`);

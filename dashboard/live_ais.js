@@ -1,5 +1,5 @@
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js";
-import { HarbourMap, typeColor } from "./harbour_map.js";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261009-18";
+import { HarbourMap, typeColor } from "./harbour_map.js?v=20261009-18";
 
 const GROUPS = [
   { key: "now", title: "Heard now" },
@@ -63,7 +63,12 @@ function countMoored(ships) {
 function shipCardHtml(s, selected) {
   const flag = flagEmoji(s.country);
   const col = typeColor(s.shiptype_category);
-  const eta = s.eta_malta ? `ETA ${s.eta_malta} Malta` : "";
+  const eta =
+    s.eta_malta && !s.eta_malta_stale
+      ? `ETA ${s.eta_malta} Malta`
+      : s.eta_malta && s.eta_malta_stale
+        ? `ETA ${s.eta_malta}`
+        : "";
   const fade = s.freshness === "earlier" ? " ship-card-fade" : "";
   const sel = s.mmsi === selected ? " selected" : "";
   return `<li class="live-ship-card${fade}${sel}" data-mmsi="${s.mmsi}" role="button" tabindex="0" style="--ship-type-color:${col}">
@@ -128,12 +133,14 @@ function renderSheet(ship) {
     sheet.hidden = true;
     backdrop.hidden = true;
     sheet.classList.remove("open");
+    document.body.classList.remove("sheet-open");
     return;
   }
   const flag = flagEmoji(ship.country);
   sheet.hidden = false;
   backdrop.hidden = false;
   sheet.classList.add("open");
+  document.body.classList.add("sheet-open");
   sheet.innerHTML = `
     <button type="button" class="sheet-close" id="sheetClose" aria-label="Close">×</button>
     <h3>${flag} ${ship.display_name}</h3>
@@ -214,13 +221,17 @@ export async function renderLiveEvents() {
     if (!res.ok) throw new Error(String(res.status));
     const data = await res.json();
     if (strip && data.activity_hourly?.length) {
-      const max = Math.max(...data.activity_hourly.map((b) => b.new_ships), 1);
-      strip.innerHTML = data.activity_hourly
+      const buckets = data.activity_hourly;
+      const max = Math.max(...buckets.map((b) => b.events ?? 0), 1);
+      strip.innerHTML = buckets
         .map((b) => {
-          const h = Math.round((b.new_ships / max) * 100);
-          return `<span style="height:${h}%" title="${b.hour_utc}: ${b.new_ships} new"></span>`;
+          const n = b.events ?? 0;
+          const h = n ? Math.max(8, Math.round((n / max) * 100)) : 2;
+          return `<span class="activity-bar" style="height:${h}%" title="${b.hour_utc}: ${n} events"></span>`;
         })
         .join("");
+    } else if (strip) {
+      strip.innerHTML = "";
     }
     const events = data.events || [];
     ol.innerHTML = events.length
