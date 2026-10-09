@@ -16,10 +16,9 @@ from zoneinfo import ZoneInfo
 from wichita_ais_copy import (
     count_freshness,
     enrich_ship_copy,
-    harbour_summary,
+    harbour_summary_bundle,
     freshness_bucket,
     movement_counts,
-    type_breakdown_now,
 )
 from wichita_provenance import SOURCE_OUR_ANTENNA, provenance_fields
 from wichita_captures import VALLETTA_AIS_BASE_MMSIS, mmsi_label
@@ -318,17 +317,17 @@ def live_dashboard_bundle() -> Dict[str, Any]:
     vessels = [s for s in normalized if not s.get("is_base_station")]
     bases = [s for s in normalized if s.get("is_base_station")]
     vessels.sort(key=stable_sort_key)
-    fresh = count_freshness(vessels)
-    move = movement_counts(vessels)
     voice_busy = os.environ.get("WICHITA_VOICE_LIVE", "0").strip() not in ("1", "true", "yes")
+    summary_block = harbour_summary_bundle(vessels, online, voice_busy)
     return {
         **status,
         "ships": vessels,
         "base_stations": bases,
-        "freshness_counts": fresh,
-        "movement_counts": move,
-        "summary": harbour_summary(vessels, online, voice_busy),
-        "type_breakdown": type_breakdown_now(vessels),
+        "freshness_counts": summary_block["freshness_counts"],
+        "movement_counts": summary_block["movement_counts"],
+        "summary": summary_block["text"],
+        "type_breakdown": summary_block["type_breakdown"],
+        "nearby_now": summary_block["nearby_now"],
         "receiver": {
             "lat": RECEIVER_LAT,
             "lon": RECEIVER_LON,

@@ -304,21 +304,47 @@ def type_breakdown_now(ships: List[Dict[str, Any]]) -> Dict[str, int]:
     return type_counts
 
 
-def harbour_summary(ships: List[Dict[str, Any]], online: bool, voice_not_monitored: bool) -> str:
+def type_breakdown_phrase(type_counts: Dict[str, int], top_n: int = 3) -> str:
+    """Top types by count, plus 'and N others' so named + others equals the total."""
+    total = sum(type_counts.values())
+    if total == 0:
+        return "few vessels"
+    ranked = sorted(type_counts.items(), key=lambda x: (-x[1], x[0]))
+    parts = [f"{n} {t}" for t, n in ranked[:top_n]]
+    named = sum(n for _, n in ranked[:top_n])
+    rest = total - named
+    if rest > 0:
+        parts.append(f"and {rest} others")
+    return ", ".join(parts)
+
+
+def harbour_summary_bundle(
+    ships: List[Dict[str, Any]], online: bool, voice_not_monitored: bool
+) -> Dict[str, Any]:
+    """Single snapshot for headline, type breakdown, and movement counts."""
     vessels = [s for s in ships if not s.get("is_base_station")]
     counts = count_freshness(vessels)
     move = movement_counts(vessels)
-    moving = move["moving"]
-    moored = move["moored_or_slow"]
     type_counts = type_breakdown_now(vessels)
-    top_types = sorted(type_counts.items(), key=lambda x: (-x[1], x[0]))[:3]
-    type_phrase = ", ".join(f"{n} {t}" for t, n in top_types) if top_types else "few vessels"
-    lead = f"{counts['now']} nearby now ({type_phrase})"
-    if moving:
-        lead += f"; {moving} moving"
-    if moored:
-        lead += f", {moored} moored or slow"
+    nearby = counts["now"]
+    type_phrase = type_breakdown_phrase(type_counts)
+    lead = f"{nearby} nearby now ({type_phrase})"
+    if move["moving"]:
+        lead += f"; {move['moving']} moving"
+    if move["moored_or_slow"]:
+        lead += f", {move['moored_or_slow']} moored or slow"
     tail = "Receiver live" if online else "Receiver offline"
     if voice_not_monitored:
         tail += " · voice channels not monitored now (AIS on the SDR)"
-    return f"{lead}. {tail}."
+    return {
+        "nearby_now": nearby,
+        "type_breakdown": type_counts,
+        "type_phrase": type_phrase,
+        "movement_counts": move,
+        "freshness_counts": counts,
+        "text": f"{lead}. {tail}.",
+    }
+
+
+def harbour_summary(ships: List[Dict[str, Any]], online: bool, voice_not_monitored: bool) -> str:
+    return harbour_summary_bundle(ships, online, voice_not_monitored)["text"]

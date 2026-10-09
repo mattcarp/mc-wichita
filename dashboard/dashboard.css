@@ -409,8 +409,10 @@ canvas {
   #panel-harbour {
     grid-column: span 12;
   }
-  #panel-heard,
-  #panel-watch {
+  #panel-heard {
+    grid-column: span 6;
+  }
+  #panel-sky {
     grid-column: span 6;
   }
   #panel-recordings {

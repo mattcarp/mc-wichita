@@ -4,10 +4,10 @@ import {
   plotInnerWidth,
   psdSpan,
   samplePsdAtMhz,
-} from "./spectrum_geometry.mjs?v=20261009-22";
-import { initLiveAis } from "./live_ais.js?v=20261009-22";
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261009-22";
-import { GEAR_ICON, TAB_ICONS } from "./tab_icons.js?v=20261009-22";
+} from "./spectrum_geometry.mjs?v=20261009-23";
+import { initLiveAis } from "./live_ais.js?v=20261009-23";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261009-23";
+import { GEAR_ICON, TAB_ICONS } from "./tab_icons.js?v=20261009-23";
 const VALLETTA = { lat: 35.8987, lon: 14.5145, span: 0.06 };
 
 const BOOKMARKS = [

@@ -1,7 +1,7 @@
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261009-22";
-import { HarbourMap, typeColor } from "./harbour_map.js?v=20261009-22";
-import { provenanceBadge, freshnessClass } from "./entity_labels.js?v=20261009-22";
-import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261009-22";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261009-23";
+import { HarbourMap, typeColor } from "./harbour_map.js?v=20261009-23";
+import { provenanceBadge, freshnessClass } from "./entity_labels.js?v=20261009-23";
+import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261009-23";
 
 const GROUPS = [
   { key: "now", title: "Now" },
@@ -196,6 +196,35 @@ function renderDrawer(ship) {
   $("#drawerClose")?.addEventListener("click", () => selectShip(null));
 }
 
+function shipFromSnapshot(mmsi) {
+  if (mmsi == null) return null;
+  return (state.snapshot?.ships || []).find((s) => s.mmsi === mmsi) || null;
+}
+
+function isNarrowViewport() {
+  return (document.documentElement.clientWidth || 800) < 720;
+}
+
+function refreshSelectedShipPanels() {
+  const ship = shipFromSnapshot(state.selectedMmsi);
+  if (!state.selectedMmsi || !ship) {
+    if (!state.selectedMmsi) {
+      renderSheet(null);
+      renderDrawer(null);
+    }
+    renderFollowCard();
+    return;
+  }
+  if (isNarrowViewport()) {
+    renderDrawer(null);
+    renderSheet(ship);
+  } else {
+    renderSheet(null);
+    renderDrawer(ship);
+  }
+  renderFollowCard();
+}
+
 function renderFollowCard() {
   const el = $("#mapFollowCard");
   if (!el) return;
@@ -206,7 +235,7 @@ function renderFollowCard() {
   }
   el.hidden = false;
   if (state.follow.kind === "ship") {
-    const ship = (state.snapshot?.ships || []).find((s) => s.mmsi === state.follow.id);
+    const ship = shipFromSnapshot(state.follow.id);
     if (!ship) return;
     el.innerHTML = `<p><strong>Following ${ship.display_name}</strong></p>
       <p class="ship-lead">${ship.lead_sentence || ""}</p>
@@ -240,9 +269,7 @@ async function selectShip(mmsi) {
     state.follow = null;
   }
   state.selectedMmsi = mmsi;
-  const ship = mmsi ? (state.snapshot?.ships || []).find((s) => s.mmsi === mmsi) : null;
   renderShipList(state.snapshot);
-  renderFollowCard();
   if (state.map) {
     state.map.update({
       ships: state.snapshot?.ships,
@@ -256,34 +283,29 @@ async function selectShip(mmsi) {
     });
     if (mmsi && !state.follow) state.map.focusShip(mmsi);
   }
-  const narrow = (document.documentElement.clientWidth || 800) < 720;
-  if (narrow) {
-    renderDrawer(null);
-    renderSheet(ship);
-  } else {
-    renderSheet(null);
-    renderDrawer(ship);
-  }
   if (!mmsi) {
-    renderSheet(null);
-    renderDrawer(null);
+    refreshSelectedShipPanels();
     return;
   }
-  if (ship) return;
+  if (shipFromSnapshot(mmsi)) {
+    refreshSelectedShipPanels();
+    return;
+  }
   try {
     const res = await fetch(`/api/live-ais/ships/${mmsi}`);
     if (res.ok) {
       const detail = await res.json();
-      if (narrow) {
+      if (isNarrowViewport()) {
         renderDrawer(null);
         renderSheet(detail);
       } else {
         renderSheet(null);
         renderDrawer(detail);
       }
+      renderFollowCard();
     }
   } catch {
-    /* keep card */
+    refreshSelectedShipPanels();
   }
 }
 
@@ -426,7 +448,7 @@ async function pollLive() {
       selectedPlaneId: state.selectedPlaneId,
       follow: state.follow,
     });
-    renderFollowCard();
+    refreshSelectedShipPanels();
     renderStationLive(data);
     await renderLiveEvents();
   } catch {
