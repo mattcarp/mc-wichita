@@ -170,7 +170,7 @@ export class HarbourMap {
   _fitView() {
     const pts = this.ships.filter((s) => s.lat != null && s.lon != null);
     if (this.zoomMode === "harbour") {
-      this.view = { minLat: 35.86, maxLat: 35.94, minLon: 14.47, maxLon: 14.55 };
+      this.view = { minLat: 35.88, maxLat: 35.92, minLon: 14.49, maxLon: 14.54 };
       return;
     }
     if (this.zoomMode === "malta") {
@@ -204,11 +204,43 @@ export class HarbourMap {
   _measure() {
     const inner = this.container.querySelector(".harbour-map-inner");
     const cw = Math.floor(inner?.clientWidth || this.container.clientWidth || 320);
+    const ch = Math.floor(this.container.clientHeight || inner?.clientHeight || 0);
     const w = Math.max(280, Math.min(cw, 1200));
-    const h = Math.round(w * 0.52);
+    const aspectH = Math.round(w * 0.52);
+    const h = ch >= 120 ? Math.max(aspectH, ch) : aspectH;
     this._mapW = w;
     this._mapH = h;
     return { w, h };
+  }
+
+  _projectShip(lat, lon, w, h, pad = 11) {
+    const p = this._project(lat, lon, w, h);
+    const left = pad;
+    const right = w - pad;
+    const top = pad;
+    const bottom = h - pad;
+    if (p.x >= left && p.x <= right && p.y >= top && p.y <= bottom) {
+      return { ...p, offFrame: false, angle: 0 };
+    }
+    const cx = (left + right) / 2;
+    const cy = (top + bottom) / 2;
+    const dx = p.x - cx;
+    const dy = p.y - cy;
+    const absDx = Math.abs(dx);
+    const absDy = Math.abs(dy);
+    let edgeX;
+    let edgeY;
+    if (absDx * (bottom - top) > absDy * (right - left)) {
+      edgeX = dx > 0 ? right : left;
+      edgeY = cy + (dy * Math.abs(edgeX - cx)) / (absDx || 1e-9);
+    } else {
+      edgeY = dy > 0 ? bottom : top;
+      edgeX = cx + (dx * Math.abs(edgeY - cy)) / (absDy || 1e-9);
+    }
+    edgeX = Math.max(left, Math.min(right, edgeX));
+    edgeY = Math.max(top, Math.min(bottom, edgeY));
+    const angle = Math.atan2(p.y - edgeY, p.x - edgeX);
+    return { x: edgeX, y: edgeY, offFrame: true, angle };
   }
 
   _project(lat, lon, w, h) {
@@ -246,7 +278,7 @@ export class HarbourMap {
     this._svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
     this._svg.removeAttribute("width");
     this._svg.style.width = "100%";
-    this._svg.style.height = "auto";
+    this._svg.style.height = `${h}px`;
     this._svg.style.maxWidth = "100%";
     this._svg.style.display = "block";
 
@@ -309,15 +341,25 @@ export class HarbourMap {
         lat = s._anim.from.lat + (s._anim.to.lat - s._anim.from.lat) * t;
         lon = s._anim.from.lon + (s._anim.to.lon - s._anim.from.lon) * t;
       }
-      const { x, y } = this._project(lat, lon, w, h);
+      const proj = this._projectShip(lat, lon, w, h);
       const stale = (s.last_signal_s || 0) > 600;
       const fresh = (s.freshness || "") === "now";
       const col = typeColor(s.shiptype_category);
       const sel = s.mmsi === this.selectedMmsi;
       const pulse = fresh && this.posHistory.get(s.mmsi)?.pulse > now - 5000;
-      parts.push(
-        `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${sel ? 7 : 5}" class="map-ship${stale ? " map-ship-stale" : ""}${pulse ? " map-ship-pulse" : ""}" fill="${col}" data-mmsi="${s.mmsi}" role="button" tabindex="0"/>`,
-      );
+      if (proj.offFrame) {
+        const deg = (proj.angle * 180) / Math.PI;
+        const r = sel ? 7 : 5;
+        parts.push(
+          `<g class="map-ship-edge${stale ? " map-ship-stale" : ""}" data-mmsi="${s.mmsi}" role="button" tabindex="0" transform="translate(${proj.x.toFixed(1)},${proj.y.toFixed(1)}) rotate(${deg.toFixed(1)})">
+            <polygon points="0,-${r} ${r + 3},0 0,${r} -${r + 3},0" fill="${col}" class="map-ship-arrow"/>
+          </g>`,
+        );
+      } else {
+        parts.push(
+          `<circle cx="${proj.x.toFixed(1)}" cy="${proj.y.toFixed(1)}" r="${sel ? 7 : 5}" class="map-ship${stale ? " map-ship-stale" : ""}${pulse ? " map-ship-pulse" : ""}" fill="${col}" data-mmsi="${s.mmsi}" role="button" tabindex="0"/>`,
+        );
+      }
     }
     this._svg.innerHTML = parts.join("");
     this._svg.querySelectorAll("[data-mmsi]").forEach((el) => {

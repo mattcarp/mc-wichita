@@ -13,7 +13,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from zoneinfo import ZoneInfo
 
-from wichita_ais_copy import count_freshness, enrich_ship_copy, harbour_summary, freshness_bucket
+from wichita_ais_copy import count_freshness, enrich_ship_copy, harbour_summary, freshness_bucket, movement_counts
 from wichita_captures import VALLETTA_AIS_BASE_MMSIS, mmsi_label
 
 MALTA_TZ = ZoneInfo("Europe/Malta")
@@ -302,12 +302,14 @@ def live_dashboard_bundle() -> Dict[str, Any]:
     bases = [s for s in normalized if s.get("is_base_station")]
     vessels.sort(key=stable_sort_key)
     fresh = count_freshness(vessels)
+    move = movement_counts(vessels)
     voice_busy = os.environ.get("WICHITA_VOICE_LIVE", "0").strip() not in ("1", "true", "yes")
     return {
         **status,
         "ships": vessels,
         "base_stations": bases,
         "freshness_counts": fresh,
+        "movement_counts": move,
         "summary": harbour_summary(vessels, online, voice_busy),
         "receiver": {
             "lat": RECEIVER_LAT,

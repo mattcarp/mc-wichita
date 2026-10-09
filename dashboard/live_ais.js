@@ -1,5 +1,5 @@
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261009-18";
-import { HarbourMap, typeColor } from "./harbour_map.js?v=20261009-18";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261009-19";
+import { HarbourMap, typeColor } from "./harbour_map.js?v=20261009-19";
 
 const GROUPS = [
   { key: "now", title: "Heard now" },
@@ -47,17 +47,14 @@ function renderHeader(snapshot) {
 function renderSummary(snapshot) {
   const el = $("#harbourSummary");
   if (!el || !snapshot) return;
+  const mc = snapshot.movement_counts || {};
+  const nearby = snapshot.freshness_counts?.now ?? mc.now ?? 0;
   el.innerHTML = `<p class="harbour-summary-text">${snapshot.summary || ""}</p>
     <div class="summary-tiles">
-      <div><span class="summary-num">${snapshot.freshness_counts?.now ?? 0}</span><span class="muted">Moving / nearby now</span></div>
-      <div><span class="summary-num">${countMoored(snapshot.ships)}</span><span class="muted">Moored or slow</span></div>
+      <div><span class="summary-num">${nearby}</span><span class="muted">Nearby now</span></div>
+      <div><span class="summary-num">${mc.moving ?? 0}</span><span class="muted">Moving</span></div>
+      <div><span class="summary-num">${mc.moored_or_slow ?? 0}</span><span class="muted">Moored or slow</span></div>
     </div>`;
-}
-
-function countMoored(ships) {
-  return (ships || []).filter(
-    (s) => (s.speed_kn || 0) < 0.5 && (s.freshness === "now" || s.freshness === "recent"),
-  ).length;
 }
 
 function shipCardHtml(s, selected) {

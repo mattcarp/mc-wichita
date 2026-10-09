@@ -252,6 +252,18 @@ def freshness_bucket(last_signal_s: Optional[float]) -> str:
     return "earlier"
 
 
+def movement_counts(ships: List[Dict[str, Any]]) -> Dict[str, int]:
+    """Disjoint moving vs moored/slow among vessels heard in the 'now' bucket."""
+    now_ships = [s for s in ships if freshness_bucket(s.get("last_signal_s")) == "now"]
+    moving = sum(1 for s in now_ships if (s.get("speed_kn") or 0) >= 0.5)
+    moored = len(now_ships) - moving
+    return {
+        "now": len(now_ships),
+        "moving": moving,
+        "moored_or_slow": moored,
+    }
+
+
 def count_freshness(ships: List[Dict[str, Any]]) -> Dict[str, int]:
     now = recent = earlier = 0
     for s in ships:
@@ -268,16 +280,9 @@ def count_freshness(ships: List[Dict[str, Any]]) -> Dict[str, int]:
 def harbour_summary(ships: List[Dict[str, Any]], online: bool, voice_not_monitored: bool) -> str:
     vessels = [s for s in ships if not s.get("is_base_station")]
     counts = count_freshness(vessels)
-    moving = sum(
-        1
-        for s in vessels
-        if (s.get("speed_kn") or 0) >= 0.5 and freshness_bucket(s.get("last_signal_s")) == "now"
-    )
-    moored = sum(
-        1
-        for s in vessels
-        if (s.get("speed_kn") or 0) < 0.5 and freshness_bucket(s.get("last_signal_s")) in ("now", "recent")
-    )
+    move = movement_counts(vessels)
+    moving = move["moving"]
+    moored = move["moored_or_slow"]
     type_counts: Dict[str, int] = {}
     for s in vessels:
         if freshness_bucket(s.get("last_signal_s")) == "earlier":
