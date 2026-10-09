@@ -1,4 +1,4 @@
-import { EntityMotion } from "./map_motion.js?v=20261009-21";
+import { EntityMotion } from "./map_motion.js?v=20261009-22";
 
 const TYPE_COLORS = {
   passenger: "#5eb8ff",
@@ -98,7 +98,7 @@ export class HarbourMap {
     this.planeMotion = new EntityMotion(5000);
     this.posHistory = new Map();
     this.view = { minLat: 35.82, maxLat: 36.08, minLon: 14.28, maxLon: 14.58 };
-    this.zoomMode = "all";
+    this.zoomMode = "harbour";
     this._reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     this._onSelect = null;
     this._svg = null;
@@ -152,16 +152,18 @@ export class HarbourMap {
     wrap.className = "harbour-map-inner";
     wrap.innerHTML = `<svg class="harbour-svg" role="img" aria-label="Malta coastline map with live ship positions"></svg>
       <div class="map-zoom-bar" role="toolbar" aria-label="Map zoom">
-        <button type="button" data-zoom="harbour">Harbour</button>
+        <button type="button" data-zoom="harbour" class="active">Harbour</button>
         <button type="button" data-zoom="malta">Malta</button>
-        <button type="button" data-zoom="all" class="active">All ships</button>
+        <button type="button" data-zoom="all">All ships</button>
       </div>`;
     this.container.appendChild(wrap);
     this._svg = wrap.querySelector("svg");
     wrap.querySelectorAll("[data-zoom]").forEach((btn) => {
       btn.addEventListener("click", () => {
         this.zoomMode = btn.getAttribute("data-zoom");
-        wrap.querySelectorAll("[data-zoom]").forEach((b) => b.classList.toggle("active", b === btn));
+        wrap.querySelectorAll("[data-zoom]").forEach((b) =>
+          b.classList.toggle("active", b.getAttribute("data-zoom") === this.zoomMode),
+        );
         this._fitView();
         this._draw();
       });
@@ -174,6 +176,9 @@ export class HarbourMap {
       this._draw();
     });
     this._resizeObserver.observe(wrap);
+    wrap.querySelectorAll("[data-zoom]").forEach((b) =>
+      b.classList.toggle("active", b.getAttribute("data-zoom") === this.zoomMode),
+    );
     this._fitView();
     this._draw();
   }
@@ -227,24 +232,49 @@ export class HarbourMap {
     this._draw();
   }
 
+  _clampView(minSpan = 0.055) {
+    const { minLat, maxLat, minLon, maxLon } = this.view;
+    const latSpan = maxLat - minLat;
+    const lonSpan = maxLon - minLon;
+    if (latSpan >= minSpan && lonSpan >= minSpan) return;
+    const cx = (minLat + maxLat) / 2;
+    const cy = (minLon + maxLon) / 2;
+    const half = minSpan / 2;
+    this.view = {
+      minLat: cx - half,
+      maxLat: cx + half,
+      minLon: cy - half,
+      maxLon: cy + half,
+    };
+  }
+
   _applyFollowView(nowMs) {
     const f = this.follow;
     if (!f) return;
     if (f.kind === "ship") {
       const disp = this.shipMotion.displayPosition(`ship:${f.id}`, nowMs);
-      if (disp) this._centerOn(disp.lat, disp.lon, 0.012);
+      if (disp) {
+        this._centerOn(disp.lat, disp.lon, 0.022);
+        this._clampView(0.06);
+      }
       return;
     }
     if (f.kind === "plane") {
       const disp = this.planeMotion.displayPosition(`plane:${f.id}`, nowMs);
-      if (disp) this._centerOn(disp.lat, disp.lon, 0.04);
+      if (disp) {
+        this._centerOn(disp.lat, disp.lon, 0.04);
+        this._clampView(0.08);
+      }
     }
   }
 
   _fitView() {
     if (this.follow) return;
+    const recentShips = this.ships.filter(
+      (s) => s.lat != null && s.lon != null && (s.last_signal_s == null || s.last_signal_s < 900),
+    );
     const pts = [
-      ...this.ships.filter((s) => s.lat != null && s.lon != null),
+      ...recentShips,
       ...this.planes.filter((p) => p.lat != null && p.lon != null),
     ];
     if (this.zoomMode === "harbour") {
@@ -358,6 +388,7 @@ export class HarbourMap {
     this._svg.style.maxWidth = "100%";
     this._svg.style.display = "block";
 
+    const latSpan = this.view.maxLat - this.view.minLat;
     const parts = [];
     parts.push(`<rect width="${w}" height="${h}" class="map-sea"/>`);
     parts.push(...this._drawPolygons(coastCache, "map-land", w, h));
@@ -380,9 +411,12 @@ export class HarbourMap {
     parts.push(
       `<text x="${Math.min(w - 8, rx.x + 8)}" y="${rx.y + 3}" class="map-label">${this.receiver.label || "Receiver (approx.)"}</text>`,
     );
-    for (const p of PLACES) {
-      const { x, y } = this._project(p.lat, p.lon, w, h);
-      parts.push(`<text x="${x}" y="${y}" class="map-place">${p.name}</text>`);
+    const placeZoom = this.zoomMode === "harbour" || latSpan < 0.08;
+    if (placeZoom) {
+      for (const p of PLACES) {
+        const { x, y } = this._project(p.lat, p.lon, w, h);
+        parts.push(`<text x="${x}" y="${y}" class="map-place">${p.name}</text>`);
+      }
     }
     for (const track of this.satelliteTracks) {
       const coords = track.coordinates || [];

@@ -15,26 +15,29 @@ SOURCE_LABELS = {
 }
 
 # Align with wichita_ais_copy.freshness_bucket thresholds.
-FRESHNESS_LIVE_SEC = 120
-FRESHNESS_RECENT_SEC = 900
+FRESHNESS_NOW_SEC = 120
+FRESHNESS_RECENT_SEC = 600
 
 
 def freshness_from_age(age_sec: Optional[float]) -> str:
     if age_sec is None:
-        return "stale"
-    if age_sec < FRESHNESS_LIVE_SEC:
-        return "live"
+        return "earlier"
+    if age_sec < FRESHNESS_NOW_SEC:
+        return "now"
     if age_sec < FRESHNESS_RECENT_SEC:
         return "recent"
-    return "stale"
+    return "earlier"
 
 
 def freshness_label(tier: str) -> str:
     return {
-        "live": "Live",
+        "now": "Now",
         "recent": "Recent",
-        "stale": "Stale",
-    }.get(tier, "Stale")
+        "earlier": "Earlier",
+        # legacy aliases
+        "live": "Now",
+        "stale": "Earlier",
+    }.get(tier, "Earlier")
 
 
 def provenance_fields(

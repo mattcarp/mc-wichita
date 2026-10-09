@@ -6,8 +6,8 @@
   <meta name="color-scheme" content="dark" />
   <title>Wichita · Valletta listener</title>
   <link rel="icon" href="data:," />
-  <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261009-21" />
-  <script type="module" src="/dashboard/dashboard.js?v=20261009-21"></script>
+  <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261009-22" />
+  <script type="module" src="/dashboard/dashboard.js?v=20261009-22"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to dashboard</a>
@@ -18,7 +18,7 @@
     </div>
     <div class="header-meta">
       <time id="maltaClock" class="mono" datetime="">—</time>
-      <button type="button" id="settingsBtn" class="icon-btn" aria-haspopup="dialog" aria-expanded="false" aria-controls="settingsMenu" title="Settings">Set</button>
+      <button type="button" id="settingsBtn" class="icon-btn icon-btn-gear" aria-haspopup="dialog" aria-expanded="false" aria-controls="settingsMenu" aria-label="Settings" title="Settings"></button>
       <div id="settingsMenu" class="settings-menu" role="dialog" hidden>
         <label class="toggle-chip"><input type="checkbox" id="colorBlindMap" /> Colour-blind waterfall</label>
       </div>
@@ -42,22 +42,17 @@
           <div id="harbourMap" class="map map-coastline" aria-label="Malta coastline with live ship positions"></div>
           <div id="mapFollowCard" class="map-follow-card" hidden></div>
           <p class="map-attrib muted">OpenStreetMap land and water (ODbL) · offline · not for navigation</p>
-          <section class="sky-section" aria-labelledby="sat-heading">
-            <h3 id="sat-heading" class="eyebrow">Overhead · computed</h3>
-            <div id="satellitesPanel" class="satellites-panel"></div>
-          </section>
         </div>
         <div class="harbour-list-col">
-          <p id="freshnessCounts" class="mono counts"></p>
-          <ul id="liveShipList" class="live-ship-list" aria-label="Ships heard live"></ul>
-          <section class="planes-section" aria-labelledby="planes-heading">
-            <h3 id="planes-heading" class="eyebrow">Planes · our ADS-B</h3>
-            <div id="planesPanel" class="planes-panel"></div>
-          </section>
+          <p id="freshnessCounts" class="mono counts harbour-counts-chips"></p>
+          <div id="harbourShipSheet" class="harbour-ship-sheet">
+            <div class="sheet-grab" aria-hidden="true"></div>
+            <ul id="liveShipList" class="live-ship-list" aria-label="Ships heard live"></ul>
+          </div>
           <div id="shoreStations" class="shore-stations"></div>
-          <aside id="liveShipDrawer" class="live-ship-drawer" hidden></aside>
         </div>
       </div>
+      <aside id="liveShipDrawer" class="live-ship-drawer" hidden></aside>
     </section>
 
     <section id="panel-heard" class="panel tab-panel" data-tab="heard" aria-labelledby="heard-heading">
@@ -68,20 +63,30 @@
         </div>
         <span class="badge badge-live">LIVE</span>
       </div>
+      <div id="voiceTiles" class="voice-grid voice-grid-heard"></div>
       <div id="activityStrip" class="activity-strip mono" aria-label="New ships per hour (24h)"></div>
-      <p id="captureAisNote" class="muted recorded-capture-note"></p>
-      <ol id="timeline" class="timeline" aria-label="Live event log"></ol>
-      <ol id="timelineRecorded" class="timeline timeline-recorded-block" aria-label="Recorded capture events"></ol>
+      <div class="timeline-shell">
+        <ol id="timeline" class="timeline" aria-label="Live event log"></ol>
+        <button type="button" id="timelineMore" class="timeline-more" hidden>Show earlier</button>
+      </div>
+      <ol id="timelineRecorded" class="timeline timeline-recorded-block" aria-label="Recorded capture events" hidden></ol>
     </section>
 
-    <section id="panel-watch" class="panel tab-panel" data-tab="heard" aria-labelledby="watch-heading">
+    <section id="panel-sky" class="panel tab-panel" data-tab="sky" aria-labelledby="sky-heading">
       <div class="panel-head">
         <div>
-          <p class="eyebrow marine">Watch</p>
-          <h2 id="watch-heading">Voice channels</h2>
+          <p class="eyebrow">Sky</p>
+          <h2 id="sky-heading">Overhead · planes &amp; satellites</h2>
         </div>
       </div>
-      <div id="voiceTiles" class="voice-grid"></div>
+      <section class="planes-section" aria-labelledby="planes-heading">
+        <h3 id="planes-heading" class="eyebrow">Planes · our ADS-B</h3>
+        <div id="planesPanel" class="planes-panel"></div>
+      </section>
+      <section class="sky-section" aria-labelledby="sat-heading">
+        <h3 id="sat-heading" class="eyebrow">Satellites · computed passes</h3>
+        <div id="satellitesPanel" class="satellites-panel"></div>
+      </section>
     </section>
 
     <section id="panel-recordings" class="panel tab-panel panel-recordings" data-tab="recordings" aria-labelledby="recordings-heading">
@@ -108,15 +113,19 @@
           <div class="spectrum-markers mono" id="spectrumMarkers" aria-hidden="true"></div>
           <details class="chart-about"><summary>About this chart</summary><p id="spectrumCaption" class="chart-caption muted"></p></details>
         </div>
-        <div class="chart-wrap chart-wrap-thin">
-          <canvas id="waterfallCanvas" role="img" aria-label="Burst activity time versus frequency"></canvas>
-          <div class="waterfall-axis mono" aria-hidden="true">
-            <span id="wfAxisLo">—</span>
-            <span id="wfAxisHi">—</span>
+        <details class="waterfall-details">
+          <summary>Show waterfall</summary>
+          <div class="chart-wrap chart-wrap-thin">
+            <canvas id="waterfallCanvas" role="img" aria-label="Burst activity time versus frequency"></canvas>
+            <div class="waterfall-axis mono" aria-hidden="true">
+              <span id="wfAxisLo">—</span>
+              <span id="wfAxisHi">—</span>
+            </div>
+            <p id="waterfallCaption" class="chart-caption muted"></p>
           </div>
-          <p id="waterfallCaption" class="chart-caption muted"></p>
-        </div>
-        <ul class="bookmark-legend mono" id="bookmarkLegend"></ul>
+        </details>
+        <p id="captureAisNote" class="muted recorded-capture-note"></p>
+        <ul class="bookmark-legend bookmark-chips mono" id="bookmarkLegend"></ul>
       </div>
       <div id="airbandView" class="subpanel hidden" hidden>
         <div class="chart-wrap">
@@ -150,10 +159,11 @@
   </footer>
 
   <nav class="tab-bar" aria-label="Primary">
-    <button type="button" class="tab-btn active" data-tab-target="harbour" aria-label="Harbour"><span class="tab-icon" aria-hidden="true">H</span><span>Harbour</span></button>
-    <button type="button" class="tab-btn" data-tab-target="heard" aria-label="Heard"><span class="tab-icon" aria-hidden="true">E</span><span>Heard</span></button>
-    <button type="button" class="tab-btn" data-tab-target="recordings" aria-label="Recordings"><span class="tab-icon" aria-hidden="true">R</span><span>Recordings</span></button>
-    <button type="button" class="tab-btn" data-tab-target="station" aria-label="Station"><span class="tab-icon" aria-hidden="true">S</span><span>Station</span></button>
+    <button type="button" class="tab-btn active" data-tab-target="harbour" aria-label="Harbour"><span class="tab-icon" data-icon="harbour"></span><span>Harbour</span></button>
+    <button type="button" class="tab-btn" data-tab-target="heard" aria-label="Heard"><span class="tab-icon" data-icon="heard"></span><span>Heard</span></button>
+    <button type="button" class="tab-btn" data-tab-target="sky" aria-label="Sky"><span class="tab-icon" data-icon="sky"></span><span>Sky</span></button>
+    <button type="button" class="tab-btn" data-tab-target="recordings" aria-label="Recordings"><span class="tab-icon" data-icon="recordings"></span><span>Recordings</span></button>
+    <button type="button" class="tab-btn" data-tab-target="station" aria-label="Station"><span class="tab-icon" data-icon="station"></span><span>Station</span></button>
   </nav>
 </body>
 </html>

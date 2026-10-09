@@ -68,6 +68,20 @@ def nav_status_label(code: Any) -> str:
     return "status unknown"
 
 
+_PLAIN_DEST_ALIASES: Dict[str, str] = {
+    "VALLETTA": "Valletta",
+    "MARSAXLOKK": "Marsaxlokk",
+    "MARSAMXETT": "Marsamxett",
+    "SLIEMA": "Sliema",
+    "GOZO": "Gozo",
+    "POZZALLO": "Pozzallo",
+    "MSIDA": "Msida",
+    "BUGIBBA": "Bugibba",
+    "CIRKEWWA": "Ċirkewwa",
+    "MELLIEHA": "Mellieħa",
+}
+
+
 def decode_destination(raw: Optional[str]) -> Tuple[Optional[str], str, bool]:
     """Return (display_name_or_none, raw_trimmed, decoded_ok)."""
     if not raw:
@@ -75,6 +89,9 @@ def decode_destination(raw: Optional[str]) -> Tuple[Optional[str], str, bool]:
     text = raw.strip()
     if not text:
         return None, "", True
+    plain = re.sub(r"[^A-Za-z0-9]+", "", text).upper()
+    if plain in _PLAIN_DEST_ALIASES:
+        return _PLAIN_DEST_ALIASES[plain], text, True
     cleaned = re.sub(r"^[>\\s]+", "", text)
     cleaned = cleaned.replace(" ", "").upper()
     # LOCODE at start (2 letter country + 3 letter location)
@@ -122,7 +139,7 @@ def first_heard_sentence(ship: Dict[str, Any]) -> str:
     dest = ship.get("destination_display") or ship.get("destination_raw")
     unnamed = name.startswith("Unnamed") or name.startswith("An unnamed")
     if unnamed and mmsi:
-        base = f"An unnamed vessel (MMSI {ship.get('mmsi_display') or f'{int(mmsi):09d}'}, {phrase}) was heard for the first time today"
+        base = f"Unnamed MMSI {ship.get('mmsi_display') or f'{int(mmsi):09d}'} ({phrase}) heard for the first time today"
     else:
         base = f"{name} ({phrase}) heard for the first time today"
     if dest:
@@ -182,8 +199,6 @@ def lead_sentence(
     dest_part = ""
     if destination_name:
         dest_part = f"toward {destination_name}"
-    elif destination_raw and not destination_decoded:
-        dest_part = f"toward destination code “{destination_raw.strip()}” (not decoded)"
     elif destination_raw:
         dest_part = f"toward {destination_raw.strip()}"
 
@@ -247,7 +262,7 @@ def freshness_bucket(last_signal_s: Optional[float]) -> str:
         return "earlier"
     if last_signal_s < 120:
         return "now"
-    if last_signal_s < 900:
+    if last_signal_s < 600:
         return "recent"
     return "earlier"
 
@@ -277,18 +292,25 @@ def count_freshness(ships: List[Dict[str, Any]]) -> Dict[str, int]:
     return {"now": now, "recent": recent, "earlier": earlier, "today": len(ships)}
 
 
+def type_breakdown_now(ships: List[Dict[str, Any]]) -> Dict[str, int]:
+    type_counts: Dict[str, int] = {}
+    for s in ships:
+        if s.get("is_base_station"):
+            continue
+        if freshness_bucket(s.get("last_signal_s")) != "now":
+            continue
+        t = s.get("shiptype_label") or "vessels"
+        type_counts[t] = type_counts.get(t, 0) + 1
+    return type_counts
+
+
 def harbour_summary(ships: List[Dict[str, Any]], online: bool, voice_not_monitored: bool) -> str:
     vessels = [s for s in ships if not s.get("is_base_station")]
     counts = count_freshness(vessels)
     move = movement_counts(vessels)
     moving = move["moving"]
     moored = move["moored_or_slow"]
-    type_counts: Dict[str, int] = {}
-    for s in vessels:
-        if freshness_bucket(s.get("last_signal_s")) == "earlier":
-            continue
-        t = s.get("shiptype_label") or "vessels"
-        type_counts[t] = type_counts.get(t, 0) + 1
+    type_counts = type_breakdown_now(vessels)
     top_types = sorted(type_counts.items(), key=lambda x: (-x[1], x[0]))[:3]
     type_phrase = ", ".join(f"{n} {t}" for t, n in top_types) if top_types else "few vessels"
     lead = f"{counts['now']} nearby now ({type_phrase})"

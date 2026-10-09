@@ -38,14 +38,9 @@ async def live_ais_ship(mmsi: int):
 
 
 @router.get("/events")
-async def live_ais_events(hours: int = 24):
+async def live_ais_events(hours: int = 2, limit: int = 20, before: str | None = None):
     engine = get_engine()
-    events = engine.read_events(hours=hours)
-    return {
-        "events": events,
-        "activity_hourly": engine.activity_hourly(hours=hours),
-        "hours": hours,
-    }
+    return engine.events_page(hours=hours, limit=limit, before=before)
 
 
 @router.get("/voice-watch")
