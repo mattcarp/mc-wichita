@@ -1,0 +1,33 @@
+AIS-catcher (build Oct  9 2026) v0.70-0-g728b41a
+(C) Copyright 2021-2026 jvde-github and other contributors
+This is free software; see the source for copying conditions. There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+Searching for device with SN SCH0-sdrplay and type SOAPYSDR.
+sample rate 2304K upsampled to 3072K.
+Community feed sharing: disabled.
+
+Actual device settings:
+======================
+ DRIVER      : SDRplay
+ HARDWARE    : RSPdx-R2
+ CHANNEL     : 0
+ ANTENNA     : Antenna A
+ SAMPLE RATE : 2.304e+06
+ FREQUENCY   : RF=1.62e+08 CORR=0 
+ HARDWARE    : sdrplay_api_api_version=3.150000 sdrplay_api_hw_version=7 
+ SETTING     : rfgain_sel=4 iqcorr_ctrl=true agc_setpoint=-30 biasT_ctrl=false rfnotch_ctrl=true dabnotch_ctrl=false hdr_ctrl=false 
+ GAIN MODE   : MANUAL
+ GAIN LEVELS : IFGR=35 RFGR=4 
+
+Device    : SOAPYSDR
+Settings  : rate 2304K format CF32 device "driver=sdrplay,serial=2403090170" gain "IFGR=35, RFGR=4" stream "" setting "biasT_ctrl=false, dabnotch_ctrl=false, iqcorr_ctrl=true, rfnotch_ctrl=true" channel "0" agc OFF antenna "Antenna A"
+Model #0-0 -> (Src: 1, Grp: 1): [AIS engine v1 base] channel AB ps_ema ON afc_wide ON droop ON fp_ds OFF dsk OFF 
+[AIS engine v1 base #0-0]               received: 10 msgs, total: 10 msgs, rate: 0.971265 msg/s
+[AIS engine v1 base #0-0]               received: 11 msgs, total: 21 msgs, rate: 1.09667 msg/s
+[AIS engine v1 base #0-0]               received: 12 msgs, total: 33 msgs, rate: 1.19961 msg/s
+[AIS engine v1 base #0-0]               received: 11 msgs, total: 44 msgs, rate: 1.09831 msg/s
+[AIS engine v1 base #0-0]               received: 11 msgs, total: 55 msgs, rate: 1.09406 msg/s
+Stop triggered by timeout after 60 seconds. (-T 60)
+----------------------
+[AIS engine v1 base #0-0]               total: 65 msgs
+

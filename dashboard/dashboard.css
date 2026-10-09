@@ -131,6 +131,31 @@ body {
   align-items: center;
 }
 
+.live-ais-strip {
+  flex: 1 1 100%;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.85rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 0.45rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 0.72rem;
+  color: var(--text);
+}
+.live-ais-strip .live-strip-label {
+  font-weight: 500;
+  color: var(--marine);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.65rem;
+}
+.live-ais-strip .muted {
+  color: var(--muted);
+}
+
 .pill {
   font-size: 0.75rem;
   padding: 0.25rem 0.55rem;
@@ -145,6 +170,34 @@ body {
   height: 0.45rem;
   border-radius: 50%;
   background: var(--aviation);
+  margin-right: 0.35rem;
+  vertical-align: 0.05rem;
+}
+.pill-live {
+  border-color: rgba(62, 198, 201, 0.45);
+  color: var(--marine);
+}
+.pill-live::before {
+  content: "";
+  display: inline-block;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--marine);
+  margin-right: 0.35rem;
+  vertical-align: 0.05rem;
+}
+.pill-offline {
+  border-color: var(--border);
+  color: var(--muted);
+}
+.pill-offline::before {
+  content: "";
+  display: inline-block;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--spur);
   margin-right: 0.35rem;
   vertical-align: 0.05rem;
 }
@@ -389,6 +442,118 @@ canvas {
   min-height: 220px;
 }
 
+.harbour-live-note {
+  margin: 0 0 0.5rem;
+  font-size: 0.78rem;
+}
+
+.harbour-grid-live .live-ships-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 0;
+}
+
+.live-ship-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: min(420px, 55vh);
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.live-ship-card {
+  padding: 0.55rem 0.65rem;
+  border-radius: 0.45rem;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+.live-ship-card:hover,
+.live-ship-card:focus-visible {
+  border-color: rgba(62, 198, 201, 0.45);
+  outline: none;
+}
+.live-ship-card.selected {
+  border-color: var(--marine);
+  box-shadow: 0 0 0 1px rgba(62, 198, 201, 0.25);
+}
+.live-ship-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.5rem;
+  margin-bottom: 0.2rem;
+}
+.live-ship-card-head strong {
+  flex: 1 1 auto;
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+.live-ship-flag {
+  font-size: 1rem;
+  line-height: 1;
+}
+.live-ship-card p {
+  margin: 0.15rem 0 0;
+  font-size: 0.75rem;
+}
+
+.live-ship-detail {
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.45rem;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  font-size: 0.8rem;
+}
+.live-ship-detail h3 {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+.ship-detail-dl {
+  display: grid;
+  grid-template-columns: minmax(6rem, 38%) 1fr;
+  gap: 0.35rem 0.65rem;
+  margin: 0.5rem 0 0.65rem;
+  font-size: 0.78rem;
+}
+.ship-detail-dl dt {
+  margin: 0;
+  color: var(--muted);
+}
+.ship-detail-dl dd {
+  margin: 0;
+}
+.live-ship-detail .detail-close {
+  font: inherit;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 0.35rem;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.harbour-svg .ship-dot-selected circle {
+  stroke: #fff;
+  stroke-width: 1.5;
+}
+
+.recorded-capture-note {
+  margin: 0 0 0.5rem;
+  font-size: 0.78rem;
+  padding: 0.45rem 0.55rem;
+  border-radius: 0.35rem;
+  border: 1px dashed var(--border);
+  background: var(--surface-2);
+}
+
 .ais-feed {
   list-style: none;
   margin: 0;
@@ -448,6 +613,24 @@ canvas {
 .timeline li {
   padding: 0.55rem 0;
   border-bottom: 1px solid var(--border);
+}
+.timeline-source {
+  display: inline-block;
+  font-size: 0.65rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+  padding: 0.12rem 0.4rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.timeline-live .timeline-source {
+  border-color: rgba(62, 198, 201, 0.35);
+  color: var(--marine);
+}
+.timeline-recorded .timeline-source {
+  color: var(--spur);
 }
 .timeline .event-title {
   display: block;

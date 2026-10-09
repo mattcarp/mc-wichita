@@ -4,9 +4,9 @@ import {
   plotInnerWidth,
   psdSpan,
   samplePsdAtMhz,
-} from "./spectrum_geometry.mjs?v=20261009-14";
-
-const MALTA_TZ = "Europe/Malta";
+} from "./spectrum_geometry.mjs?v=20261009-16";
+import { initLiveAis, getLiveTimelineEvents } from "./live_ais.js?v=20261009-16";
+import { formatMalta } from "./time_malta.js?v=20261009-16";
 const VALLETTA = { lat: 35.8987, lon: 14.5145, span: 0.06 };
 
 const BOOKMARKS = [
@@ -28,22 +28,6 @@ const state = {
 
 function $(sel) {
   return document.querySelector(sel);
-}
-
-function formatMalta(isoOrSec) {
-  let d;
-  if (typeof isoOrSec === "number") {
-    d = new Date(isoOrSec * 1000);
-  } else if (isoOrSec) {
-    d = new Date(isoOrSec);
-  } else {
-    return "—";
-  }
-  return new Intl.DateTimeFormat("en-GB", {
-    timeZone: MALTA_TZ,
-    dateStyle: "medium",
-    timeStyle: "medium",
-  }).format(d);
 }
 
 function tickClock() {
@@ -518,12 +502,12 @@ function renderBookmarks(psd) {
   }).join("");
 }
 
-function renderAisCounts(summary, messages) {
-  const el = $("#aisCounts");
+function renderCaptureAisNote(summary, messages) {
+  const el = $("#captureAisNote");
   if (!el) return;
   const vessels = summary?.vessel_count ?? 0;
   const bases = summary?.base_station_count ?? 0;
-  el.textContent = `${bases} station(s) · ${vessels} vessel(s) · ${messages.length} messages`;
+  el.textContent = `Recorded capture (library): ${bases} station(s) · ${vessels} vessel(s) · ${messages.length} AIS messages in folder — not live air.`;
 }
 
 function renderAisFeed(messages) {
@@ -616,18 +600,35 @@ function renderVoiceTiles(detail) {
 function renderTimeline(events) {
   const ol = $("#timeline");
   if (!ol) return;
-  if (!events?.length) {
+  const live = getLiveTimelineEvents();
+  const blocks = [];
+  if (live.length) {
+    blocks.push(
+      live
+        .map((e) => {
+          const time = e.time_utc ? formatMalta(e.time_utc) : "—";
+          return `<li class="timeline-live"><span class="timeline-source">Live</span><strong class="event-title">${e.title}</strong><span class="muted">${e.detail || ""}</span><span class="mono event-time">${time}</span></li>`;
+        })
+        .join(""),
+    );
+  }
+  if (events?.length) {
+    blocks.push(
+      events
+        .map((e) => {
+          const time = e.time_utc ? formatMalta(e.time_utc) : "—";
+          const caution = e.caution ? `<p class="caution">${e.caution}</p>` : "";
+          return `<li class="timeline-recorded"><span class="timeline-source">Recorded</span><strong class="event-title">${e.title}</strong><span class="muted">${e.detail || ""}</span><span class="mono event-time">${time}</span>${caution}</li>`;
+        })
+        .join(""),
+    );
+  }
+  if (!blocks.length) {
     ol.innerHTML =
-      "<li class='muted'>Nothing notable in this capture besides routine AIS from the Valletta base station. Quiet is good news.</li>";
+      "<li class='muted'>No live or recorded events yet. Live AIS updates every few seconds when the receiver is running.</li>";
     return;
   }
-  ol.innerHTML = events
-    .map((e) => {
-      const time = e.time_utc ? formatMalta(e.time_utc) : "—";
-      const caution = e.caution ? `<p class="caution">${e.caution}</p>` : "";
-      return `<li><strong class="event-title">${e.title}</strong><span class="muted">${e.detail || ""}</span><span class="mono event-time">${time}</span>${caution}</li>`;
-    })
-    .join("");
+  ol.innerHTML = blocks.join("");
 }
 
 function renderStation(station, comparison) {
@@ -713,11 +714,7 @@ async function loadCapture(captureId) {
   state.lastDuration = captureDurationSec(detail);
   redrawCharts();
   drawAirband(detail.airband);
-  renderAisCounts(detail.summary, detail.ais || []);
-  renderAisFeed(detail.ais || []);
-  const base = (detail.ais || []).find((m) => m.lat != null && m.lon != null);
-  if (base) initHarbourSchematicMap(base.lat, base.lon);
-  else initHarbourSchematicMap(VALLETTA.lat, VALLETTA.lon);
+  renderCaptureAisNote(detail.summary, detail.ais || []);
   renderVoiceTiles(detail);
   renderTimeline(detail.timeline);
   renderStation(detail.station_snapshot, null);
@@ -805,6 +802,7 @@ function main() {
   setupSubtabs();
   tickClock();
   setInterval(tickClock, 30000);
+  initLiveAis(() => renderTimeline(state.dashboard?.primary?.timeline || []));
   window.addEventListener("resize", onResize);
   $("#colorBlindMap")?.addEventListener("change", (e) => {
     state.colorBlind = e.target.checked;

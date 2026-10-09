@@ -6,8 +6,8 @@
   <meta name="color-scheme" content="dark" />
   <title>Wichita · Valletta listener</title>
   <link rel="icon" href="data:," />
-  <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261009-14" />
-  <script type="module" src="/dashboard/dashboard.js?v=20261009-14"></script>
+  <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261009-16" />
+  <script type="module" src="/dashboard/dashboard.js?v=20261009-16"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to dashboard</a>
@@ -23,6 +23,7 @@
       <span id="listenState" class="pill pill-listen">Checking library…</span>
       <time id="maltaClock" class="mono" datetime="">—</time>
     </div>
+    <div id="liveAisStrip" class="live-ais-strip mono" role="status" hidden></div>
   </header>
 
   <main id="main" class="app">
@@ -81,12 +82,13 @@
         </div>
         <span id="aisCounts" class="mono counts"></span>
       </div>
-      <div class="harbour-grid">
-        <div id="harbourMap" class="map" aria-label="Valletta harbour schematic map"></div>
-        <p class="map-attrib muted">Local schematic · OpenStreetMap data not shown · not for navigation</p>
-        <div class="ais-side">
-          <div id="aisSpark" class="spark" aria-hidden="true"></div>
-          <ul id="aisFeed" class="ais-feed"></ul>
+      <p class="harbour-live-note muted">Live balcony AIS from the local receiver · separate from recorded captures below</p>
+      <div class="harbour-grid harbour-grid-live">
+        <div id="harbourMap" class="map" aria-label="Live ship positions on local harbour schematic"></div>
+        <p class="map-attrib muted">Local schematic · offline · not for navigation</p>
+        <div class="live-ships-col">
+          <ul id="liveShipList" class="live-ship-list" aria-label="Ships heard live"></ul>
+          <aside id="liveShipDetail" class="live-ship-detail" hidden></aside>
         </div>
       </div>
     </section>
@@ -108,6 +110,7 @@
           <h2 id="heard-heading">What we heard</h2>
         </div>
       </div>
+      <p id="captureAisNote" class="muted recorded-capture-note"></p>
       <ol id="timeline" class="timeline"></ol>
     </section>
 
