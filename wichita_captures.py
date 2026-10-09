@@ -27,6 +27,8 @@ MARINE_BOOKMARKS_MHZ = {
     "AIS1": 161.975,
     "AIS2": 162.025,
 }
+MARINE_PSD_MIN_MHZ = 156.45
+MARINE_PSD_MAX_MHZ = 162.55
 AIRBAND_WATCH_MHZ = {
     "121.5_distress": 121.5,
     "123.1_SAR": 123.1,
@@ -230,16 +232,33 @@ def load_wideband_psd(capture_dir: Path, max_points: int = 2048) -> Dict[str, An
                 continue
     if not freqs:
         return {"available": False, "reason": "wideband_psd.csv empty"}
+    trimmed_low_mhz: Optional[float] = None
+    if freqs:
+        while freqs and freqs[0] < MARINE_PSD_MIN_MHZ:
+            trimmed_low_mhz = freqs[0] / 1e6 if freqs[0] > 1e5 else freqs[0]
+            freqs.pop(0)
+            psd.pop(0)
+        while freqs and freqs[-1] > MARINE_PSD_MAX_MHZ:
+            freqs.pop()
+            psd.pop()
     if len(freqs) > max_points:
         step = max(1, len(freqs) // max_points)
         freqs = freqs[::step][:max_points]
         psd = psd[::step][:max_points]
+    analysis = _read_json(capture_dir / "analysis_report.json") or {}
     return {
         "available": True,
         "freq_mhz": freqs,
         "psd_db_per_hz": psd,
         "bookmarks_mhz": MARINE_BOOKMARKS_MHZ,
-        "median_db": _read_json(capture_dir / "analysis_report.json") or {},
+        "median_db": analysis.get("wideband_psd_median_db"),
+        "display_kind": "averaged_psd",
+        "trimmed_low_mhz": trimmed_low_mhz,
+        "trim_note": (
+            "Left-edge filter roll-off trimmed below {:.3f} MHz.".format(MARINE_PSD_MIN_MHZ)
+            if trimmed_low_mhz is not None
+            else None
+        ),
     }
 
 
@@ -333,6 +352,78 @@ def airband_payload(capture_dir: Path) -> Dict[str, Any]:
     }
 
 
+def _is_known_base_station(mmsi: int) -> bool:
+    return mmsi in VALLETTA_AIS_BASE_MMSIS
+
+
+def _append_ais_timeline_events(
+    events: List[Dict[str, Any]],
+    capture_ref: CaptureRef,
+    ais_messages: List[Dict[str, Any]],
+) -> None:
+    start = capture_ref.start_utc
+    by_mmsi: Dict[int, List[Dict[str, Any]]] = {}
+    for msg in ais_messages:
+        mmsi = normalize_mmsi(msg.get("mmsi"))
+        if mmsi:
+            by_mmsi.setdefault(mmsi, []).append(msg)
+
+    for mmsi, msgs in by_mmsi.items():
+        timed = [m for m in msgs if m.get("t_s") is not None]
+        label = msgs[0].get("label") or mmsi_label(mmsi)
+        if _is_known_base_station(mmsi) and timed:
+            times = sorted(float(m["t_s"]) for m in timed)
+            t0 = start.timestamp() + times[0]
+            t1 = start.timestamp() + times[-1]
+            events.append(
+                {
+                    "kind": "ais_summary",
+                    "t_utc": t0,
+                    "title": f"{label} heard {len(timed)} times",
+                    "detail": (
+                        f"Routine AIS in this capture · "
+                        f"{datetime.fromtimestamp(t0, tz=timezone.utc).strftime('%H:%M')}–"
+                        f"{datetime.fromtimestamp(t1, tz=timezone.utc).strftime('%H:%M')} UTC"
+                    ),
+                    "caution": None,
+                    "grouped": True,
+                    "meta": {"mmsi": mmsi, "count": len(timed), "label": label},
+                }
+            )
+            continue
+
+        # Vessels or unknown carriers: one summary per MMSI unless only a single message
+        if len(timed) > 3:
+            times = sorted(float(m["t_s"]) for m in timed)
+            t0 = start.timestamp() + times[0]
+            t1 = start.timestamp() + times[-1]
+            events.append(
+                {
+                    "kind": "ais_vessel_summary",
+                    "t_utc": t0,
+                    "title": f"{label} — {len(timed)} messages",
+                    "detail": "Vessel or mobile station in range (not the Valletta base).",
+                    "caution": None,
+                    "grouped": True,
+                    "meta": {"mmsi": mmsi, "count": len(timed)},
+                }
+            )
+        else:
+            for msg in timed:
+                t_s = float(msg["t_s"])
+                events.append(
+                    {
+                        "kind": "ais",
+                        "t_utc": start.timestamp() + t_s,
+                        "title": "AIS from vessel or unknown station",
+                        "detail": label,
+                        "caution": "New or infrequent AIS — worth a glance, not an alert.",
+                        "grouped": False,
+                        "meta": msg,
+                    }
+                )
+
+
 def build_timeline(
     capture_ref: CaptureRef,
     analysis: Dict[str, Any],
@@ -343,20 +434,7 @@ def build_timeline(
     events: List[Dict[str, Any]] = []
     start = capture_ref.start_utc
 
-    for msg in ais_messages:
-        t_s = msg.get("t_s")
-        if t_s is None:
-            continue
-        events.append(
-            {
-                "kind": "ais",
-                "t_utc": (start.timestamp() + float(t_s)),
-                "title": "AIS burst",
-                "detail": msg.get("label") or msg.get("mmsi_display"),
-                "caution": None,
-                "meta": msg,
-            }
-        )
+    _append_ais_timeline_events(events, capture_ref, ais_messages)
 
     for ch_key, tile in (("ch16", marine.get("ch16")), ("ch09", marine.get("ch09"))):
         if not tile:

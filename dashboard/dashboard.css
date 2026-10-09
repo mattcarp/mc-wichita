@@ -46,12 +46,15 @@ html {
   font-family: "Geist Sans", system-ui, sans-serif;
   background: var(--bg);
   color: var(--text);
+  overflow-x: hidden;
 }
 
 body {
   margin: 0;
   min-height: 100dvh;
   padding-bottom: calc(var(--tab-h) + env(safe-area-inset-bottom, 0px));
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 .mono {
@@ -91,6 +94,7 @@ body {
   padding: 0.85rem 1rem;
   border-bottom: 1px solid var(--border);
   background: linear-gradient(180deg, #10131a, var(--bg));
+  max-width: 100vw;
 }
 
 .brand {
@@ -150,7 +154,10 @@ body {
   display: grid;
   gap: 0.75rem;
   max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
+  overflow-x: hidden;
+  min-width: 0;
 }
 
 .feed-banner {
@@ -198,6 +205,15 @@ body {
   flex-wrap: wrap;
   gap: 0.5rem;
   align-items: center;
+  min-width: 0;
+  flex: 1 1 12rem;
+  justify-content: flex-end;
+}
+
+.select-wrap {
+  flex: 1 1 8rem;
+  min-width: 0;
+  max-width: 100%;
 }
 
 select {
@@ -207,6 +223,8 @@ select {
   border-radius: 0.4rem;
   padding: 0.35rem 0.5rem;
   font: inherit;
+  width: 100%;
+  max-width: 100%;
 }
 
 .toggle-chip {
@@ -237,13 +255,32 @@ select {
   border-color: var(--marine);
 }
 
+.chart-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.chart-caption {
+  margin: 0.35rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
 canvas {
   width: 100%;
+  max-width: 100%;
   height: auto;
   display: block;
   border-radius: 0.45rem;
   background: #08090c;
   border: 1px solid var(--border);
+}
+
+.map-attrib {
+  margin: 0.35rem 0 0;
+  font-size: 0.68rem;
 }
 
 .bookmark-legend {
@@ -301,6 +338,11 @@ canvas {
   border-radius: 0.45rem;
   border: 1px solid var(--border);
   background: #0a0c10;
+}
+
+.harbour-svg {
+  display: block;
+  min-height: 220px;
 }
 
 .ais-feed {
@@ -434,6 +476,18 @@ canvas {
   }
   .tab-panel.active {
     display: block;
+  }
+  #maltaClock {
+    font-size: 0.72rem;
+    max-width: 11rem;
+    text-align: right;
+    line-height: 1.2;
+  }
+  .panel {
+    min-width: 0;
+  }
+  .toggle-chip {
+    flex: 1 1 100%;
   }
 }
 

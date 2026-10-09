@@ -6,9 +6,7 @@
   <meta name="color-scheme" content="dark" />
   <title>Wichita · Valletta listener</title>
   <link rel="icon" href="data:," />
-  <link rel="stylesheet" href="/dashboard/vendor/leaflet.css" />
   <link rel="stylesheet" href="/dashboard/dashboard.css" />
-  <script defer src="/dashboard/vendor/leaflet.js"></script>
   <script type="module" src="/dashboard/dashboard.js"></script>
 </head>
 <body>
@@ -52,12 +50,20 @@
         <button type="button" class="subtab" data-subtab="airband" role="tab" aria-selected="false">Airband 118–137</button>
       </div>
       <div id="marineBandView" class="subpanel">
-        <canvas id="spectrumCanvas" width="1200" height="220" role="img" aria-label="Wideband spectrum from capture PSD"></canvas>
-        <canvas id="waterfallCanvas" width="1200" height="160" role="img" aria-label="AIS burst timeline waterfall"></canvas>
+        <div class="chart-wrap">
+          <canvas id="spectrumCanvas" role="img" aria-label="Averaged wideband spectrum from capture PSD"></canvas>
+          <p id="spectrumCaption" class="chart-caption muted"></p>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="waterfallCanvas" role="img" aria-label="Burst activity time versus frequency"></canvas>
+          <p id="waterfallCaption" class="chart-caption muted"></p>
+        </div>
         <ul class="bookmark-legend mono" id="bookmarkLegend"></ul>
       </div>
       <div id="airbandView" class="subpanel hidden" hidden>
-        <canvas id="airbandCanvas" width="1200" height="200" role="img" aria-label="Airband scan"></canvas>
+        <div class="chart-wrap">
+          <canvas id="airbandCanvas" role="img" aria-label="Airband scan"></canvas>
+        </div>
         <p id="airbandNote" class="muted"></p>
       </div>
     </section>
@@ -71,7 +77,8 @@
         <span id="aisCounts" class="mono counts"></span>
       </div>
       <div class="harbour-grid">
-        <div id="harbourMap" class="map" aria-label="AIS map"></div>
+        <div id="harbourMap" class="map" aria-label="Valletta harbour schematic map"></div>
+        <p class="map-attrib muted">Local schematic · OpenStreetMap data not shown · not for navigation</p>
         <div class="ais-side">
           <div id="aisSpark" class="spark" aria-hidden="true"></div>
           <ul id="aisFeed" class="ais-feed"></ul>

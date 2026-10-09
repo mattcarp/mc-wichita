@@ -86,6 +86,26 @@ def test_health_no_hackrf_field():
     assert data["captures_on_disk"] >= 2
 
 
+def test_timeline_groups_routine_ais():
+    ref = wc.resolve_capture("20261009T002803Z")
+    assert ref is not None
+    detail = wc.capture_detail(ref)
+    timeline = detail["timeline"]
+    per_burst = [e for e in timeline if e.get("kind") == "ais"]
+    summaries = [e for e in timeline if e.get("kind") == "ais_summary"]
+    assert len(per_burst) == 0
+    assert len(summaries) >= 1
+    assert "Valletta AIS base station" in summaries[0]["title"]
+    assert summaries[0].get("grouped") is True
+
+
+def test_psd_trims_low_edge():
+    ref = wc.resolve_capture("20261009T001016Z")
+    psd = wc.load_wideband_psd(ref.path, max_points=500)
+    assert psd["freq_mhz"][0] >= wc.MARINE_PSD_MIN_MHZ - 0.001
+    assert psd.get("trim_note")
+
+
 def test_antenna_power_rejected():
     import api_server
 
