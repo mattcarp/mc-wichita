@@ -830,7 +830,7 @@ canvas {
   }
 }
 .map-coastline {
-  min-height: 280px;
+  min-height: 0;
   position: relative;
   background: radial-gradient(ellipse at 50% 80%, #0a1830 0%, #060a12 70%);
 }
@@ -850,16 +850,18 @@ canvas {
   position: relative;
   width: 100%;
   max-width: 100%;
-  height: 100%;
-  min-height: inherit;
+  height: auto;
+  min-height: 0;
   overflow: hidden;
+  aspect-ratio: 100 / 52;
+  max-height: min(70vh, 520px);
 }
 .harbour-map-inner {
   position: relative;
   width: 100%;
   max-width: 100%;
   height: 100%;
-  min-height: inherit;
+  min-height: 0;
 }
 .map-coastline.harbour-map-host {
   display: block;
@@ -1107,6 +1109,88 @@ body.sheet-open .live-ship-list {
 }
 .map-ship-pulse {
   animation: ship-pulse 1.2s ease 1;
+}
+.prov-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  padding: 0.12rem 0.35rem;
+  border-radius: 0.25rem;
+  margin-bottom: 0.25rem;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.prov-live {
+  border-color: rgba(62, 198, 201, 0.45);
+  color: var(--marine);
+}
+.prov-recent {
+  border-color: rgba(224, 164, 88, 0.35);
+}
+.prov-stale {
+  opacity: 0.75;
+}
+.map-estimated {
+  stroke: rgba(224, 164, 88, 0.75);
+  stroke-width: 1.2;
+  stroke-dasharray: 4 3;
+}
+.map-follow-trail {
+  fill: none;
+  stroke: rgba(62, 198, 201, 0.35);
+  stroke-width: 1.5;
+}
+.map-sat-track {
+  fill: none;
+  stroke: rgba(180, 160, 220, 0.35);
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
+}
+.map-plane-selected {
+  stroke: #fff;
+  stroke-width: 1;
+}
+.squawk-alert.calm {
+  font-size: 0.72rem;
+  color: var(--review);
+  margin: 0.25rem 0 0;
+}
+.map-follow-card {
+  margin: 0.35rem 0;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 0.35rem;
+  font-size: 0.78rem;
+  background: rgba(10, 16, 28, 0.85);
+}
+.live-plane-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.live-plane-card {
+  padding: 0.5rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 0.35rem;
+  cursor: pointer;
+}
+.adsb-offline {
+  color: var(--review);
+  font-size: 0.85rem;
+}
+.sat-pass-list {
+  list-style: none;
+  margin: 0.35rem 0 0;
+  padding: 0;
+  font-size: 0.78rem;
+}
+.sat-pass-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  margin-bottom: 0.35rem;
 }
 .panel-hero {
   background: linear-gradient(180deg, rgba(14, 24, 40, 0.6), var(--surface));

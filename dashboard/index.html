@@ -6,8 +6,8 @@
   <meta name="color-scheme" content="dark" />
   <title>Wichita · Valletta listener</title>
   <link rel="icon" href="data:," />
-  <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261009-19" />
-  <script type="module" src="/dashboard/dashboard.js?v=20261009-19"></script>
+  <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261009-21" />
+  <script type="module" src="/dashboard/dashboard.js?v=20261009-21"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to dashboard</a>
@@ -40,11 +40,20 @@
       <div class="harbour-layout">
         <div class="harbour-map-col">
           <div id="harbourMap" class="map map-coastline" aria-label="Malta coastline with live ship positions"></div>
+          <div id="mapFollowCard" class="map-follow-card" hidden></div>
           <p class="map-attrib muted">OpenStreetMap land and water (ODbL) · offline · not for navigation</p>
+          <section class="sky-section" aria-labelledby="sat-heading">
+            <h3 id="sat-heading" class="eyebrow">Overhead · computed</h3>
+            <div id="satellitesPanel" class="satellites-panel"></div>
+          </section>
         </div>
         <div class="harbour-list-col">
           <p id="freshnessCounts" class="mono counts"></p>
           <ul id="liveShipList" class="live-ship-list" aria-label="Ships heard live"></ul>
+          <section class="planes-section" aria-labelledby="planes-heading">
+            <h3 id="planes-heading" class="eyebrow">Planes · our ADS-B</h3>
+            <div id="planesPanel" class="planes-panel"></div>
+          </section>
           <div id="shoreStations" class="shore-stations"></div>
           <aside id="liveShipDrawer" class="live-ship-drawer" hidden></aside>
         </div>
