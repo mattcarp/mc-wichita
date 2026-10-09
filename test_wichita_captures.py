@@ -86,6 +86,25 @@ def test_health_no_hackrf_field():
     assert data["captures_on_disk"] >= 2
 
 
+def test_station_snapshot_from_capture_settings():
+    ref = wc.resolve_capture("20261009T002803Z")
+    snap = wc.station_snapshot_from_capture(ref)
+    assert snap["device_serial"] == "2403090170"
+    assert snap["bias_t"] == "false"
+    assert snap["overflows"] == 0
+    assert snap["noise_rms_dbfs"] == -39.26
+    assert "002803Z" in snap["source_label"]
+
+
+def test_timeline_uses_malta_in_ais_summary():
+    ref = wc.resolve_capture("20261009T002803Z")
+    detail = wc.capture_detail(ref)
+    summaries = [e for e in detail["timeline"] if e.get("kind") == "ais_summary"]
+    assert summaries
+    assert "Malta" in summaries[0]["detail"]
+    assert "UTC" not in summaries[0]["detail"]
+
+
 def test_timeline_groups_routine_ais():
     ref = wc.resolve_capture("20261009T002803Z")
     assert ref is not None

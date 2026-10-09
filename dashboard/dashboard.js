@@ -1,7 +1,7 @@
 const MALTA_TZ = "Europe/Malta";
 const VALLETTA = { lat: 35.8987, lon: 14.5145, span: 0.06 };
 const MARINE_MIN_MHZ = 156.45;
-const MARINE_MAX_MHZ = 162.55;
+const MARINE_MAX_MHZ = 162.4;
 
 const BOOKMARKS = [
   { key: "CH09", mhz: 156.45, color: "#3ec6c9" },
@@ -75,15 +75,21 @@ function paletteColor(t, colorBlind) {
   return colorBlind ? cividis(t) : inferno(t);
 }
 
-function fitCanvas(canvas, cssHeight) {
+function fitCanvas(canvas, cssHeight, logicalPixels = false) {
   const wrap = canvas.closest(".chart-wrap") || canvas.parentElement;
   const cssWidth = Math.max(240, Math.floor(wrap?.clientWidth || 320));
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
   canvas.style.width = `${cssWidth}px`;
   canvas.style.height = `${cssHeight}px`;
+  const ctx = canvas.getContext("2d");
+  if (logicalPixels) {
+    canvas.width = cssWidth;
+    canvas.height = cssHeight;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    return { ctx, w: cssWidth, h: cssHeight };
+  }
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
   canvas.width = Math.floor(cssWidth * dpr);
   canvas.height = Math.floor(cssHeight * dpr);
-  const ctx = canvas.getContext("2d");
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   return { ctx, w: cssWidth, h: cssHeight };
 }
@@ -113,6 +119,8 @@ function drawSpectrum(psd) {
   if (!freqs?.length) return;
   const minF = freqs[0];
   const maxF = freqs[freqs.length - 1];
+  const tunerMhz = psd.tuner_center_mhz;
+  const dcHalfWidth = 0.06;
   const sorted = [...vals].sort((a, b) => a - b);
   const minV = sorted[Math.floor(sorted.length * 0.05)];
   const maxV = sorted[Math.floor(sorted.length * 0.98)];
@@ -127,18 +135,45 @@ function drawSpectrum(psd) {
     ctx.stroke();
   }
   ctx.beginPath();
+  let penDown = false;
   for (let i = 0; i < freqs.length; i++) {
-    const x = ((freqs[i] - minF) / (maxF - minF)) * w;
+    const fm = freqs[i];
+    if (tunerMhz && Math.abs(fm - tunerMhz) < dcHalfWidth) {
+      penDown = false;
+      continue;
+    }
+    const x = ((fm - minF) / (maxF - minF)) * w;
     const norm = (vals[i] - minV) / (maxV - minV + 1e-6);
     const y = h - norm * (h - 12) - 6;
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
+    if (!penDown) {
+      ctx.moveTo(x, y);
+      penDown = true;
+    } else {
+      ctx.lineTo(x, y);
+    }
   }
   ctx.strokeStyle = "#3ec6c9";
   ctx.lineWidth = 1.5;
   ctx.stroke();
-  for (const bm of BOOKMARKS) {
-    if (bm.mhz < minF || bm.mhz > maxF) continue;
+  if (tunerMhz && tunerMhz >= minF && tunerMhz <= maxF) {
+    const tx = ((tunerMhz - minF) / (maxF - minF)) * w;
+    ctx.strokeStyle = "#8b93a7";
+    ctx.setLineDash([2, 3]);
+    ctx.beginPath();
+    ctx.moveTo(tx, 0);
+    ctx.lineTo(tx, h);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = "#9aa3b2";
+    ctx.font = "9px Geist Mono, monospace";
+    ctx.fillText("tuner centre", Math.min(tx + 2, w - 52), h - 4);
+  }
+  const narrow = w < 420;
+  const bookmarks = narrow
+    ? BOOKMARKS.filter((b) => b.key === "CH16" || b.key === "AIS1" || b.key === "AIS2")
+    : BOOKMARKS;
+  bookmarks.forEach((bm, idx) => {
+    if (bm.mhz < minF || bm.mhz > maxF) return;
     const x = ((bm.mhz - minF) / (maxF - minF)) * w;
     ctx.strokeStyle = bm.color;
     ctx.setLineDash([4, 4]);
@@ -148,12 +183,14 @@ function drawSpectrum(psd) {
     ctx.stroke();
     ctx.setLineDash([]);
     ctx.fillStyle = "#9aa3b2";
-    ctx.font = "10px Geist Mono, monospace";
-    ctx.fillText(bm.key, x + 2, 11);
-  }
+    ctx.font = "9px Geist Mono, monospace";
+    const yLabel = narrow && idx % 2 === 1 ? 22 : 11;
+    ctx.fillText(bm.key, Math.min(x + 2, w - 28), yLabel);
+  });
   if (caption) {
     const parts = ["Averaged PSD from capture (not live FFT)."];
     if (psd.trim_note) parts.push(psd.trim_note);
+    if (tunerMhz) parts.push(`Tuner centre ${tunerMhz.toFixed(3)} MHz (DC spike masked).`);
     caption.textContent = parts.join(" ");
   }
 }
@@ -199,19 +236,21 @@ function drawBurstWaterfall(analysis, psd, colorBlind, durationSec) {
   const canvas = $("#waterfallCanvas");
   const caption = $("#waterfallCaption");
   if (!canvas) return;
-  const { ctx, w, h } = fitCanvas(canvas, 180);
+  const { ctx, w, h } = fitCanvas(canvas, 180, true);
   const duration = Math.max(30, durationSec || 600);
   const grid = new Float32Array(w * h);
   const minV = psd?.psd_db_per_hz ? Math.min(...psd.psd_db_per_hz) : -120;
   const maxV = psd?.psd_db_per_hz ? Math.max(...psd.psd_db_per_hz) : -90;
 
   if (psd?.available) {
-    for (let x = 0; x < w; x++) {
-      const mhz = MARINE_MIN_MHZ + (x / (w - 1)) * (MARINE_MAX_MHZ - MARINE_MIN_MHZ);
-      const val = samplePsdAtMhz(psd, mhz);
-      if (val == null) continue;
-      const norm = Math.min(1, Math.max(0, (val - minV) / (maxV - minV + 1e-6)));
-      grid[(h - 1) * w + x] = norm * 0.25;
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const mhz = MARINE_MIN_MHZ + (x / (w - 1)) * (MARINE_MAX_MHZ - MARINE_MIN_MHZ);
+        const val = samplePsdAtMhz(psd, mhz);
+        if (val == null) continue;
+        const norm = Math.min(1, Math.max(0, (val - minV) / (maxV - minV + 1e-6)));
+        grid[y * w + x] = norm * 0.14;
+      }
     }
   }
 
@@ -400,33 +439,46 @@ function renderTimeline(events) {
     .map((e) => {
       const time = e.time_malta ? formatMalta(e.time_malta) : "—";
       const caution = e.caution ? `<p class="caution">${e.caution}</p>` : "";
-      return `<li><strong>${e.title}</strong> <span class="mono">${time}</span><br/><span class="muted">${e.detail || ""}</span>${caution}</li>`;
+      return `<li><strong class="event-title">${e.title}</strong><span class="muted">${e.detail || ""}</span><span class="mono event-time">${time}</span>${caution}</li>`;
     })
     .join("");
 }
 
-function renderStation(station, summaries) {
+function renderStation(station, comparison) {
   const dl = $("#stationStrip");
+  const panel = $("#panel-station");
   if (!dl) return;
+  const source = station?.source_label || "";
+  let sourceEl = panel?.querySelector(".station-source");
+  if (panel && !sourceEl) {
+    sourceEl = document.createElement("p");
+    sourceEl.className = "station-source mono";
+    panel.querySelector(".panel-head")?.after(sourceEl);
+  }
+  if (sourceEl) sourceEl.textContent = source ? `${source} (not live)` : "";
   const items = [
-    ["Receiver", station.receiver],
-    ["Serial", station.device_serial],
-    ["Bias-T", station.bias_t],
-    ["Overflows", station.overflows ?? "—"],
-    ["Noise (RMS)", station.noise_floor_dbfs != null ? `${station.noise_floor_dbfs} dBFS` : "—"],
-    ["Antenna", station.antenna_note || "—"],
+    ["Receiver", station?.receiver],
+    ["Serial", station?.device_serial],
+    ["Bias-T", station?.bias_t],
+    ["Overflows", station?.overflows ?? "—"],
+    [
+      "Noise (RMS)",
+      station?.noise_rms_dbfs != null ? `${station.noise_rms_dbfs} dBFS` : "—",
+    ],
+    ["Antenna", station?.antenna_note || "—"],
   ];
   dl.innerHTML = items
     .map(([k, v]) => `<div><dt>${k}</dt><dd>${v ?? "—"}</dd></div>`)
     .join("");
   const cmp = $("#captureCompare");
-  if (cmp && summaries?.length) {
+  const rows = comparison || station?.capture_comparison || [];
+  if (cmp && rows.length) {
     cmp.innerHTML =
-      "<p><strong>Capture comparison</strong></p><ul>" +
-      summaries
+      "<p><strong>Capture comparison</strong></p><ul class=\"compare-list mono\">" +
+      rows
         .map(
           (s) =>
-            `<li class="mono">${s.capture_id}</li><li class="muted">${s.location || "unknown"} · ${s.ais_message_count ?? 0} AIS msgs</li>`,
+            `<li>${s.picker_label || s.capture_id} · ${s.ais_message_count ?? 0} AIS msgs</li>`,
         )
         .join("") +
       "</ul>";
@@ -438,8 +490,9 @@ function populateCaptureSelect(captures, selected) {
   if (!sel) return;
   sel.innerHTML = captures
     .map((c) => {
-      const loc = (c.location || "unknown").slice(0, 40);
-      return `<option value="${c.capture_id}" ${c.capture_id === selected ? "selected" : ""}>${c.capture_id} · ${loc}</option>`;
+      const short = c.picker_label || c.capture_id;
+      const title = `${c.capture_id} — ${c.location || "unknown"}`;
+      return `<option value="${c.capture_id}" title="${title.replace(/"/g, "'")}" ${c.capture_id === selected ? "selected" : ""}>${short}</option>`;
     })
     .join("");
 }
@@ -478,6 +531,7 @@ async function loadCapture(captureId) {
   else initHarbourSchematicMap(VALLETTA.lat, VALLETTA.lon);
   renderVoiceTiles(detail);
   renderTimeline(detail.timeline);
+  renderStation(detail.station_snapshot, null);
   return detail;
 }
 
@@ -501,7 +555,7 @@ async function refreshDashboard() {
     const id = state.captureId || data.primary_capture_id;
     const detail = await loadCapture(id);
     state.dashboard.primary = detail;
-    renderStation(data.station, data.recent_captures);
+    renderStation(detail.station_snapshot, data.recent_captures);
   } catch (err) {
     if (banner) {
       banner.hidden = false;
@@ -523,6 +577,7 @@ function setupTabs() {
     const main = $("#main");
     if (main) main.scrollIntoView({ block: "start", behavior: "instant" in window ? "instant" : "auto" });
     window.scrollTo(0, 0);
+    requestAnimationFrame(() => redrawCharts());
   };
   buttons.forEach((b) => b.addEventListener("click", () => show(b.dataset.tabTarget)));
   show("live");

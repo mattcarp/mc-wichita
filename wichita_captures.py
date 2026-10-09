@@ -13,6 +13,9 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
+from zoneinfo import ZoneInfo
+
+MALTA_TZ = ZoneInfo("Europe/Malta")
 
 CAPTURE_DIR_RE = re.compile(
     r"^(?P<date>\d{8})T(?P<time>\d{6})Z(?P<suffix>.*)$"
@@ -28,7 +31,7 @@ MARINE_BOOKMARKS_MHZ = {
     "AIS2": 162.025,
 }
 MARINE_PSD_MIN_MHZ = 156.45
-MARINE_PSD_MAX_MHZ = 162.55
+MARINE_PSD_MAX_MHZ = 162.4
 AIRBAND_WATCH_MHZ = {
     "121.5_distress": 121.5,
     "123.1_SAR": 123.1,
@@ -94,6 +97,100 @@ def scan_captures(roots: Optional[Iterable[Path]] = None) -> List[CaptureRef]:
             if prev is None or ref.path.stat().st_mtime > prev.path.stat().st_mtime:
                 found[ref.capture_id] = ref
     return sorted(found.values(), key=lambda r: r.sort_key, reverse=True)
+
+
+def _malta_hm(ts: float) -> str:
+    return (
+        datetime.fromtimestamp(ts, tz=timezone.utc)
+        .astimezone(MALTA_TZ)
+        .strftime("%H:%M")
+    )
+
+
+def _malta_time_range(t0: float, t1: float) -> str:
+    return f"{_malta_hm(t0)}–{_malta_hm(t1)} Malta"
+
+
+def _load_capture_settings(capture_dir: Path) -> Dict[str, Any]:
+    direct = capture_dir / "capture_settings.json"
+    if direct.is_file():
+        data = _read_json(direct)
+        return data or {}
+    candidates = sorted(capture_dir.glob("*capture_settings.json"))
+    for path in candidates:
+        if "wichita_vhf" in path.name or "marine" in path.name:
+            data = _read_json(path)
+            if data:
+                return data
+    if candidates:
+        data = _read_json(candidates[0])
+        return data or {}
+    return {}
+
+
+def _load_primary_sigmf_meta(capture_dir: Path) -> Dict[str, Any]:
+    direct = list(capture_dir.glob("*.sigmf-meta"))
+    if not direct:
+        return {}
+    preferred = [p for p in direct if "wichita_vhf" in p.name or "marine" in p.name]
+    path = preferred[0] if preferred else sorted(direct)[0]
+    data = _read_json(path)
+    if not data:
+        return {}
+    return data.get("global") or data
+
+
+def _device_serial_from_stdout(capture_dir: Path) -> Optional[str]:
+    for path in sorted(capture_dir.glob("*capture_stdout.log")):
+        try:
+            for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+                if "SerNo:" in line:
+                    return line.split("SerNo:", 1)[1].strip()
+        except OSError:
+            continue
+    return None
+
+
+def station_snapshot_from_capture(ref: CaptureRef) -> Dict[str, Any]:
+    settings = _load_capture_settings(ref.path)
+    sigmf = _load_primary_sigmf_meta(ref.path)
+    manifest = load_manifest(ref.path)
+    readback = None
+    rb = settings.get("readback")
+    if isinstance(rb, list) and rb:
+        readback = rb[-1]
+    elif isinstance(rb, dict):
+        readback = rb
+    bias_meta = sigmf.get("wichita:biasT_readback") or {}
+    bias_t = None
+    if readback and readback.get("biasT_ctrl") is not None:
+        bias_t = readback.get("biasT_ctrl")
+    elif bias_meta:
+        bias_t = bias_meta.get("during_stream") or bias_meta.get("pre_stream")
+    serial = sigmf.get("wichita:device_serial") or _device_serial_from_stdout(ref.path)
+    tuner_hz = None
+    if readback and readback.get("frequency"):
+        tuner_hz = float(readback["frequency"])
+    hw = sigmf.get("core:hw") or "SDRplay RSPdx-R2 (receive-only)"
+    overflows = settings.get("overflows")
+    if overflows is None:
+        overflows = 0
+    return {
+        "source_capture_id": ref.capture_id,
+        "source_label": f"from capture {ref.capture_id}",
+        "receiver": hw,
+        "device_serial": serial or "not recorded",
+        "bias_t": str(bias_t).lower() if bias_t is not None else "not recorded",
+        "overflows": overflows,
+        "noise_rms_dbfs": settings.get("rms_dbfs"),
+        "peak_dbfs": settings.get("peak_dbfs"),
+        "tuner_center_mhz": (tuner_hz / 1e6) if tuner_hz else None,
+        "antenna_note": manifest.get("location") or sigmf.get("wichita:location"),
+        "known_spurs_mhz": [
+            {"mhz": 120.0, "label": "known local spur"},
+            {"mhz": 132.0, "label": "known local spur"},
+        ],
+    }
 
 
 def _read_json(path: Path) -> Optional[Dict[str, Any]]:
@@ -241,11 +338,27 @@ def load_wideband_psd(capture_dir: Path, max_points: int = 2048) -> Dict[str, An
         while freqs and freqs[-1] > MARINE_PSD_MAX_MHZ:
             freqs.pop()
             psd.pop()
+    trimmed_high_mhz: Optional[float] = None
+    if freqs and freqs[-1] < MARINE_PSD_MAX_MHZ - 0.01:
+        trimmed_high_mhz = MARINE_PSD_MAX_MHZ
     if len(freqs) > max_points:
         step = max(1, len(freqs) // max_points)
         freqs = freqs[::step][:max_points]
         psd = psd[::step][:max_points]
     analysis = _read_json(capture_dir / "analysis_report.json") or {}
+    settings = _load_capture_settings(capture_dir)
+    sigmf = _load_primary_sigmf_meta(capture_dir)
+    rb = settings.get("readback")
+    if isinstance(rb, list) and rb:
+        rb = rb[-1]
+    tuner_mhz = None
+    if isinstance(rb, dict) and rb.get("frequency"):
+        tuner_mhz = float(rb["frequency"]) / 1e6
+    trim_parts = []
+    if trimmed_low_mhz is not None:
+        trim_parts.append(f"left roll-off trimmed below {MARINE_PSD_MIN_MHZ:.3f} MHz")
+    if trimmed_high_mhz is not None:
+        trim_parts.append(f"right roll-off trimmed above {MARINE_PSD_MAX_MHZ:.3f} MHz")
     return {
         "available": True,
         "freq_mhz": freqs,
@@ -254,11 +367,9 @@ def load_wideband_psd(capture_dir: Path, max_points: int = 2048) -> Dict[str, An
         "median_db": analysis.get("wideband_psd_median_db"),
         "display_kind": "averaged_psd",
         "trimmed_low_mhz": trimmed_low_mhz,
-        "trim_note": (
-            "Left-edge filter roll-off trimmed below {:.3f} MHz.".format(MARINE_PSD_MIN_MHZ)
-            if trimmed_low_mhz is not None
-            else None
-        ),
+        "trimmed_high_mhz": trimmed_high_mhz,
+        "tuner_center_mhz": tuner_mhz,
+        "trim_note": "; ".join(trim_parts) if trim_parts else None,
     }
 
 
@@ -381,9 +492,7 @@ def _append_ais_timeline_events(
                     "t_utc": t0,
                     "title": f"{label} heard {len(timed)} times",
                     "detail": (
-                        f"Routine AIS in this capture · "
-                        f"{datetime.fromtimestamp(t0, tz=timezone.utc).strftime('%H:%M')}–"
-                        f"{datetime.fromtimestamp(t1, tz=timezone.utc).strftime('%H:%M')} UTC"
+                        f"Routine AIS in this capture · {_malta_time_range(t0, t1)}"
                     ),
                     "caution": None,
                     "grouped": True,
@@ -489,6 +598,22 @@ def build_timeline(
     return events
 
 
+def capture_picker_label(ref: CaptureRef) -> str:
+    manifest = load_manifest(ref.path)
+    loc = (manifest.get("location") or "").lower()
+    if "balcony" in loc or "stairwell" in loc:
+        place = "Balcony"
+    elif "indoor" in loc:
+        place = "Indoor"
+    elif ref.suffix == "voice" or "voice" in ref.capture_id:
+        place = "Voice test"
+    else:
+        place = "Capture"
+    local = ref.start_utc.astimezone(MALTA_TZ)
+    when = f"{local.day} {local.strftime('%b %H:%M')}"
+    return f"{place} · {when}"
+
+
 def capture_summary(ref: CaptureRef) -> Dict[str, Any]:
     manifest = load_manifest(ref.path)
     analysis = _read_json(ref.path / "analysis_report.json") or {}
@@ -518,7 +643,8 @@ def capture_summary(ref: CaptureRef) -> Dict[str, Any]:
         "marine_quiet": marine.get("ch16", {}).get("quiet")
         and marine.get("ch09", {}).get("quiet"),
         "wideband_psd_median_db": analysis.get("wideband_psd_median_db"),
-        "overflows": (_read_json(ref.path / "capture_settings.json") or {}).get("overflows"),
+        "overflows": _load_capture_settings(ref.path).get("overflows"),
+        "picker_label": capture_picker_label(ref),
     }
 
 
@@ -528,7 +654,7 @@ def capture_detail(ref: CaptureRef) -> Dict[str, Any]:
     ais = decode_ais_from_nmea(ref.path, analysis)
     marine = marine_watch_payload(ref.path, analysis)
     airband = airband_payload(ref.path)
-    settings = _read_json(ref.path / "capture_settings.json") or {}
+    settings = _load_capture_settings(ref.path)
     timeline = build_timeline(ref, analysis, ais, marine, airband)
     return {
         "summary": capture_summary(ref),
@@ -539,6 +665,7 @@ def capture_detail(ref: CaptureRef) -> Dict[str, Any]:
         "airband": airband,
         "capture_settings": settings,
         "timeline": timeline,
+        "station_snapshot": station_snapshot_from_capture(ref),
     }
 
 
@@ -570,39 +697,18 @@ def dashboard_aggregate(refs: List[CaptureRef]) -> Dict[str, Any]:
 
 def station_payload(refs: List[CaptureRef]) -> Dict[str, Any]:
     primary = refs[0] if refs else None
-    settings = {}
-    if primary:
-        settings = _read_json(primary.path / "capture_settings.json") or {}
-    readback = None
-    rb = settings.get("readback")
-    if isinstance(rb, list) and rb:
-        readback = rb[-1]
-    elif isinstance(rb, dict):
-        readback = rb
-    bias_t = None
-    if readback:
-        bias_t = readback.get("biasT_ctrl")
-    return {
-        "receiver": "SDRplay RSPdx-R2 (receive-only)",
-        "device_serial": "unknown",
-        "bias_t": bias_t or "unknown",
-        "overflows": settings.get("overflows"),
-        "noise_floor_dbfs": settings.get("rms_dbfs"),
-        "peak_dbfs": settings.get("peak_dbfs"),
-        "known_spurs_mhz": [
-            {"mhz": 120.0, "label": "known local spur"},
-            {"mhz": 132.0, "label": "known local spur"},
-        ],
-        "antenna_note": primary and load_manifest(primary.path).get("location"),
-        "capture_comparison": [
-            {
-                "capture_id": r.capture_id,
-                "location": load_manifest(r.path).get("location"),
-                "ais_message_count": capture_summary(r).get("ais_message_count"),
-            }
-            for r in refs[:5]
-        ],
-    }
+    if not primary:
+        return {"capture_comparison": []}
+    snap = station_snapshot_from_capture(primary)
+    snap["capture_comparison"] = [
+        {
+            "capture_id": r.capture_id,
+            "picker_label": capture_picker_label(r),
+            "ais_message_count": capture_summary(r).get("ais_message_count"),
+        }
+        for r in refs[:5]
+    ]
+    return snap
 
 
 def resolve_capture(capture_id: str, roots: Optional[Iterable[Path]] = None) -> Optional[CaptureRef]:
