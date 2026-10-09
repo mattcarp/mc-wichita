@@ -128,11 +128,20 @@ def test_timeline_groups_routine_ais():
     assert summaries[0].get("grouped") is True
 
 
-def test_psd_trims_low_edge():
-    ref = wc.resolve_capture("20261009T001016Z")
+def test_psd_plot_span_from_sigmf():
+    ref = wc.resolve_capture("20261009T002803Z")
     psd = wc.load_wideband_psd(ref.path, max_points=500)
-    assert psd["freq_mhz"][0] >= wc.MARINE_PSD_MIN_MHZ - 0.001
-    assert psd.get("trim_note")
+    assert psd["plot_min_mhz"] < 156.3
+    assert psd["plot_max_mhz"] > 162.2
+    assert psd["freq_mhz"][0] >= psd["plot_min_mhz"] - 0.001
+    assert psd["draw_max_mhz"] < psd["plot_max_mhz"]
+    assert "AIS2 near band edge" in " ".join(psd.get("span_notes") or [])
+    assert psd.get("span_caption")
+
+    indoor = wc.resolve_capture("20261009T001016Z")
+    psd_in = wc.load_wideband_psd(indoor.path, max_points=500)
+    assert psd_in["iq_center_mhz"] == 159.4125
+    assert psd_in["plot_min_mhz"] > 156.4
 
 
 def test_antenna_power_rejected():

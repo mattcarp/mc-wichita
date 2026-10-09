@@ -1,7 +1,7 @@
 const MALTA_TZ = "Europe/Malta";
 const VALLETTA = { lat: 35.8987, lon: 14.5145, span: 0.06 };
-const MARINE_MIN_MHZ = 156.45;
-const MARINE_MAX_MHZ = 162.4;
+const MARINE_FALLBACK_MIN_MHZ = 156.45;
+const MARINE_FALLBACK_MAX_MHZ = 162.4;
 
 const BOOKMARKS = [
   { key: "CH09", mhz: 156.45, color: "#3ec6c9" },
@@ -128,8 +128,17 @@ function samplePsdAtMhz(psd, mhz) {
   return vals[vals.length - 1];
 }
 
-function freqToAxisX(mhz, w) {
-  return ((mhz - MARINE_MIN_MHZ) / (MARINE_MAX_MHZ - MARINE_MIN_MHZ)) * w;
+function psdSpan(psd) {
+  const minF = psd?.plot_min_mhz ?? MARINE_FALLBACK_MIN_MHZ;
+  const maxF = psd?.plot_max_mhz ?? MARINE_FALLBACK_MAX_MHZ;
+  const drawMin = psd?.draw_min_mhz ?? minF;
+  const drawMax = psd?.draw_max_mhz ?? maxF;
+  return { minF, maxF, drawMin, drawMax };
+}
+
+function freqToAxisX(mhz, w, span) {
+  const { minF, maxF } = span;
+  return ((mhz - minF) / (maxF - minF + 1e-9)) * w;
 }
 
 const PLOT_PAD_X = 10;
@@ -139,8 +148,24 @@ function plotInnerWidth(w) {
 }
 
 /** Map MHz to canvas x with horizontal inset so edge channels (CH09) are not clipped. */
-function freqToPlotX(mhz, w) {
-  return PLOT_PAD_X + freqToAxisX(mhz, plotInnerWidth(w));
+function freqToPlotX(mhz, w, span) {
+  return PLOT_PAD_X + freqToAxisX(mhz, plotInnerWidth(w), span);
+}
+
+function clampMarkerCenterX(x, width, w) {
+  const half = width / 2;
+  return Math.max(PLOT_PAD_X + half, Math.min(w - PLOT_PAD_X - half, x));
+}
+
+function updateWaterfallAxisLabels(psd) {
+  const axis = document.querySelector(".waterfall-axis");
+  if (!axis) return;
+  const { minF, maxF } = psdSpan(psd);
+  const spans = axis.querySelectorAll("span");
+  if (spans.length >= 2) {
+    spans[0].textContent = `${minF.toFixed(3)} MHz`;
+    spans[1].textContent = `${maxF.toFixed(3)} MHz`;
+  }
 }
 
 const MARKER_FONT = "10px Geist Mono, monospace";
@@ -151,25 +176,14 @@ function markerLabelWidth(ctx, key) {
 }
 
 function markerLabelBox(key, x, width, w) {
-  if (key === "CH09") {
-    const left = PLOT_PAD_X;
-    return { left, right: left + width };
-  }
-  if (key === "AIS2") {
-    const right = Math.min(w - PLOT_PAD_X, x);
-    return { left: right - width, right };
-  }
+  const cx = clampMarkerCenterX(x, width, w);
   const half = width / 2;
-  return { left: x - half, right: x + half };
+  return { left: cx - half, right: cx + half, cx };
 }
 
 function layoutSpectrumMarkerRows(items, w, ctx) {
   ctx.font = MARKER_FONT;
-  const sorted = [...items].sort((a, b) => {
-    const ax = a.key === "CH09" ? PLOT_PAD_X : a.x;
-    const bx = b.key === "CH09" ? PLOT_PAD_X : b.x;
-    return ax - bx;
-  });
+  const sorted = [...items].sort((a, b) => a.x - b.x);
   const placed = [];
   const out = [];
   for (const item of sorted) {
@@ -196,28 +210,21 @@ function layoutSpectrumMarkerRows(items, w, ctx) {
   return out;
 }
 
-function renderSpectrumMarkersHtml(w, h, ctx) {
-  const axisMinF = MARINE_MIN_MHZ;
-  const axisMaxF = MARINE_MAX_MHZ;
+function renderSpectrumMarkersHtml(w, h, ctx, span) {
+  const { minF, maxF } = span;
   const items = BOOKMARKS.filter(
-    (bm) => bm.mhz >= axisMinF && bm.mhz <= axisMaxF,
+    (bm) => bm.mhz >= minF - 0.001 && bm.mhz <= maxF + 0.001,
   ).map((bm) => ({
     key: bm.key,
     bm,
-    x: freqToPlotX(bm.mhz, w),
+    x: freqToPlotX(bm.mhz, w, span),
   }));
   const layout = layoutSpectrumMarkerRows(items, w, ctx);
   return layout
     .map(({ key, x, row, width }) => {
       const top = 4 + row * MARKER_ROW_STEP;
-      if (key === "CH09") {
-        return `<span style="left:${PLOT_PAD_X}px;top:${top}px">${key}</span>`;
-      }
-      if (key === "AIS2") {
-        const right = Math.min(w - PLOT_PAD_X, x);
-        return `<span style="left:${right}px;top:${top}px;transform:translateX(-100%)">${key}</span>`;
-      }
-      return `<span style="left:${x}px;top:${top}px">${key}</span>`;
+      const cx = clampMarkerCenterX(x, width, w);
+      return `<span style="left:${cx}px;top:${top}px">${key}</span>`;
     })
     .join("");
 }
@@ -230,18 +237,15 @@ function drawSpectrum(psd) {
   const freqs = psd.freq_mhz;
   const vals = psd.psd_db_per_hz;
   if (!freqs?.length) return;
-  const axisMinF = MARINE_MIN_MHZ;
-  const axisMaxF = MARINE_MAX_MHZ;
-  const edgeMarginMhz = 0.35;
+  const span = psdSpan(psd);
+  const { minF: axisMinF, maxF: axisMaxF, drawMin, drawMax } = span;
   const innerW = plotInnerWidth(w);
-  const xMin = PLOT_PAD_X + innerW * 0.035;
-  const xMax = PLOT_PAD_X + innerW * 0.965;
   const tunerMhz = psd.tuner_center_mhz;
   const dcHalfWidth = 0.06;
   const coreVals = [];
   for (let i = 0; i < freqs.length; i++) {
     const fm = freqs[i];
-    if (fm < axisMinF + edgeMarginMhz || fm > axisMaxF - edgeMarginMhz) continue;
+    if (fm < drawMin || fm > drawMax) continue;
     if (tunerMhz && Math.abs(fm - tunerMhz) < dcHalfWidth) continue;
     coreVals.push(vals[i]);
   }
@@ -268,7 +272,7 @@ function drawSpectrum(psd) {
   let penDown = false;
   for (let i = 0; i < freqs.length; i++) {
     const fm = freqs[i];
-    if (fm < axisMinF + edgeMarginMhz || fm > axisMaxF - edgeMarginMhz) {
+    if (fm < drawMin || fm > drawMax) {
       penDown = false;
       continue;
     }
@@ -276,11 +280,7 @@ function drawSpectrum(psd) {
       penDown = false;
       continue;
     }
-    const x = freqToPlotX(fm, w);
-    if (x < xMin || x > xMax) {
-      penDown = false;
-      continue;
-    }
+    const x = freqToPlotX(fm, w, span);
     const y = Math.max(
       6,
       Math.min(h - 6, h - 6 - ((vals[i] - yLoDb) / ySpan) * (h - 12)),
@@ -297,7 +297,7 @@ function drawSpectrum(psd) {
   ctx.stroke();
   ctx.restore();
   if (tunerMhz && tunerMhz >= axisMinF && tunerMhz <= axisMaxF) {
-    const tx = freqToPlotX(tunerMhz, w);
+    const tx = freqToPlotX(tunerMhz, w, span);
     ctx.strokeStyle = "#8b93a7";
     ctx.setLineDash([2, 3]);
     ctx.beginPath();
@@ -313,12 +313,12 @@ function drawSpectrum(psd) {
   const markersEl = $("#spectrumMarkers");
   if (markersEl) {
     markersEl.style.height = `${h}px`;
-    markersEl.innerHTML = renderSpectrumMarkersHtml(w, h, ctx);
+    markersEl.innerHTML = renderSpectrumMarkersHtml(w, h, ctx, span);
   }
   for (const key of labelKeys) {
     const bm = BOOKMARKS.find((b) => b.key === key);
-    if (!bm || bm.mhz < axisMinF || bm.mhz > axisMaxF) continue;
-    const x = freqToPlotX(bm.mhz, w);
+    if (!bm || bm.mhz < axisMinF - 0.001 || bm.mhz > axisMaxF + 0.001) continue;
+    const x = freqToPlotX(bm.mhz, w, span);
     ctx.strokeStyle = bm.color;
     ctx.setLineDash([4, 4]);
     ctx.beginPath();
@@ -330,7 +330,8 @@ function drawSpectrum(psd) {
   if (caption) {
     caption.textContent = formatCaption([
       "Averaged PSD from capture (not live FFT)",
-      psd.trim_note,
+      psd.span_caption,
+      ...(psd.span_notes || []),
       tunerMhz ? `Tuner centre ${tunerMhz.toFixed(3)} MHz (DC spike masked)` : null,
     ]);
   }
@@ -389,12 +390,14 @@ function drawBurstWaterfall(analysis, psd, colorBlind, durationSec) {
     ? sortedPsd[Math.floor(sortedPsd.length * 0.98)]
     : -90;
 
+  const span = psdSpan(psd);
+  const { minF, maxF, drawMax } = span;
   if (psd?.available) {
     const inner = plotInnerWidth(w);
     for (let y = 0; y < h; y++) {
       for (let x = 0; x < w; x++) {
         const t = Math.max(0, Math.min(1, (x - PLOT_PAD_X) / inner));
-        const mhz = MARINE_MIN_MHZ + t * (MARINE_MAX_MHZ - MARINE_MIN_MHZ);
+        const mhz = minF + t * (maxF - minF);
         const val = samplePsdAtMhz(psd, mhz);
         if (val == null) continue;
         const norm = Math.min(1, Math.max(0, (val - minV) / (maxV - minV + 1e-6)));
@@ -409,7 +412,7 @@ function drawBurstWaterfall(analysis, psd, colorBlind, durationSec) {
       const y = Math.min(h - 2, Math.max(0, Math.floor((b.t_s / duration) * (h - 4))));
       const x = Math.min(
         w - 1,
-        Math.max(0, Math.floor(freqToPlotX(b.freq_mhz, w))),
+        Math.max(0, Math.floor(freqToPlotX(b.freq_mhz, w, span))),
       );
       splatEnergy(grid, w, h, x, y, b.intensity, 4);
     }
@@ -655,6 +658,7 @@ function captureDurationSec(detail) {
 
 function redrawCharts() {
   if (!state.lastPsd || !state.lastAnalysis) return;
+  updateWaterfallAxisLabels(state.lastPsd);
   drawSpectrum(state.lastPsd);
   drawBurstWaterfall(state.lastAnalysis, state.lastPsd, state.colorBlind, state.lastDuration);
 }

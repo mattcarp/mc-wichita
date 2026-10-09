@@ -33,6 +33,9 @@ MARINE_BOOKMARKS_MHZ = {
 MARINE_PSD_MIN_MHZ = 156.45
 MARINE_PSD_MAX_MHZ = 162.4
 PSD_EDGE_MARGIN_BINS = 4
+IQ_PLOT_HALF_FRAC = 0.5
+IQ_USABLE_HALF_FRAC = 0.45
+AIS2_MHZ = MARINE_BOOKMARKS_MHZ["AIS2"]
 AIRBAND_WATCH_MHZ = {
     "121.5_distress": 121.5,
     "123.1_SAR": 123.1,
@@ -129,16 +132,137 @@ def _load_capture_settings(capture_dir: Path) -> Dict[str, Any]:
     return {}
 
 
-def _load_primary_sigmf_meta(capture_dir: Path) -> Dict[str, Any]:
+def _load_primary_sigmf_path(capture_dir: Path) -> Optional[Path]:
     direct = list(capture_dir.glob("*.sigmf-meta"))
     if not direct:
-        return {}
+        return None
     preferred = [p for p in direct if "wichita_vhf" in p.name or "marine" in p.name]
-    path = preferred[0] if preferred else sorted(direct)[0]
+    return preferred[0] if preferred else sorted(direct)[0]
+
+
+def _load_primary_sigmf_document(capture_dir: Path) -> Dict[str, Any]:
+    path = _load_primary_sigmf_path(capture_dir)
+    if not path:
+        return {}
     data = _read_json(path)
+    return data or {}
+
+
+def _load_primary_sigmf_meta(capture_dir: Path) -> Dict[str, Any]:
+    data = _load_primary_sigmf_document(capture_dir)
     if not data:
         return {}
     return data.get("global") or data
+
+
+def _iq_centre_and_fs_mhz(sigmf_doc: Dict[str, Any]) -> Tuple[Optional[float], Optional[float]]:
+    caps = sigmf_doc.get("captures") or []
+    cf_hz = caps[0].get("core:frequency") if caps else None
+    glob = sigmf_doc.get("global") or {}
+    fs_hz = glob.get("core:sample_rate")
+    if cf_hz is None or fs_hz is None:
+        return None, None
+    return float(cf_hz) / 1e6, float(fs_hz) / 1e6
+
+
+def _index_span(freqs: List[float], f_lo: float, f_hi: float) -> Tuple[int, int]:
+    i_lo = 0
+    for i, f in enumerate(freqs):
+        if f >= f_lo - 1e-6:
+            i_lo = i
+            break
+    i_hi = len(freqs) - 1
+    for i in range(len(freqs) - 1, -1, -1):
+        if freqs[i] <= f_hi + 1e-6:
+            i_hi = i
+            break
+    return i_lo, i_hi
+
+
+def _right_rolloff_draw_index(
+    freqs: List[float],
+    psd: List[float],
+    i_lo: int,
+    i_hi: int,
+) -> int:
+    """Index of the last in-band bin before the right filter roll-off (per-bin descent toward Nyquist)."""
+    core = [
+        psd[j]
+        for j in range(i_lo, i_hi + 1)
+        if freqs[j] < freqs[i_hi] - 0.12
+    ]
+    if not core:
+        return i_hi
+    med = sorted(core)[len(core) // 2]
+    for i in range(i_hi - 1, i_lo, -1):
+        if psd[i] < med - 25:
+            continue
+        seg = psd[i : i_hi + 1]
+        if len(seg) < 8:
+            continue
+        per_bin = (seg[0] - seg[-1]) / max(1, len(seg) - 1)
+        if per_bin < 0.35:
+            return i
+    return i_lo
+
+
+def compute_psd_plot_span(
+    freqs: List[float],
+    psd: List[float],
+    sigmf_doc: Dict[str, Any],
+) -> Dict[str, Any]:
+    cf_mhz, fs_mhz = _iq_centre_and_fs_mhz(sigmf_doc)
+    if not freqs or cf_mhz is None or fs_mhz is None:
+        f0, f1 = (freqs[0], freqs[-1]) if freqs else (MARINE_PSD_MIN_MHZ, MARINE_PSD_MAX_MHZ)
+        return {
+            "plot_min_mhz": f0,
+            "plot_max_mhz": f1,
+            "draw_min_mhz": f0,
+            "draw_max_mhz": f1,
+            "usable_min_mhz": f0,
+            "usable_max_mhz": f1,
+            "iq_center_mhz": cf_mhz,
+            "sample_rate_mhz": fs_mhz,
+            "span_notes": [],
+        }
+
+    plot_half = IQ_PLOT_HALF_FRAC * fs_mhz
+    usable_half = IQ_USABLE_HALF_FRAC * fs_mhz
+    plot_lo = max(freqs[0], cf_mhz - plot_half)
+    plot_hi = min(freqs[-1], cf_mhz + plot_half)
+    usable_lo = cf_mhz - usable_half
+    usable_hi = cf_mhz + usable_half
+    i_lo, i_hi = _index_span(freqs, plot_lo, plot_hi)
+    draw_lo_mhz = plot_lo
+    draw_hi_idx = _right_rolloff_draw_index(freqs, psd, i_lo, i_hi)
+    draw_hi_mhz = freqs[draw_hi_idx]
+
+    notes: List[str] = []
+    if AIS2_MHZ > usable_hi + 0.001:
+        notes.append("AIS2 near band edge, levels understated")
+    elif AIS2_MHZ > draw_hi_mhz - 0.02:
+        notes.append("AIS2 near band edge, levels understated")
+
+    span_caption = (
+        f"Plotted span {plot_lo:.3f}–{plot_hi:.3f} MHz "
+        f"(IQ centre {cf_mhz:.4f} MHz at {fs_mhz:.1f} Msps; "
+        f"~±{IQ_USABLE_HALF_FRAC:.2f}× sample rate usable)"
+    )
+    if draw_hi_mhz < plot_hi - 0.01:
+        span_caption += f"; trace ends {draw_hi_mhz:.3f} MHz where filter roll-off begins"
+
+    return {
+        "plot_min_mhz": plot_lo,
+        "plot_max_mhz": plot_hi,
+        "draw_min_mhz": draw_lo_mhz,
+        "draw_max_mhz": draw_hi_mhz,
+        "usable_min_mhz": usable_lo,
+        "usable_max_mhz": usable_hi,
+        "iq_center_mhz": cf_mhz,
+        "sample_rate_mhz": fs_mhz,
+        "span_caption": span_caption,
+        "span_notes": notes,
+    }
 
 
 def _device_serial_from_stdout(capture_dir: Path) -> Optional[str]:
@@ -330,39 +454,23 @@ def load_wideband_psd(capture_dir: Path, max_points: int = 2048) -> Dict[str, An
                 continue
     if not freqs:
         return {"available": False, "reason": "wideband_psd.csv empty"}
-    trimmed_low_mhz: Optional[float] = None
-    if freqs:
-        while freqs and freqs[0] < MARINE_PSD_MIN_MHZ:
-            trimmed_low_mhz = freqs[0] / 1e6 if freqs[0] > 1e5 else freqs[0]
-            freqs.pop(0)
-            psd.pop(0)
-        while freqs and freqs[-1] > MARINE_PSD_MAX_MHZ:
-            freqs.pop()
-            psd.pop()
-    trimmed_high_mhz: Optional[float] = None
-    if freqs and freqs[-1] < MARINE_PSD_MAX_MHZ - 0.01:
-        trimmed_high_mhz = MARINE_PSD_MAX_MHZ
-    if len(freqs) > PSD_EDGE_MARGIN_BINS * 2 + 8:
-        freqs = freqs[PSD_EDGE_MARGIN_BINS:-PSD_EDGE_MARGIN_BINS]
-        psd = psd[PSD_EDGE_MARGIN_BINS:-PSD_EDGE_MARGIN_BINS]
+    sigmf_doc = _load_primary_sigmf_document(capture_dir)
+    span = compute_psd_plot_span(freqs, psd, sigmf_doc)
+    i_lo, i_hi = _index_span(freqs, span["plot_min_mhz"], span["plot_max_mhz"])
+    freqs = freqs[i_lo : i_hi + 1]
+    psd = psd[i_lo : i_hi + 1]
     if len(freqs) > max_points:
         step = max(1, len(freqs) // max_points)
         freqs = freqs[::step][:max_points]
         psd = psd[::step][:max_points]
     analysis = _read_json(capture_dir / "analysis_report.json") or {}
     settings = _load_capture_settings(capture_dir)
-    sigmf = _load_primary_sigmf_meta(capture_dir)
     rb = settings.get("readback")
     if isinstance(rb, list) and rb:
         rb = rb[-1]
-    tuner_mhz = None
+    tuner_mhz = span.get("iq_center_mhz")
     if isinstance(rb, dict) and rb.get("frequency"):
         tuner_mhz = float(rb["frequency"]) / 1e6
-    trim_parts = []
-    if trimmed_low_mhz is not None:
-        trim_parts.append(f"Left roll-off trimmed below {MARINE_PSD_MIN_MHZ:.3f} MHz")
-    if trimmed_high_mhz is not None:
-        trim_parts.append(f"Right roll-off trimmed above {MARINE_PSD_MAX_MHZ:.3f} MHz")
     return {
         "available": True,
         "freq_mhz": freqs,
@@ -370,10 +478,8 @@ def load_wideband_psd(capture_dir: Path, max_points: int = 2048) -> Dict[str, An
         "bookmarks_mhz": MARINE_BOOKMARKS_MHZ,
         "median_db": analysis.get("wideband_psd_median_db"),
         "display_kind": "averaged_psd",
-        "trimmed_low_mhz": trimmed_low_mhz,
-        "trimmed_high_mhz": trimmed_high_mhz,
         "tuner_center_mhz": tuner_mhz,
-        "trim_note": "; ".join(trim_parts) if trim_parts else None,
+        **span,
     }
 
 
