@@ -1812,7 +1812,11 @@ async def dashboard_asset(filename: str):
         media_type = "font/woff2"
     else:
         media_type = "application/octet-stream"
-    return FileResponse(str(asset), media_type=media_type)
+    return FileResponse(
+        str(asset),
+        media_type=media_type,
+        headers={"Cache-Control": "no-cache, must-revalidate"},
+    )
 
 
 @app.get("/", include_in_schema=False)
@@ -1820,7 +1824,11 @@ async def root():
     """Serve Wichita dashboard."""
     dashboard_path = Path(__file__).resolve().parent / "dashboard" / "index.html"
     if dashboard_path.exists():
-        return FileResponse(str(dashboard_path), media_type="text/html")
+        return FileResponse(
+            str(dashboard_path),
+            media_type="text/html",
+            headers={"Cache-Control": "no-cache, must-revalidate"},
+        )
     raise HTTPException(status_code=404, detail="Dashboard not found")
 
 

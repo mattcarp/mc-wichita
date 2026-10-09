@@ -122,6 +122,10 @@ function samplePsdAtMhz(psd, mhz) {
   return vals[vals.length - 1];
 }
 
+function freqToAxisX(mhz, w) {
+  return ((mhz - MARINE_MIN_MHZ) / (MARINE_MAX_MHZ - MARINE_MIN_MHZ)) * w;
+}
+
 function drawSpectrum(psd) {
   const canvas = $("#spectrumCanvas");
   const caption = $("#spectrumCaption");
@@ -130,17 +134,22 @@ function drawSpectrum(psd) {
   const freqs = psd.freq_mhz;
   const vals = psd.psd_db_per_hz;
   if (!freqs?.length) return;
-  const edgeSkip = Math.min(5, Math.max(2, Math.floor(freqs.length * 0.015)));
-  const plotStart = edgeSkip;
-  const plotEnd = freqs.length - edgeSkip;
-  const minF = freqs[plotStart];
-  const maxF = freqs[plotEnd - 1];
+  const axisMinF = MARINE_MIN_MHZ;
+  const axisMaxF = MARINE_MAX_MHZ;
+  const edgeMarginMhz = 0.25;
   const tunerMhz = psd.tuner_center_mhz;
   const dcHalfWidth = 0.06;
-  const coreVals = vals.slice(plotStart, plotEnd);
-  const sorted = [...coreVals].sort((a, b) => a - b);
+  const coreVals = [];
+  for (let i = 0; i < freqs.length; i++) {
+    const fm = freqs[i];
+    if (fm < axisMinF + edgeMarginMhz || fm > axisMaxF - edgeMarginMhz) continue;
+    if (tunerMhz && Math.abs(fm - tunerMhz) < dcHalfWidth) continue;
+    coreVals.push(vals[i]);
+  }
+  const sorted = coreVals.length ? [...coreVals].sort((a, b) => a - b) : [...vals].sort((a, b) => a - b);
   const minV = sorted[Math.floor(sorted.length * 0.05)];
   const maxV = sorted[Math.floor(sorted.length * 0.98)];
+  const floorCut = sorted[Math.floor(sorted.length * 0.12)];
   ctx.fillStyle = "#08090c";
   ctx.fillRect(0, 0, w, h);
   ctx.strokeStyle = "#252a36";
@@ -153,14 +162,30 @@ function drawSpectrum(psd) {
   }
   ctx.beginPath();
   let penDown = false;
-  for (let i = plotStart; i < plotEnd; i++) {
+  for (let i = 0; i < freqs.length; i++) {
     const fm = freqs[i];
+    if (fm < axisMinF + edgeMarginMhz || fm > axisMaxF - edgeMarginMhz) {
+      penDown = false;
+      continue;
+    }
     if (tunerMhz && Math.abs(fm - tunerMhz) < dcHalfWidth) {
       penDown = false;
       continue;
     }
-    const x = ((fm - minF) / (maxF - minF)) * w;
-    const norm = (vals[i] - minV) / (maxV - minV + 1e-6);
+    if (vals[i] < floorCut - 4) {
+      penDown = false;
+      continue;
+    }
+    const x = freqToAxisX(fm, w);
+    if (x < w * 0.025 || x > w * 0.975) {
+      penDown = false;
+      continue;
+    }
+    const norm = Math.min(1, Math.max(0, (vals[i] - minV) / (maxV - minV + 1e-6)));
+    if (norm < 0.08) {
+      penDown = false;
+      continue;
+    }
     const y = h - norm * (h - 12) - 6;
     if (!penDown) {
       ctx.moveTo(x, y);
@@ -172,8 +197,8 @@ function drawSpectrum(psd) {
   ctx.strokeStyle = "#3ec6c9";
   ctx.lineWidth = 1.5;
   ctx.stroke();
-  if (tunerMhz && tunerMhz >= minF && tunerMhz <= maxF) {
-    const tx = ((tunerMhz - minF) / (maxF - minF)) * w;
+  if (tunerMhz && tunerMhz >= axisMinF && tunerMhz <= axisMaxF) {
+    const tx = freqToAxisX(tunerMhz, w);
     ctx.strokeStyle = "#8b93a7";
     ctx.setLineDash([2, 3]);
     ctx.beginPath();
@@ -190,8 +215,8 @@ function drawSpectrum(psd) {
   const labelY = { CH09: 11, CH16: 22, AIS1: 11, AIS2: 22, CH70: 11 };
   for (const key of labelKeys) {
     const bm = BOOKMARKS.find((b) => b.key === key);
-    if (!bm || bm.mhz < minF || bm.mhz > maxF) continue;
-    const x = ((bm.mhz - minF) / (maxF - minF)) * w;
+    if (!bm || bm.mhz < axisMinF || bm.mhz > axisMaxF) continue;
+    const x = freqToAxisX(bm.mhz, w);
     ctx.strokeStyle = bm.color;
     ctx.setLineDash([4, 4]);
     ctx.beginPath();
@@ -201,7 +226,10 @@ function drawSpectrum(psd) {
     ctx.setLineDash([]);
     ctx.fillStyle = "#9aa3b2";
     ctx.font = "9px Geist Mono, monospace";
-    ctx.fillText(bm.key, Math.min(x + 2, w - 28), labelY[key] || 11);
+    let lx = x + 2;
+    if (key === "CH09") lx = Math.max(2, x - 1);
+    if (key === "AIS2" && narrow) lx = Math.min(lx, w - 34);
+    ctx.fillText(bm.key, lx, labelY[key] || 11);
   }
   if (caption) {
     caption.textContent = formatCaption([
@@ -283,7 +311,7 @@ function drawBurstWaterfall(analysis, psd, colorBlind, durationSec) {
       const y = Math.min(h - 2, Math.max(0, Math.floor((b.t_s / duration) * (h - 4))));
       const x = Math.min(
         w - 1,
-        Math.max(0, Math.floor(((b.freq_mhz - MARINE_MIN_MHZ) / (MARINE_MAX_MHZ - MARINE_MIN_MHZ)) * (w - 1))),
+        Math.max(0, Math.floor(freqToAxisX(b.freq_mhz, w - 1))),
       );
       splatEnergy(grid, w, h, x, y, b.intensity, 4);
     }
@@ -302,13 +330,6 @@ function drawBurstWaterfall(analysis, psd, colorBlind, durationSec) {
     }
   }
   ctx.putImageData(img, 0, 0);
-
-  ctx.fillStyle = "#b8c0ce";
-  ctx.font = "9px Geist Mono, monospace";
-  ctx.fillText(String(MARINE_MIN_MHZ), 2, 11);
-  ctx.textAlign = "right";
-  ctx.fillText(String(MARINE_MAX_MHZ), w - 2, 11);
-  ctx.textAlign = "left";
 
   if (caption) {
     caption.textContent = formatCaption([
