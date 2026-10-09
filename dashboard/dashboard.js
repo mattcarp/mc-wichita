@@ -143,6 +143,85 @@ function freqToPlotX(mhz, w) {
   return PLOT_PAD_X + freqToAxisX(mhz, plotInnerWidth(w));
 }
 
+const MARKER_FONT = "10px Geist Mono, monospace";
+const MARKER_ROW_STEP = 12;
+
+function markerLabelWidth(ctx, key) {
+  return ctx.measureText(key).width + 6;
+}
+
+function markerLabelBox(key, x, width, w) {
+  if (key === "CH09") {
+    const left = PLOT_PAD_X;
+    return { left, right: left + width };
+  }
+  if (key === "AIS2") {
+    const right = Math.min(w - PLOT_PAD_X, x);
+    return { left: right - width, right };
+  }
+  const half = width / 2;
+  return { left: x - half, right: x + half };
+}
+
+function layoutSpectrumMarkerRows(items, w, ctx) {
+  ctx.font = MARKER_FONT;
+  const sorted = [...items].sort((a, b) => {
+    const ax = a.key === "CH09" ? PLOT_PAD_X : a.x;
+    const bx = b.key === "CH09" ? PLOT_PAD_X : b.x;
+    return ax - bx;
+  });
+  const placed = [];
+  const out = [];
+  for (const item of sorted) {
+    const width = markerLabelWidth(ctx, item.key);
+    let chosenRow = null;
+    for (let row = 0; row < 4; row++) {
+      const box = markerLabelBox(item.key, item.x, width, w);
+      const clash = placed.some(
+        (p) =>
+          p.row === row &&
+          !(box.right < p.left - 2 || box.left > p.right + 2),
+      );
+      if (!clash) {
+        chosenRow = row;
+        placed.push({ row, left: box.left, right: box.right });
+        out.push({ ...item, row, width });
+        break;
+      }
+    }
+    if (chosenRow == null) {
+      out.push({ ...item, row: 3, width });
+    }
+  }
+  return out;
+}
+
+function renderSpectrumMarkersHtml(w, h, ctx) {
+  const axisMinF = MARINE_MIN_MHZ;
+  const axisMaxF = MARINE_MAX_MHZ;
+  const items = BOOKMARKS.filter(
+    (bm) => bm.mhz >= axisMinF && bm.mhz <= axisMaxF,
+  ).map((bm) => ({
+    key: bm.key,
+    bm,
+    x: freqToPlotX(bm.mhz, w),
+  }));
+  const layout = layoutSpectrumMarkerRows(items, w, ctx);
+  return layout
+    .map(({ key, x, row, width }) => {
+      const top = 4 + row * MARKER_ROW_STEP;
+      if (key === "CH09") {
+        return `<span style="left:${PLOT_PAD_X}px;top:${top}px">${key}</span>`;
+      }
+      if (key === "AIS2") {
+        const right = Math.min(w - PLOT_PAD_X, x);
+        return `<span style="left:${right}px;top:${top}px;transform:translateX(-100%)">${key}</span>`;
+      }
+      return `<span style="left:${x}px;top:${top}px">${key}</span>`;
+    })
+    .join("");
+}
+
 function drawSpectrum(psd) {
   const canvas = $("#spectrumCanvas");
   const caption = $("#spectrumCaption");
@@ -167,9 +246,10 @@ function drawSpectrum(psd) {
     coreVals.push(vals[i]);
   }
   const sorted = coreVals.length ? [...coreVals].sort((a, b) => a - b) : [...vals].sort((a, b) => a - b);
-  const minV = sorted[Math.floor(sorted.length * 0.05)];
-  const maxV = sorted[Math.floor(sorted.length * 0.98)];
-  const floorCut = sorted[Math.floor(sorted.length * 0.12)];
+  const pct = (p) => sorted[Math.floor(sorted.length * p)] ?? sorted[0];
+  const yLoDb = pct(0.01) - 2.5;
+  const yHiDb = pct(0.99) + 1.5;
+  const ySpan = Math.max(3, yHiDb - yLoDb);
   ctx.fillStyle = "#08090c";
   ctx.fillRect(0, 0, w, h);
   ctx.strokeStyle = "#252a36";
@@ -196,25 +276,15 @@ function drawSpectrum(psd) {
       penDown = false;
       continue;
     }
-    if (vals[i] < floorCut - 4) {
-      penDown = false;
-      continue;
-    }
     const x = freqToPlotX(fm, w);
     if (x < xMin || x > xMax) {
       penDown = false;
       continue;
     }
-    const norm = Math.min(1, Math.max(0, (vals[i] - minV) / (maxV - minV + 1e-6)));
-    if (norm < 0.12) {
-      penDown = false;
-      continue;
-    }
-    const y = h - norm * (h - 12) - 6;
-    if (y > h - 14) {
-      penDown = false;
-      continue;
-    }
+    const y = Math.max(
+      6,
+      Math.min(h - 6, h - 6 - ((vals[i] - yLoDb) / ySpan) * (h - 12)),
+    );
     if (!penDown) {
       ctx.moveTo(x, y);
       penDown = true;
@@ -239,22 +309,11 @@ function drawSpectrum(psd) {
     ctx.font = "9px Geist Mono, monospace";
     ctx.fillText("tuner centre", Math.min(tx + 2, w - 52), h - 4);
   }
-  const narrow = w < 420;
-  const labelKeys = narrow ? ["CH09", "CH16", "AIS1", "AIS2"] : BOOKMARKS.map((b) => b.key);
+  const labelKeys = BOOKMARKS.map((b) => b.key);
   const markersEl = $("#spectrumMarkers");
   if (markersEl) {
     markersEl.style.height = `${h}px`;
-    markersEl.innerHTML = labelKeys
-      .map((key) => {
-        const bm = BOOKMARKS.find((b) => b.key === key);
-        if (!bm || bm.mhz < axisMinF || bm.mhz > axisMaxF) return "";
-        const pct = (freqToPlotX(bm.mhz, w) / w) * 100;
-        const rowB = narrow && (key === "CH16" || key === "AIS2") ? " row-b" : "";
-        const extra =
-          key === "CH09" ? " marker-ch09" : key === "AIS2" ? " marker-ais2" : "";
-        return `<span class="${rowB}${extra}" style="left:${pct}%">${bm.key}</span>`;
-      })
-      .join("");
+    markersEl.innerHTML = renderSpectrumMarkersHtml(w, h, ctx);
   }
   for (const key of labelKeys) {
     const bm = BOOKMARKS.find((b) => b.key === key);

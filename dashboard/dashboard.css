@@ -280,26 +280,13 @@ select {
 
 .spectrum-markers span {
   position: absolute;
-  top: 4px;
   transform: translateX(-50%);
   text-shadow: 0 0 6px #08090c, 0 0 3px #08090c;
-}
-
-.spectrum-markers span.marker-ch09 {
-  transform: none;
-  left: 10px !important;
-}
-
-.spectrum-markers span.marker-ais2 {
-  transform: translateX(-100%);
 }
 
 @media (max-width: 899px) {
   .spectrum-markers {
     height: 148px;
-  }
-  .spectrum-markers span.row-b {
-    top: 16px;
   }
 }
 
