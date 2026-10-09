@@ -96,6 +96,16 @@ def test_station_snapshot_from_capture_settings():
     assert "002803Z" in snap["source_label"]
 
 
+def test_timeline_events_expose_time_utc():
+    ref = wc.resolve_capture("20261009T002803Z")
+    detail = wc.capture_detail(ref)
+    summaries = [e for e in detail["timeline"] if e.get("kind") == "ais_summary"]
+    assert summaries
+    assert "time_utc" in summaries[0]
+    assert "time_malta" not in summaries[0]
+    assert summaries[0]["time_utc"].endswith("+00:00") or summaries[0]["time_utc"].endswith("Z")
+
+
 def test_timeline_uses_malta_in_ais_summary():
     ref = wc.resolve_capture("20261009T002803Z")
     detail = wc.capture_detail(ref)

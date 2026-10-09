@@ -94,6 +94,19 @@ function fitCanvas(canvas, cssHeight, logicalPixels = false) {
   return { ctx, w: cssWidth, h: cssHeight };
 }
 
+function formatCaption(sentences) {
+  return sentences
+    .filter(Boolean)
+    .map((s, i) => {
+      let t = String(s).trim();
+      if (!t) return "";
+      if (i > 0) t = t.charAt(0).toUpperCase() + t.slice(1);
+      if (!/[.!?]$/.test(t)) t += ".";
+      return t;
+    })
+    .join(" ");
+}
+
 function samplePsdAtMhz(psd, mhz) {
   const freqs = psd.freq_mhz;
   const vals = psd.psd_db_per_hz;
@@ -117,11 +130,15 @@ function drawSpectrum(psd) {
   const freqs = psd.freq_mhz;
   const vals = psd.psd_db_per_hz;
   if (!freqs?.length) return;
-  const minF = freqs[0];
-  const maxF = freqs[freqs.length - 1];
+  const edgeSkip = Math.min(5, Math.max(2, Math.floor(freqs.length * 0.015)));
+  const plotStart = edgeSkip;
+  const plotEnd = freqs.length - edgeSkip;
+  const minF = freqs[plotStart];
+  const maxF = freqs[plotEnd - 1];
   const tunerMhz = psd.tuner_center_mhz;
   const dcHalfWidth = 0.06;
-  const sorted = [...vals].sort((a, b) => a - b);
+  const coreVals = vals.slice(plotStart, plotEnd);
+  const sorted = [...coreVals].sort((a, b) => a - b);
   const minV = sorted[Math.floor(sorted.length * 0.05)];
   const maxV = sorted[Math.floor(sorted.length * 0.98)];
   ctx.fillStyle = "#08090c";
@@ -136,7 +153,7 @@ function drawSpectrum(psd) {
   }
   ctx.beginPath();
   let penDown = false;
-  for (let i = 0; i < freqs.length; i++) {
+  for (let i = plotStart; i < plotEnd; i++) {
     const fm = freqs[i];
     if (tunerMhz && Math.abs(fm - tunerMhz) < dcHalfWidth) {
       penDown = false;
@@ -169,11 +186,11 @@ function drawSpectrum(psd) {
     ctx.fillText("tuner centre", Math.min(tx + 2, w - 52), h - 4);
   }
   const narrow = w < 420;
-  const bookmarks = narrow
-    ? BOOKMARKS.filter((b) => b.key === "CH16" || b.key === "AIS1" || b.key === "AIS2")
-    : BOOKMARKS;
-  bookmarks.forEach((bm, idx) => {
-    if (bm.mhz < minF || bm.mhz > maxF) return;
+  const labelKeys = narrow ? ["CH09", "CH16", "AIS1", "AIS2"] : BOOKMARKS.map((b) => b.key);
+  const labelY = { CH09: 11, CH16: 22, AIS1: 11, AIS2: 22, CH70: 11 };
+  for (const key of labelKeys) {
+    const bm = BOOKMARKS.find((b) => b.key === key);
+    if (!bm || bm.mhz < minF || bm.mhz > maxF) continue;
     const x = ((bm.mhz - minF) / (maxF - minF)) * w;
     ctx.strokeStyle = bm.color;
     ctx.setLineDash([4, 4]);
@@ -184,14 +201,14 @@ function drawSpectrum(psd) {
     ctx.setLineDash([]);
     ctx.fillStyle = "#9aa3b2";
     ctx.font = "9px Geist Mono, monospace";
-    const yLabel = narrow && idx % 2 === 1 ? 22 : 11;
-    ctx.fillText(bm.key, Math.min(x + 2, w - 28), yLabel);
-  });
+    ctx.fillText(bm.key, Math.min(x + 2, w - 28), labelY[key] || 11);
+  }
   if (caption) {
-    const parts = ["Averaged PSD from capture (not live FFT)."];
-    if (psd.trim_note) parts.push(psd.trim_note);
-    if (tunerMhz) parts.push(`Tuner centre ${tunerMhz.toFixed(3)} MHz (DC spike masked).`);
-    caption.textContent = parts.join(" ");
+    caption.textContent = formatCaption([
+      "Averaged PSD from capture (not live FFT)",
+      psd.trim_note,
+      tunerMhz ? `Tuner centre ${tunerMhz.toFixed(3)} MHz (DC spike masked)` : null,
+    ]);
   }
 }
 
@@ -249,7 +266,9 @@ function drawBurstWaterfall(analysis, psd, colorBlind, durationSec) {
         const val = samplePsdAtMhz(psd, mhz);
         if (val == null) continue;
         const norm = Math.min(1, Math.max(0, (val - minV) / (maxV - minV + 1e-6)));
-        grid[y * w + x] = norm * 0.14;
+        const grain = ((x * 17 + y * 31) % 89) / 89;
+        const ripple = 0.03 * Math.sin(x * 0.11 + y * 0.07);
+        grid[y * w + x] = Math.min(0.45, norm * 0.16 + grain * 0.05 + ripple + 0.04);
       }
     }
   }
@@ -280,15 +299,19 @@ function drawBurstWaterfall(analysis, psd, colorBlind, durationSec) {
   }
   ctx.putImageData(img, 0, 0);
 
-  ctx.fillStyle = "#9aa3b2";
+  ctx.fillStyle = "#b8c0ce";
   ctx.font = "9px Geist Mono, monospace";
-  ctx.fillText(`${MARINE_MIN_MHZ}`, 2, h - 2);
-  ctx.fillText(`${MARINE_MAX_MHZ}`, w - 36, h - 2);
+  ctx.fillText(String(MARINE_MIN_MHZ), 2, 11);
+  ctx.textAlign = "right";
+  ctx.fillText(String(MARINE_MAX_MHZ), w - 2, 11);
+  ctx.textAlign = "left";
 
   if (caption) {
-    caption.textContent = bursts.length
-      ? "Time (vertical) vs marine band frequency (horizontal). Colormap from AIS burst timing and averaged PSD floor — not a live IQ spectrogram."
-      : "No burst timing in this capture; showing averaged PSD baseline only (not a live waterfall).";
+    caption.textContent = formatCaption([
+      bursts.length
+        ? "Time (vertical) vs marine band frequency (horizontal); colormap from AIS burst timing and averaged PSD floor — not a live IQ spectrogram"
+        : "No burst timing in this capture; showing averaged PSD baseline only (not a live waterfall)",
+    ]);
   }
 }
 
@@ -437,7 +460,7 @@ function renderTimeline(events) {
   }
   ol.innerHTML = events
     .map((e) => {
-      const time = e.time_malta ? formatMalta(e.time_malta) : "—";
+      const time = e.time_utc ? formatMalta(e.time_utc) : "—";
       const caution = e.caution ? `<p class="caution">${e.caution}</p>` : "";
       return `<li><strong class="event-title">${e.title}</strong><span class="muted">${e.detail || ""}</span><span class="mono event-time">${time}</span>${caution}</li>`;
     })

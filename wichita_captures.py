@@ -32,6 +32,7 @@ MARINE_BOOKMARKS_MHZ = {
 }
 MARINE_PSD_MIN_MHZ = 156.45
 MARINE_PSD_MAX_MHZ = 162.4
+PSD_EDGE_MARGIN_BINS = 4
 AIRBAND_WATCH_MHZ = {
     "121.5_distress": 121.5,
     "123.1_SAR": 123.1,
@@ -341,6 +342,9 @@ def load_wideband_psd(capture_dir: Path, max_points: int = 2048) -> Dict[str, An
     trimmed_high_mhz: Optional[float] = None
     if freqs and freqs[-1] < MARINE_PSD_MAX_MHZ - 0.01:
         trimmed_high_mhz = MARINE_PSD_MAX_MHZ
+    if len(freqs) > PSD_EDGE_MARGIN_BINS * 2 + 8:
+        freqs = freqs[PSD_EDGE_MARGIN_BINS:-PSD_EDGE_MARGIN_BINS]
+        psd = psd[PSD_EDGE_MARGIN_BINS:-PSD_EDGE_MARGIN_BINS]
     if len(freqs) > max_points:
         step = max(1, len(freqs) // max_points)
         freqs = freqs[::step][:max_points]
@@ -356,9 +360,9 @@ def load_wideband_psd(capture_dir: Path, max_points: int = 2048) -> Dict[str, An
         tuner_mhz = float(rb["frequency"]) / 1e6
     trim_parts = []
     if trimmed_low_mhz is not None:
-        trim_parts.append(f"left roll-off trimmed below {MARINE_PSD_MIN_MHZ:.3f} MHz")
+        trim_parts.append(f"Left roll-off trimmed below {MARINE_PSD_MIN_MHZ:.3f} MHz")
     if trimmed_high_mhz is not None:
-        trim_parts.append(f"right roll-off trimmed above {MARINE_PSD_MAX_MHZ:.3f} MHz")
+        trim_parts.append(f"Right roll-off trimmed above {MARINE_PSD_MAX_MHZ:.3f} MHz")
     return {
         "available": True,
         "freq_mhz": freqs,
@@ -592,7 +596,7 @@ def build_timeline(
     events.sort(key=lambda e: e.get("t_utc") or 0)
     for e in events:
         if e.get("t_utc") is not None:
-            e["time_malta"] = datetime.fromtimestamp(
+            e["time_utc"] = datetime.fromtimestamp(
                 e["t_utc"], tz=timezone.utc
             ).isoformat()
     return events
