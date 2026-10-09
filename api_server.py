@@ -44,8 +44,21 @@ from wichita_capture_routes import router as capture_feed_router
 from whisper_transcription import WhisperConfig, transcribe_audio_file
 from ai_analysis_pipeline import analyze_audio_file, extract_stress_features, score_stress
 
+from contextlib import asynccontextmanager
+
+from wichita_live_events import get_engine
+
+
+@asynccontextmanager
+async def _wichita_lifespan(app):  # noqa: ARG001
+    get_engine().start()
+    yield
+    get_engine().stop()
+
+
 # Initialize FastAPI with rich metadata
 app = FastAPI(
+    lifespan=_wichita_lifespan,
     title="RF Digital Forensics Toolkit API",
     description="""
     ## 🎯 Full-Spectrum SIGINT Platform

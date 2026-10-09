@@ -45,8 +45,10 @@ def test_live_snapshot_api():
     assert body["source"] == "live"
     assert len(body["ships"]) >= 10
     assert body["paths"]["type"] == "FeatureCollection"
-    names = {s["display_name"] for s in body["ships"]}
-    assert "Valletta AIS base station" in names
+    assert body.get("summary")
+    base_names = {s["display_name"] for s in body.get("base_stations") or []}
+    assert "Valletta AIS base station" in base_names
+    assert body["ships"][0].get("lead_sentence")
 
 
 def test_live_ship_detail_fixture():

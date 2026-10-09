@@ -2,9 +2,14 @@
 
 from __future__ import annotations
 
+import os
+
 from fastapi import APIRouter, HTTPException
 
 import wichita_ais_live as wal
+import wichita_captures as wc
+from wichita_ais_voice import voice_channel_tiles
+from wichita_live_events import get_engine
 
 router = APIRouter(prefix="/api/live-ais", tags=["live-ais"])
 
@@ -30,3 +35,40 @@ async def live_ais_ship(mmsi: int):
     if detail is None:
         raise HTTPException(status_code=503 if err == "receiver offline" else 404, detail=err or "not found")
     return detail
+
+
+@router.get("/events")
+async def live_ais_events(hours: int = 24):
+    engine = get_engine()
+    events = engine.read_events(hours=hours)
+    return {
+        "events": events,
+        "activity_hourly": engine.activity_hourly(hours=hours),
+        "hours": hours,
+    }
+
+
+@router.get("/voice-watch")
+async def live_voice_watch():
+    voice_live = os.environ.get("WICHITA_VOICE_LIVE", "0").strip().lower() in ("1", "true", "yes")
+    roots = wc.captures_roots_from_env()
+    refs = wc.scan_captures(roots)
+    ag = wc.dashboard_aggregate(refs)
+    detail = None
+    if ag.get("available") and ag.get("primary_capture_id"):
+        ref = wc.resolve_capture(ag["primary_capture_id"], roots)
+        if ref is not None:
+            detail = wc.capture_detail(ref)
+    label = ""
+    time_utc = None
+    if detail:
+        label = detail.get("picker_label") or detail.get("capture_id") or ""
+        time_utc = detail.get("start_utc")
+    tiles = voice_channel_tiles(
+        (detail or {}).get("marine_watch"),
+        ((detail or {}).get("airband") or {}).get("watch"),
+        label,
+        time_utc,
+        voice_live,
+    )
+    return {"voice_live": voice_live, "channels": tiles}

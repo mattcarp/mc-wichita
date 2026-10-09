@@ -6,44 +6,87 @@
   <meta name="color-scheme" content="dark" />
   <title>Wichita · Valletta listener</title>
   <link rel="icon" href="data:," />
-  <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261009-16" />
-  <script type="module" src="/dashboard/dashboard.js?v=20261009-16"></script>
+  <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261009-17" />
+  <script type="module" src="/dashboard/dashboard.js?v=20261009-17"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to dashboard</a>
-  <header class="site-header">
-    <div class="brand">
+  <header class="site-header site-header-compact">
+    <div class="brand brand-compact">
       <span class="brand-glyph" aria-hidden="true">W</span>
-      <div>
-        <h1>Wichita</h1>
-        <p class="tagline">Listen · notice · review</p>
-      </div>
+      <div id="headerLive" class="header-live mono" role="status">Checking AIS…</div>
     </div>
     <div class="header-meta">
-      <span id="listenState" class="pill pill-listen">Checking library…</span>
       <time id="maltaClock" class="mono" datetime="">—</time>
+      <button type="button" id="settingsBtn" class="icon-btn" aria-haspopup="dialog" aria-expanded="false" aria-controls="settingsMenu" title="Settings">Set</button>
+      <div id="settingsMenu" class="settings-menu" role="dialog" hidden>
+        <label class="toggle-chip"><input type="checkbox" id="colorBlindMap" /> Colour-blind waterfall</label>
+      </div>
     </div>
-    <div id="liveAisStrip" class="live-ais-strip mono" role="status" hidden></div>
   </header>
 
   <main id="main" class="app">
     <p id="feedBanner" class="feed-banner" role="status" hidden></p>
 
-    <section id="panel-live" class="panel tab-panel" data-tab="live" aria-labelledby="live-heading">
+    <section id="panel-harbour" class="panel tab-panel panel-hero" data-tab="harbour" aria-labelledby="harbour-heading">
       <div class="panel-head">
         <div>
-          <p class="eyebrow marine">Live band</p>
-          <h2 id="live-heading">—</h2>
+          <p class="eyebrow marine">Now</p>
+          <h2 id="harbour-heading">Harbour · live AIS</h2>
+        </div>
+        <span class="badge badge-live">LIVE</span>
+      </div>
+      <div id="harbourSummary" class="harbour-summary"></div>
+      <div class="harbour-layout">
+        <div class="harbour-map-col">
+          <div id="harbourMap" class="map map-coastline" aria-label="Malta coastline with live ship positions"></div>
+          <p class="map-attrib muted">Natural Earth coastline (simplified) · offline · not for navigation</p>
+        </div>
+        <div class="harbour-list-col">
+          <p id="freshnessCounts" class="mono counts"></p>
+          <ul id="liveShipList" class="live-ship-list" aria-label="Ships heard live"></ul>
+          <div id="shoreStations" class="shore-stations"></div>
+          <aside id="liveShipDrawer" class="live-ship-drawer" hidden></aside>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel-heard" class="panel tab-panel" data-tab="heard" aria-labelledby="heard-heading">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Heard</p>
+          <h2 id="heard-heading">What we heard</h2>
+        </div>
+        <span class="badge badge-live">LIVE</span>
+      </div>
+      <div id="activityStrip" class="activity-strip mono" aria-label="New ships per hour (24h)"></div>
+      <p id="captureAisNote" class="muted recorded-capture-note"></p>
+      <ol id="timeline" class="timeline" aria-label="Live event log"></ol>
+      <ol id="timelineRecorded" class="timeline timeline-recorded-block" aria-label="Recorded capture events"></ol>
+    </section>
+
+    <section id="panel-watch" class="panel tab-panel" data-tab="heard" aria-labelledby="watch-heading">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow marine">Watch</p>
+          <h2 id="watch-heading">Voice channels</h2>
+        </div>
+      </div>
+      <div id="voiceTiles" class="voice-grid"></div>
+    </section>
+
+    <section id="panel-recordings" class="panel tab-panel panel-recordings" data-tab="recordings" aria-labelledby="recordings-heading">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Recordings</p>
+          <h2 id="recordings-heading">Recorded band</h2>
         </div>
         <div class="panel-actions">
           <label class="select-wrap">
             <span class="sr-only">Capture</span>
             <select id="captureSelect" aria-label="Capture folder"></select>
           </label>
-          <label class="toggle-chip">
-            <input type="checkbox" id="colorBlindMap" />
-            Colour-blind waterfall
-          </label>
+          <span class="badge badge-recorded">RECORDED</span>
         </div>
       </div>
       <div class="subtabs" role="tablist" aria-label="Band view">
@@ -54,13 +97,13 @@
         <div class="chart-wrap spectrum-wrap">
           <canvas id="spectrumCanvas" role="img" aria-label="Averaged wideband spectrum from capture PSD"></canvas>
           <div class="spectrum-markers mono" id="spectrumMarkers" aria-hidden="true"></div>
-          <p id="spectrumCaption" class="chart-caption muted"></p>
+          <details class="chart-about"><summary>About this chart</summary><p id="spectrumCaption" class="chart-caption muted"></p></details>
         </div>
-        <div class="chart-wrap">
+        <div class="chart-wrap chart-wrap-thin">
           <canvas id="waterfallCanvas" role="img" aria-label="Burst activity time versus frequency"></canvas>
           <div class="waterfall-axis mono" aria-hidden="true">
-            <span>156.45 MHz</span>
-            <span>162.4 MHz</span>
+            <span id="wfAxisLo">—</span>
+            <span id="wfAxisHi">—</span>
           </div>
           <p id="waterfallCaption" class="chart-caption muted"></p>
         </div>
@@ -74,46 +117,6 @@
       </div>
     </section>
 
-    <section id="panel-harbour" class="panel tab-panel" data-tab="harbour" aria-labelledby="harbour-heading">
-      <div class="panel-head">
-        <div>
-          <p class="eyebrow marine">Harbour</p>
-          <h2 id="harbour-heading">AIS</h2>
-        </div>
-        <span id="aisCounts" class="mono counts"></span>
-      </div>
-      <p class="harbour-live-note muted">Live balcony AIS from the local receiver · separate from recorded captures below</p>
-      <div class="harbour-grid harbour-grid-live">
-        <div id="harbourMap" class="map" aria-label="Live ship positions on local harbour schematic"></div>
-        <p class="map-attrib muted">Local schematic · offline · not for navigation</p>
-        <div class="live-ships-col">
-          <ul id="liveShipList" class="live-ship-list" aria-label="Ships heard live"></ul>
-          <aside id="liveShipDetail" class="live-ship-detail" hidden></aside>
-        </div>
-      </div>
-    </section>
-
-    <section id="panel-watch" class="panel tab-panel" data-tab="heard" aria-labelledby="watch-heading">
-      <div class="panel-head">
-        <div>
-          <p class="eyebrow marine">Watch</p>
-          <h2 id="watch-heading">Voice channels</h2>
-        </div>
-      </div>
-      <div id="voiceTiles" class="voice-grid"></div>
-    </section>
-
-    <section id="panel-heard" class="panel tab-panel" data-tab="heard" aria-labelledby="heard-heading">
-      <div class="panel-head">
-        <div>
-          <p class="eyebrow">Heard</p>
-          <h2 id="heard-heading">What we heard</h2>
-        </div>
-      </div>
-      <p id="captureAisNote" class="muted recorded-capture-note"></p>
-      <ol id="timeline" class="timeline"></ol>
-    </section>
-
     <section id="panel-station" class="panel tab-panel" data-tab="station" aria-labelledby="station-heading">
       <div class="panel-head">
         <div>
@@ -121,10 +124,16 @@
           <h2 id="station-heading">Health &amp; provenance</h2>
         </div>
       </div>
+      <h3 class="station-section-title"><span class="badge badge-live">LIVE</span> Receiver (AIS-catcher)</h3>
+      <dl id="stationLive" class="station-strip mono"></dl>
+      <h3 class="station-section-title"><span class="badge badge-recorded">RECORDED</span> Capture library</h3>
       <dl id="stationStrip" class="station-strip mono"></dl>
       <div id="captureCompare" class="compare"></div>
     </section>
   </main>
+
+  <div id="sheetBackdrop" class="sheet-backdrop" hidden></div>
+  <aside id="shipSheet" class="ship-sheet" hidden></aside>
 
   <footer class="site-footer">
     <p>Wichita listens on receive-only equipment in Valletta. It cannot rescue anyone, does not contact authorities on its own, and is not a substitute for the Malta RCC or coast guard. Do not rely on this dashboard for emergency response.</p>
@@ -132,10 +141,10 @@
   </footer>
 
   <nav class="tab-bar" aria-label="Primary">
-    <button type="button" class="tab-btn active" data-tab-target="live">Live</button>
-    <button type="button" class="tab-btn" data-tab-target="harbour">Harbour</button>
-    <button type="button" class="tab-btn" data-tab-target="heard">Heard</button>
-    <button type="button" class="tab-btn" data-tab-target="station">Station</button>
+    <button type="button" class="tab-btn active" data-tab-target="harbour" aria-label="Harbour"><span class="tab-icon" aria-hidden="true">H</span><span>Harbour</span></button>
+    <button type="button" class="tab-btn" data-tab-target="heard" aria-label="Heard"><span class="tab-icon" aria-hidden="true">E</span><span>Heard</span></button>
+    <button type="button" class="tab-btn" data-tab-target="recordings" aria-label="Recordings"><span class="tab-icon" aria-hidden="true">R</span><span>Recordings</span></button>
+    <button type="button" class="tab-btn" data-tab-target="station" aria-label="Station"><span class="tab-icon" aria-hidden="true">S</span><span>Station</span></button>
   </nav>
 </body>
 </html>
