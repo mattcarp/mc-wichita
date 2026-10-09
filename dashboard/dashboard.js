@@ -75,9 +75,15 @@ function paletteColor(t, colorBlind) {
   return colorBlind ? cividis(t) : inferno(t);
 }
 
+function chartCssHeight(defaultPx) {
+  const vw = document.documentElement.clientWidth || 800;
+  return vw < 420 ? Math.round(defaultPx * 0.72) : defaultPx;
+}
+
 function fitCanvas(canvas, cssHeight, logicalPixels = false) {
   const wrap = canvas.closest(".chart-wrap") || canvas.parentElement;
   const cssWidth = Math.max(240, Math.floor(wrap?.clientWidth || 320));
+  cssHeight = chartCssHeight(cssHeight);
   canvas.style.width = `${cssWidth}px`;
   canvas.style.height = `${cssHeight}px`;
   const ctx = canvas.getContext("2d");
@@ -126,6 +132,17 @@ function freqToAxisX(mhz, w) {
   return ((mhz - MARINE_MIN_MHZ) / (MARINE_MAX_MHZ - MARINE_MIN_MHZ)) * w;
 }
 
+const PLOT_PAD_X = 10;
+
+function plotInnerWidth(w) {
+  return Math.max(1, w - 2 * PLOT_PAD_X);
+}
+
+/** Map MHz to canvas x with horizontal inset so edge channels (CH09) are not clipped. */
+function freqToPlotX(mhz, w) {
+  return PLOT_PAD_X + freqToAxisX(mhz, plotInnerWidth(w));
+}
+
 function drawSpectrum(psd) {
   const canvas = $("#spectrumCanvas");
   const caption = $("#spectrumCaption");
@@ -136,7 +153,10 @@ function drawSpectrum(psd) {
   if (!freqs?.length) return;
   const axisMinF = MARINE_MIN_MHZ;
   const axisMaxF = MARINE_MAX_MHZ;
-  const edgeMarginMhz = 0.25;
+  const edgeMarginMhz = 0.35;
+  const innerW = plotInnerWidth(w);
+  const xMin = PLOT_PAD_X + innerW * 0.035;
+  const xMax = PLOT_PAD_X + innerW * 0.965;
   const tunerMhz = psd.tuner_center_mhz;
   const dcHalfWidth = 0.06;
   const coreVals = [];
@@ -160,6 +180,10 @@ function drawSpectrum(psd) {
     ctx.lineTo(w, y);
     ctx.stroke();
   }
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(PLOT_PAD_X, 0, innerW, h);
+  ctx.clip();
   ctx.beginPath();
   let penDown = false;
   for (let i = 0; i < freqs.length; i++) {
@@ -176,17 +200,21 @@ function drawSpectrum(psd) {
       penDown = false;
       continue;
     }
-    const x = freqToAxisX(fm, w);
-    if (x < w * 0.025 || x > w * 0.975) {
+    const x = freqToPlotX(fm, w);
+    if (x < xMin || x > xMax) {
       penDown = false;
       continue;
     }
     const norm = Math.min(1, Math.max(0, (vals[i] - minV) / (maxV - minV + 1e-6)));
-    if (norm < 0.08) {
+    if (norm < 0.12) {
       penDown = false;
       continue;
     }
     const y = h - norm * (h - 12) - 6;
+    if (y > h - 14) {
+      penDown = false;
+      continue;
+    }
     if (!penDown) {
       ctx.moveTo(x, y);
       penDown = true;
@@ -197,8 +225,9 @@ function drawSpectrum(psd) {
   ctx.strokeStyle = "#3ec6c9";
   ctx.lineWidth = 1.5;
   ctx.stroke();
+  ctx.restore();
   if (tunerMhz && tunerMhz >= axisMinF && tunerMhz <= axisMaxF) {
-    const tx = freqToAxisX(tunerMhz, w);
+    const tx = freqToPlotX(tunerMhz, w);
     ctx.strokeStyle = "#8b93a7";
     ctx.setLineDash([2, 3]);
     ctx.beginPath();
@@ -212,11 +241,25 @@ function drawSpectrum(psd) {
   }
   const narrow = w < 420;
   const labelKeys = narrow ? ["CH09", "CH16", "AIS1", "AIS2"] : BOOKMARKS.map((b) => b.key);
-  const labelY = { CH09: 11, CH16: 22, AIS1: 11, AIS2: 22, CH70: 11 };
+  const markersEl = $("#spectrumMarkers");
+  if (markersEl) {
+    markersEl.style.height = `${h}px`;
+    markersEl.innerHTML = labelKeys
+      .map((key) => {
+        const bm = BOOKMARKS.find((b) => b.key === key);
+        if (!bm || bm.mhz < axisMinF || bm.mhz > axisMaxF) return "";
+        const pct = (freqToPlotX(bm.mhz, w) / w) * 100;
+        const rowB = narrow && (key === "CH16" || key === "AIS2") ? " row-b" : "";
+        const extra =
+          key === "CH09" ? " marker-ch09" : key === "AIS2" ? " marker-ais2" : "";
+        return `<span class="${rowB}${extra}" style="left:${pct}%">${bm.key}</span>`;
+      })
+      .join("");
+  }
   for (const key of labelKeys) {
     const bm = BOOKMARKS.find((b) => b.key === key);
     if (!bm || bm.mhz < axisMinF || bm.mhz > axisMaxF) continue;
-    const x = freqToAxisX(bm.mhz, w);
+    const x = freqToPlotX(bm.mhz, w);
     ctx.strokeStyle = bm.color;
     ctx.setLineDash([4, 4]);
     ctx.beginPath();
@@ -224,12 +267,6 @@ function drawSpectrum(psd) {
     ctx.lineTo(x, h);
     ctx.stroke();
     ctx.setLineDash([]);
-    ctx.fillStyle = "#9aa3b2";
-    ctx.font = "9px Geist Mono, monospace";
-    let lx = x + 2;
-    if (key === "CH09") lx = Math.max(2, x - 1);
-    if (key === "AIS2" && narrow) lx = Math.min(lx, w - 34);
-    ctx.fillText(bm.key, lx, labelY[key] || 11);
   }
   if (caption) {
     caption.textContent = formatCaption([
@@ -294,9 +331,11 @@ function drawBurstWaterfall(analysis, psd, colorBlind, durationSec) {
     : -90;
 
   if (psd?.available) {
+    const inner = plotInnerWidth(w);
     for (let y = 0; y < h; y++) {
       for (let x = 0; x < w; x++) {
-        const mhz = MARINE_MIN_MHZ + (x / (w - 1)) * (MARINE_MAX_MHZ - MARINE_MIN_MHZ);
+        const t = Math.max(0, Math.min(1, (x - PLOT_PAD_X) / inner));
+        const mhz = MARINE_MIN_MHZ + t * (MARINE_MAX_MHZ - MARINE_MIN_MHZ);
         const val = samplePsdAtMhz(psd, mhz);
         if (val == null) continue;
         const norm = Math.min(1, Math.max(0, (val - minV) / (maxV - minV + 1e-6)));
@@ -311,7 +350,7 @@ function drawBurstWaterfall(analysis, psd, colorBlind, durationSec) {
       const y = Math.min(h - 2, Math.max(0, Math.floor((b.t_s / duration) * (h - 4))));
       const x = Math.min(
         w - 1,
-        Math.max(0, Math.floor(freqToAxisX(b.freq_mhz, w - 1))),
+        Math.max(0, Math.floor(freqToPlotX(b.freq_mhz, w))),
       );
       splatEnergy(grid, w, h, x, y, b.intensity, 4);
     }

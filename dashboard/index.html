@@ -6,8 +6,8 @@
   <meta name="color-scheme" content="dark" />
   <title>Wichita · Valletta listener</title>
   <link rel="icon" href="data:," />
-  <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261009-6" />
-  <script type="module" src="/dashboard/dashboard.js?v=20261009-6"></script>
+  <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261009-9" />
+  <script type="module" src="/dashboard/dashboard.js?v=20261009-9"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to dashboard</a>
@@ -50,8 +50,9 @@
         <button type="button" class="subtab" data-subtab="airband" role="tab" aria-selected="false">Airband 118–137</button>
       </div>
       <div id="marineBandView" class="subpanel">
-        <div class="chart-wrap">
+        <div class="chart-wrap spectrum-wrap">
           <canvas id="spectrumCanvas" role="img" aria-label="Averaged wideband spectrum from capture PSD"></canvas>
+          <div class="spectrum-markers mono" id="spectrumMarkers" aria-hidden="true"></div>
           <p id="spectrumCaption" class="chart-caption muted"></p>
         </div>
         <div class="chart-wrap">
