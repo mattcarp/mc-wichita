@@ -2,12 +2,12 @@ from wichita_provenance import SOURCE_OUR_ANTENNA, freshness_from_age, provenanc
 
 
 def test_freshness_tiers():
-    assert freshness_from_age(30) == "live"
+    assert freshness_from_age(30) == "now"
     assert freshness_from_age(200) == "recent"
-    assert freshness_from_age(2000) == "stale"
+    assert freshness_from_age(2000) == "earlier"
 
 
 def test_provenance_labels():
     p = provenance_fields(SOURCE_OUR_ANTENNA, 10)
     assert p["source_label"] == "Heard by our antenna"
-    assert p["freshness_label"] == "Live"
+    assert p["freshness_label"] == "Now"

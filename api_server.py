@@ -41,6 +41,8 @@ from discord_alerts import send_alert as send_discord_alert
 from evidence_context import delivery_health, evidence_context, answer_question
 from wichita_ais_routes import router as live_ais_router
 from wichita_gods_eye_routes import router as sky_router
+from wichita_platform_routes import router as platform_router
+from wichita_security import WichitaSecurityMiddleware
 from wichita_capture_routes import router as capture_feed_router
 from whisper_transcription import WhisperConfig, transcribe_audio_file
 from ai_analysis_pipeline import analyze_audio_file, extract_stress_features, score_stress
@@ -104,6 +106,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(WichitaSecurityMiddleware)
 
 # ==================== ENUMS & MODELS ====================
 
@@ -1852,6 +1855,7 @@ app = add_maritime_aviation_routes(app)
 app.include_router(capture_feed_router)
 app.include_router(live_ais_router)
 app.include_router(sky_router)
+app.include_router(platform_router)
 
 if __name__ == "__main__":
     import uvicorn
