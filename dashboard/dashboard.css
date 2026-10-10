@@ -1405,3 +1405,102 @@ body.sheet-open .live-ship-list {
     pointer-events: auto;
   }
 }
+
+.header-heard-badge {
+  margin-top: 0.25rem;
+}
+
+.receiver-pill {
+  display: inline-block;
+  font-size: 0.72rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+
+.receiver-live {
+  border-color: #3ec6c9;
+  color: #9ee8e4;
+}
+
+.receiver-quiet {
+  border-color: #6a7a8a;
+  color: #b8c4d0;
+}
+
+.receiver-stale,
+.receiver-unreachable,
+.receiver-invalid {
+  border-color: #c97a3e;
+  color: #f0c89a;
+}
+
+.pill-quiet {
+  background: rgba(120, 140, 160, 0.25);
+}
+
+.pill-stale,
+.pill-unreachable,
+.pill-invalid {
+  background: rgba(180, 100, 40, 0.25);
+}
+
+.watch-zone-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.35rem;
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: inherit;
+  border-radius: 0.35rem;
+  padding: 0.25rem 0.55rem;
+  font-size: 0.8rem;
+}
+
+.map-watch-zone {
+  fill: rgba(255, 200, 80, 0.12);
+  stroke: rgba(255, 200, 80, 0.65);
+  stroke-width: 1.5;
+}
+
+.replay-shell {
+  margin: 1rem 0;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.replay-scrub {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.weather-card {
+  padding: 0.5rem 0;
+}
+
+.weather-attrib {
+  font-size: 0.75rem;
+}
+
+.flag-warn {
+  color: #f0a060;
+  font-size: 0.85rem;
+  margin-right: 0.5rem;
+}
+
+.station-receivers {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.receiver-card {
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+}

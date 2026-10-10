@@ -11,18 +11,22 @@ export function renderPlanesPanel(adsb) {
     el.innerHTML = "<p class='muted'>Checking ADS-B…</p>";
     return;
   }
-  if (!adsb.receiver_connected) {
+  const rh = adsb.receiver_health || {};
+  if (!adsb.receiver_connected && rh.state === "unreachable") {
     el.innerHTML = `<p class="adsb-offline">${adsb.error || "Receiver not connected"}</p>
       <p class="muted small">Our readsb feed will appear here when the RTL-SDR is on 1090 MHz.</p>`;
     return;
   }
   const planes = adsb.aircraft || [];
+  const caveat = adsb.data_caveat
+    ? `<p class="muted small">${adsb.data_caveat}</p>`
+    : "";
   if (!planes.length) {
-    el.innerHTML = `<p class="muted">No aircraft with position from our receiver right now.</p>
-      <p class="prov-badge prov-stale">Heard by our antenna · Live</p>`;
+    const quiet = rh.state === "quiet" ? "Quiet — receiver healthy, no aircraft in view." : "No aircraft with position right now.";
+    el.innerHTML = `<p class="muted">${quiet}</p>${caveat}`;
     return;
   }
-  el.innerHTML = `<p class="mono counts">${planes.length} aircraft with position</p>
+  el.innerHTML = `${caveat}<p class="mono counts">${planes.length} aircraft with position</p>
     <ul class="live-plane-list">
       ${planes
         .map((p) => {

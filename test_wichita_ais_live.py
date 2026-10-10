@@ -27,6 +27,14 @@ def test_fixture_ships_load():
     assert any(s["mmsi"] == 2155001 for s in ships)
 
 
+def test_normalize_ais_not_available_speed():
+    raw = {"mmsi": 999999999, "speed": 102.3, "cog": 360, "heading": 511, "last_signal": 5}
+    norm = wal.normalize_ship(raw)
+    assert norm["speed_unknown"] is True
+    assert norm["speed_kn"] is None
+    assert norm["cog_unknown"] is True
+
+
 def test_normalize_valletta_base():
     raw = next(s for s in wal.fetch_ais_json("/api/ships.json")[0]["ships"] if s["mmsi"] == 2155001)
     norm = wal.normalize_ship(raw)

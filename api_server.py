@@ -41,6 +41,9 @@ from discord_alerts import send_alert as send_discord_alert
 from evidence_context import delivery_health, evidence_context, answer_question
 from wichita_ais_routes import router as live_ais_router
 from wichita_gods_eye_routes import router as sky_router
+from wichita_gev_routes import router as gev_router
+from wichita_mcp_routes import router as mcp_router
+from wichita_tailscale import TailscaleSecurityMiddleware
 from wichita_capture_routes import router as capture_feed_router
 from whisper_transcription import WhisperConfig, transcribe_audio_file
 from ai_analysis_pipeline import analyze_audio_file, extract_stress_features, score_stress
@@ -95,6 +98,8 @@ app = FastAPI(
         {"name": "realtime", "description": "Real-time streaming"},
     ],
 )
+
+app.add_middleware(TailscaleSecurityMiddleware)
 
 # CORS for web frontends
 app.add_middleware(
@@ -1825,6 +1830,8 @@ async def dashboard_asset(filename: str):
         media_type = "text/javascript"
     elif filename.endswith(".woff2"):
         media_type = "font/woff2"
+    elif filename.endswith(".html"):
+        media_type = "text/html"
     else:
         media_type = "application/octet-stream"
     return FileResponse(
@@ -1834,10 +1841,8 @@ async def dashboard_asset(filename: str):
     )
 
 
-@app.get("/", include_in_schema=False)
-async def root():
-    """Serve Wichita dashboard."""
-    dashboard_path = Path(__file__).resolve().parent / "dashboard" / "index.html"
+def _dashboard_html(name: str):
+    dashboard_path = Path(__file__).resolve().parent / "dashboard" / name
     if dashboard_path.exists():
         return FileResponse(
             str(dashboard_path),
@@ -1847,11 +1852,24 @@ async def root():
     raise HTTPException(status_code=404, detail="Dashboard not found")
 
 
+@app.get("/", include_in_schema=False)
+async def root():
+    """Serve Wichita dashboard."""
+    return _dashboard_html("index.html")
+
+
+@app.get("/dashboard/radar_wall.html", include_in_schema=False)
+async def radar_wall_page():
+    return _dashboard_html("radar_wall.html")
+
+
 # Add maritime and aviation routes
 app = add_maritime_aviation_routes(app)
 app.include_router(capture_feed_router)
 app.include_router(live_ais_router)
 app.include_router(sky_router)
+app.include_router(gev_router)
+app.include_router(mcp_router)
 
 if __name__ == "__main__":
     import uvicorn

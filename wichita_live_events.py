@@ -13,6 +13,7 @@ from typing import Any, Dict, List, Optional, Set
 
 from wichita_ais_copy import enrich_ship_copy, first_heard_sentence, freshness_bucket
 from wichita_timeline import DEFAULT_HOURS, DEFAULT_LIMIT, paginate_events, prepare_timeline_events
+from wichita_watch_zones import check_vessel_zones
 
 logger = logging.getLogger(__name__)
 
@@ -64,6 +65,7 @@ class LiveEventEngine:
         self._first_seen_monotonic: Dict[int, float] = {}
         self._heard_accum_s: Dict[int, float] = {}
         self._moving_harbour: Dict[int, bool] = {}
+        self._zone_inside: Dict[int, List[str]] = {}
         self._thread: Optional[threading.Thread] = None
         self._stop = threading.Event()
 
@@ -127,6 +129,23 @@ class LiveEventEngine:
                 if spd >= 0.5 and _in_harbour(enriched.get("lat"), enriched.get("lon")):
                     self._moving_harbour[mmsi] = True
 
+                for _zid, zname in check_vessel_zones(
+                    mmsi,
+                    enriched.get("lat"),
+                    enriched.get("lon"),
+                    self._zone_inside,
+                ):
+                    append_event(
+                        "watch_zone_enter",
+                        f"{name} entered watch zone {zname}.",
+                        mmsi=mmsi,
+                        display_name=name,
+                        lat=enriched.get("lat"),
+                        lon=enriched.get("lon"),
+                        zone_id=_zid,
+                        zone_name=zname,
+                    )
+
                 if mmsi not in self._seen_mmsi:
                     self._seen_mmsi.add(mmsi)
                     sentence = first_heard_sentence(enriched)
@@ -136,6 +155,8 @@ class LiveEventEngine:
                         mmsi=mmsi,
                         display_name=name,
                         first_heard_utc=enriched.get("last_heard_utc"),
+                        lat=enriched.get("lat"),
+                        lon=enriched.get("lon"),
                     )
                 nav = enriched.get("nav_status")
                 if nav is not None:

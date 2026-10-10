@@ -12,6 +12,9 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from wichita_provenance import SOURCE_OUR_ANTENNA, provenance_fields
+from wichita_receiver_health import classify_receiver_state, feed_age_from_unix, receiver_health_block
+from wichita_upstream import assert_private_upstream
+from wichita_adsb_history import get_adsb_history
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +53,9 @@ def fetch_aircraft_json() -> Tuple[Optional[Dict[str, Any]], Optional[str]]:
             return None, str(exc)
 
     url = adsb_base_url()
+    ok, why = assert_private_upstream(url)
+    if not ok:
+        return None, why or "upstream blocked"
     req = urllib.request.Request(url, headers={"Accept": "application/json"})
     try:
         with urllib.request.urlopen(req, timeout=ADSB_TIMEOUT_SEC) as resp:
@@ -121,9 +127,51 @@ def normalize_aircraft(raw: Dict[str, Any], now: Optional[datetime] = None) -> O
     }
 
 
+def readsb_receiver_health(
+    payload: Optional[Dict[str, Any]],
+    err: Optional[str],
+    planes: List[Dict[str, Any]],
+) -> Dict[str, Any]:
+    if err == "Receiver not connected":
+        reachable = False
+        payload_valid = False
+        feed_age = None
+    elif err == "Receiver returned invalid JSON":
+        reachable = True
+        payload_valid = False
+        feed_age = None
+    else:
+        reachable = True
+        payload_valid = True
+        feed_age = feed_age_from_unix((payload or {}).get("now"))
+        if feed_age is None and planes:
+            ages = [p.get("last_signal_s") for p in planes if p.get("last_signal_s") is not None]
+            feed_age = min(ages) if ages else None
+    min_seen = min(
+        (p.get("last_signal_s") for p in planes if p.get("last_signal_s") is not None),
+        default=None,
+    )
+    state = classify_receiver_state(
+        reachable=reachable,
+        payload_valid=payload_valid,
+        feed_age_sec=feed_age,
+        contact_count=len(planes),
+    )
+    return receiver_health_block(
+        service="readsb",
+        band="ADS-B 1090 MHz",
+        source=SOURCE_OUR_ANTENNA,
+        state=state,
+        feed_age_sec=feed_age,
+        contact_count=len(planes),
+        last_signal_s=min_seen,
+        extra={"error": err, "messages": (payload or {}).get("messages")},
+    )
+
+
 def live_adsb_snapshot() -> Dict[str, Any]:
     payload, err = fetch_aircraft_json()
-    online = payload is not None
+    online = payload is not None and err is None
     now = datetime.now(timezone.utc)
     aircraft_raw = (payload or {}).get("aircraft") or []
     planes: List[Dict[str, Any]] = []
@@ -134,12 +182,19 @@ def live_adsb_snapshot() -> Dict[str, Any]:
         if norm:
             planes.append(norm)
     planes.sort(key=lambda p: (p.get("freshness") != "live", (p.get("callsign") or p.get("hex") or "").upper()))
+    health = readsb_receiver_health(payload, err, planes)
+    try:
+        get_adsb_history().record_snapshot(planes, (payload or {}).get("now"))
+    except OSError as exc:
+        logger.warning("adsb history write failed: %s", exc)
     return {
-        "online": online,
-        "receiver_connected": online,
+        "online": health.get("online", online),
+        "receiver_connected": health.get("reachable", online),
+        "receiver_health": health,
         "error": err,
         "source_label": "Heard by our antenna",
         "data_source": SOURCE_OUR_ANTENNA,
+        "data_caveat": "Observed from our antenna — not official flight data or ground truth",
         "aircraft": planes,
         "aircraft_count": len(planes),
         "server_time_utc": now.isoformat(),

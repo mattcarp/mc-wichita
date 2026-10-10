@@ -101,6 +101,8 @@ export class HarbourMap {
     this.zoomMode = "harbour";
     this._reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     this._onSelect = null;
+    this._onMapClick = null;
+    this.watchZones = [];
     this._svg = null;
     this._mapW = 400;
     this._mapH = 220;
@@ -114,6 +116,22 @@ export class HarbourMap {
 
   onPlaneSelect(fn) {
     this._onPlaneSelect = fn;
+  }
+
+  onMapClick(fn) {
+    this._onMapClick = fn;
+  }
+
+  setWatchZones(zones) {
+    this.watchZones = zones || [];
+    this._draw();
+  }
+
+  focusCamera(camera) {
+    if (!camera?.lat || !camera?.lon) return;
+    const pad = camera.zoom ? 0.18 / camera.zoom : 0.02;
+    this._centerOn(camera.lat, camera.lon, pad);
+    this._draw();
   }
 
   setFollow(target) {
@@ -181,6 +199,17 @@ export class HarbourMap {
     );
     this._fitView();
     this._draw();
+    this._svg.addEventListener("click", (ev) => {
+      if (!this._onMapClick || ev.target.closest("[data-mmsi],[data-plane-id]")) return;
+      const pt = this._svg.createSVGPoint();
+      pt.x = ev.clientX;
+      pt.y = ev.clientY;
+      const ctm = this._svg.getScreenCTM()?.inverse();
+      if (!ctm) return;
+      const loc = pt.matrixTransform(ctm);
+      const ll = this._unproject(loc.x, loc.y, this._mapW, this._mapH);
+      if (ll) this._onMapClick(ll.lat, ll.lon);
+    });
   }
 
   setReceiver(r) {
@@ -358,6 +387,15 @@ export class HarbourMap {
     return { x, y };
   }
 
+  _unproject(x, y, w, h) {
+    const { minLat, maxLat, minLon, maxLon } = this.view;
+    const lonSpan = maxLon - minLon || 1e-6;
+    const latSpan = maxLat - minLat || 1e-6;
+    const lon = minLon + ((x - 8) / (w - 16)) * lonSpan;
+    const lat = minLat + ((h - 8 - y) / (h - 16)) * latSpan;
+    return { lat, lon };
+  }
+
   _drawPolygons(geojson, className, w, h) {
     const parts = [];
     if (!geojson?.features) return parts;
@@ -393,6 +431,18 @@ export class HarbourMap {
     parts.push(`<rect width="${w}" height="${h}" class="map-sea"/>`);
     parts.push(...this._drawPolygons(coastCache, "map-land", w, h));
     parts.push(...this._drawPolygons(waterCache, "map-water", w, h));
+
+    for (const zone of this.watchZones) {
+      const poly = zone.polygon || [];
+      if (poly.length < 3) continue;
+      const pts = poly
+        .map(([lat, lon]) => {
+          const p = this._project(lat, lon, w, h);
+          return `${p.x.toFixed(1)},${p.y.toFixed(1)}`;
+        })
+        .join(" ");
+      parts.push(`<polygon points="${pts}" class="map-watch-zone" data-zone="${zone.id || ""}"/>`);
+    }
 
     for (const km of [5, 10, 20]) {
       const ring = ringCoords(this.receiver.lat, this.receiver.lon, km);
