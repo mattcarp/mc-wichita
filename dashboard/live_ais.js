@@ -1,13 +1,18 @@
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261009-21";
-import { HarbourMap, typeColor } from "./harbour_map.js?v=20261009-21";
-import { provenanceBadge } from "./entity_labels.js?v=20261009-21";
-import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261009-21";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261009-23";
+import { HarbourMap, typeColor } from "./harbour_map.js?v=20261009-23";
+import { provenanceBadge, freshnessClass } from "./entity_labels.js?v=20261009-23";
+import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261009-23";
 
 const GROUPS = [
-  { key: "now", title: "Heard now" },
-  { key: "recent", title: "Recently" },
-  { key: "earlier", title: "Earlier today" },
+  { key: "now", title: "Now" },
+  { key: "recent", title: "Recent" },
+  { key: "earlier", title: "Earlier" },
 ];
+
+const timelineState = {
+  nextBefore: null,
+  hours: 2,
+};
 
 const state = {
   snapshot: null,
@@ -54,7 +59,18 @@ function renderSummary(snapshot) {
   if (!el || !snapshot) return;
   const mc = snapshot.movement_counts || {};
   const nearby = snapshot.freshness_counts?.now ?? mc.now ?? 0;
-  el.innerHTML = `<p class="harbour-summary-text">${snapshot.summary || ""}</p>
+  const narrow = (document.documentElement.clientWidth || 800) < 720;
+  const line = snapshot.summary || "";
+  if (narrow) {
+    el.innerHTML = `<p class="harbour-summary-oneline">${line}</p>
+      <div class="summary-chips mono">
+        <span class="chip">${nearby} nearby</span>
+        <span class="chip">${mc.moving ?? 0} moving</span>
+        <span class="chip">${mc.moored_or_slow ?? 0} moored</span>
+      </div>`;
+    return;
+  }
+  el.innerHTML = `<p class="harbour-summary-text">${line}</p>
     <div class="summary-tiles">
       <div><span class="summary-num">${nearby}</span><span class="muted">Nearby now</span></div>
       <div><span class="summary-num">${mc.moving ?? 0}</span><span class="muted">Moving</span></div>
@@ -65,21 +81,17 @@ function renderSummary(snapshot) {
 function shipCardHtml(s, selected) {
   const flag = flagEmoji(s.country);
   const col = typeColor(s.shiptype_category);
-  const eta =
-    s.eta_malta && !s.eta_malta_stale
-      ? `ETA ${s.eta_malta} Malta`
-      : s.eta_malta && s.eta_malta_stale
-        ? `ETA ${s.eta_malta}`
-        : "";
-  const fade = s.freshness === "earlier" ? " ship-card-fade" : "";
+  const eta = s.eta_malta && !s.eta_malta_stale ? `ETA ${s.eta_malta} Malta` : "";
+  const tierClass = freshnessClass(s.freshness);
+  const fade = s.freshness === "earlier" ? " ship-card-fade" : s.freshness === "recent" ? " ship-card-recent" : "";
   const sel = s.mmsi === selected ? " selected" : "";
-  return `<li class="live-ship-card${fade}${sel}" data-mmsi="${s.mmsi}" role="button" tabindex="0" style="--ship-type-color:${col}">
-    ${provenanceBadge(s)}
+  const tierLabel = s.freshness_label || "Earlier";
+  return `<li class="live-ship-card ${tierClass}${fade}${sel}" data-mmsi="${s.mmsi}" role="button" tabindex="0" style="--ship-type-color:${col}">
     <div class="live-ship-card-head">
       <span class="ship-type-icon" aria-hidden="true"></span>
       <span class="live-ship-flag" title="${s.country || ""}">${flag}</span>
       <strong>${s.display_name}</strong>
-      <span class="mono muted ship-fresh">${agoLabel(s.last_signal_s)}</span>
+      <span class="mono ship-fresh ship-fresh-${s.freshness || "earlier"}">${tierLabel} · ${agoLabel(s.last_signal_s)}</span>
     </div>
     <p class="ship-lead">${s.lead_sentence}</p>
     <p class="muted ship-meta">${s.shiptype_label}${eta ? ` · ${eta}` : ""}</p>
@@ -176,12 +188,41 @@ function renderDrawer(ship) {
     <p class="ship-lead">${ship.lead_sentence}</p>
     <dl class="ship-detail-dl">
       <dt>Destination</dt><dd>${ship.destination_display || ship.destination_raw || "—"}</dd>
-      <dt>ETA</dt><dd>${ship.eta_malta ? ship.eta_malta + " Malta" : "—"}</dd>
+      <dt>ETA</dt><dd>${ship.eta_malta ? `${ship.eta_malta}${ship.eta_malta_stale ? " (out of date)" : ""} Malta` : "—"}</dd>
       <dt>Signals</dt><dd>${ship.level_db != null ? ship.level_db.toFixed(1) + " dB" : "—"} · ${ship.message_count ?? 0} msgs</dd>
     </dl>
     <a class="mmsi-link" href="https://www.vesselfinder.com/?mmsi=${ship.mmsi}" rel="noopener noreferrer" target="_blank">Look up MMSI (external)</a>
   `;
   $("#drawerClose")?.addEventListener("click", () => selectShip(null));
+}
+
+function shipFromSnapshot(mmsi) {
+  if (mmsi == null) return null;
+  return (state.snapshot?.ships || []).find((s) => s.mmsi === mmsi) || null;
+}
+
+function isNarrowViewport() {
+  return (document.documentElement.clientWidth || 800) < 720;
+}
+
+function refreshSelectedShipPanels() {
+  const ship = shipFromSnapshot(state.selectedMmsi);
+  if (!state.selectedMmsi || !ship) {
+    if (!state.selectedMmsi) {
+      renderSheet(null);
+      renderDrawer(null);
+    }
+    renderFollowCard();
+    return;
+  }
+  if (isNarrowViewport()) {
+    renderDrawer(null);
+    renderSheet(ship);
+  } else {
+    renderSheet(null);
+    renderDrawer(ship);
+  }
+  renderFollowCard();
 }
 
 function renderFollowCard() {
@@ -194,11 +235,12 @@ function renderFollowCard() {
   }
   el.hidden = false;
   if (state.follow.kind === "ship") {
-    const ship = (state.snapshot?.ships || []).find((s) => s.mmsi === state.follow.id);
+    const ship = shipFromSnapshot(state.follow.id);
     if (!ship) return;
-    el.innerHTML = `${provenanceBadge(ship)}
-      <p><strong>Following ${ship.display_name}</strong> — tap again or press Esc to stop.</p>
-      <p class="ship-lead">${ship.lead_sentence || ""}</p>`;
+    el.innerHTML = `<p><strong>Following ${ship.display_name}</strong></p>
+      <p class="ship-lead">${ship.lead_sentence || ""}</p>
+      <button type="button" class="btn-stop-follow" id="stopFollowBtn">Stop following</button>`;
+    $("#stopFollowBtn")?.addEventListener("click", () => selectShip(null));
     return;
   }
   const plane = (state.sky?.adsb?.aircraft || []).find((p) => p.id === state.follow.id);
@@ -227,9 +269,7 @@ async function selectShip(mmsi) {
     state.follow = null;
   }
   state.selectedMmsi = mmsi;
-  const ship = mmsi ? (state.snapshot?.ships || []).find((s) => s.mmsi === mmsi) : null;
   renderShipList(state.snapshot);
-  renderFollowCard();
   if (state.map) {
     state.map.update({
       ships: state.snapshot?.ships,
@@ -243,21 +283,29 @@ async function selectShip(mmsi) {
     });
     if (mmsi && !state.follow) state.map.focusShip(mmsi);
   }
-  const narrow = (document.documentElement.clientWidth || 800) < 720;
-  if (narrow) renderSheet(ship);
-  else renderDrawer(ship);
-  if (mmsi && ship) return;
-  if (mmsi) {
-    try {
-      const res = await fetch(`/api/live-ais/ships/${mmsi}`);
-      if (res.ok) {
-        const detail = await res.json();
-        if (narrow) renderSheet(detail);
-        else renderDrawer(detail);
+  if (!mmsi) {
+    refreshSelectedShipPanels();
+    return;
+  }
+  if (shipFromSnapshot(mmsi)) {
+    refreshSelectedShipPanels();
+    return;
+  }
+  try {
+    const res = await fetch(`/api/live-ais/ships/${mmsi}`);
+    if (res.ok) {
+      const detail = await res.json();
+      if (isNarrowViewport()) {
+        renderDrawer(null);
+        renderSheet(detail);
+      } else {
+        renderSheet(null);
+        renderDrawer(detail);
       }
-    } catch {
-      /* keep card */
+      renderFollowCard();
     }
+  } catch {
+    refreshSelectedShipPanels();
   }
 }
 
@@ -286,12 +334,28 @@ async function selectPlane(id) {
   });
 }
 
-export async function renderLiveEvents() {
+function timelineItemHtml(e) {
+  const t = e.ts_utc ? formatMaltaTimeShort(e.ts_utc) : "—";
+  const kind = e.kind || "";
+  const cls =
+    kind.startsWith("receiver") ? "timeline-receiver" : kind.includes("silent") ? "timeline-quiet" : "timeline-live";
+  const tsAttr = e.ts_utc ? ` data-ts="${e.ts_utc}"` : "";
+  return `<li class="${cls}"${tsAttr}><span class="event-time mono">${t}</span> <span class="event-body">${e.sentence}</span></li>`;
+}
+
+export async function renderLiveEvents(append = false) {
   const ol = $("#timeline");
   const strip = $("#activityStrip");
+  const moreBtn = $("#timelineMore");
   if (!ol) return;
   try {
-    const res = await fetch("/api/live-ais/events?hours=24");
+    if (!append) timelineState.nextBefore = null;
+    const qs = new URLSearchParams({
+      hours: String(timelineState.hours),
+      limit: "20",
+    });
+    if (append && timelineState.nextBefore) qs.set("before", timelineState.nextBefore);
+    const res = await fetch(`/api/live-ais/events?${qs}`);
     if (!res.ok) throw new Error(String(res.status));
     const data = await res.json();
     if (strip && data.activity_hourly?.length) {
@@ -308,17 +372,21 @@ export async function renderLiveEvents() {
       strip.innerHTML = "";
     }
     const events = data.events || [];
-    ol.innerHTML = events.length
-      ? events
-          .map((e) => {
-            const t = e.ts_utc ? formatMaltaTimeShort(e.ts_utc) : "—";
-            return `<li class="timeline-live"><span class="badge badge-live">Live</span> <span class="event-time mono">${t}</span> ${e.sentence}</li>`;
-          })
-          .join("")
-      : "<li class='muted'>No live events logged yet.</li>";
+    const html = events.length ? events.map(timelineItemHtml).join("") : "<li class='muted'>No live events logged yet.</li>";
+    if (append) ol.innerHTML += html;
+    else ol.innerHTML = html;
+    timelineState.nextBefore = data.next_before || null;
+    if (moreBtn) {
+      moreBtn.hidden = !data.has_more;
+      moreBtn.disabled = false;
+    }
   } catch {
-    ol.innerHTML = "<li class='muted'>Could not load live event log.</li>";
+    if (!append) ol.innerHTML = "<li class='muted'>Could not load live event log.</li>";
   }
+}
+
+function setupTimelinePaging() {
+  $("#timelineMore")?.addEventListener("click", () => renderLiveEvents(true));
 }
 
 function renderStationLive(snapshot) {
@@ -380,7 +448,7 @@ async function pollLive() {
       selectedPlaneId: state.selectedPlaneId,
       follow: state.follow,
     });
-    renderFollowCard();
+    refreshSelectedShipPanels();
     renderStationLive(data);
     await renderLiveEvents();
   } catch {
@@ -388,7 +456,32 @@ async function pollLive() {
   }
 }
 
+function initHarbourSheetDrag() {
+  const sheet = $("#harbourShipSheet");
+  const grab = sheet?.querySelector(".sheet-grab");
+  if (!sheet || !grab) return;
+  let startY = 0;
+  let startH = 0;
+  const onMove = (clientY) => {
+    const dy = startY - clientY;
+    const next = Math.max(120, Math.min(window.innerHeight * 0.72, startH + dy));
+    sheet.style.setProperty("--sheet-height", `${next}px`);
+  };
+  grab.addEventListener("pointerdown", (ev) => {
+    grab.setPointerCapture(ev.pointerId);
+    startY = ev.clientY;
+    startH = sheet.getBoundingClientRect().height;
+  });
+  grab.addEventListener("pointermove", (ev) => {
+    if (!grab.hasPointerCapture(ev.pointerId)) return;
+    onMove(ev.clientY);
+  });
+  grab.addEventListener("pointerup", (ev) => grab.releasePointerCapture(ev.pointerId));
+}
+
 export function initLiveAis() {
+  setupTimelinePaging();
+  initHarbourSheetDrag();
   pollLive();
   if (state.timer) clearInterval(state.timer);
   state.timer = setInterval(pollLive, 5000);

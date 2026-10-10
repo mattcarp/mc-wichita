@@ -25,6 +25,7 @@ from enum import Enum
 import asyncio
 import numpy as np
 from datetime import datetime, timezone
+from dataclasses import asdict
 import subprocess
 import os
 import json
@@ -42,6 +43,7 @@ from evidence_context import delivery_health, evidence_context, answer_question
 from wichita_ais_routes import router as live_ais_router
 from wichita_gods_eye_routes import router as sky_router
 from wichita_capture_routes import router as capture_feed_router
+from capture_provenance import ProvenanceImportError, import_capture
 from whisper_transcription import WhisperConfig, transcribe_audio_file
 from ai_analysis_pipeline import analyze_audio_file, extract_stress_features, score_stress
 
@@ -56,6 +58,7 @@ async def _wichita_lifespan(app):  # noqa: ARG001
     yield
     get_engine().stop()
 
+from stress_scorer import score_stress as kenneth_score_stress
 
 # Initialize FastAPI with rich metadata
 app = FastAPI(
@@ -898,6 +901,14 @@ async def _broadcast_alert(alert: AlertRecord) -> None:
 
 _load_speaker_profiles()
 
+class StressScoreRequest(BaseModel):
+    """Voice stress scoring request."""
+
+    audio_path: str = Field(..., description="Path to local audio file")
+    frequency: Optional[float] = Field(
+        default=None, description="Optional reference frequency in Hz"
+    )
+
 
 # ==================== SIGNAL CAPTURE ====================
 
@@ -1087,6 +1098,25 @@ async def classify_signal(
             )
         },
     )
+
+
+# ==================== VOICE STRESS ====================
+
+
+@app.post("/stress", tags=["analysis"], response_model=Dict[str, Any])
+async def score_voice_stress(request: StressScoreRequest):
+    """
+    Score stress indicators from a voice audio file.
+
+    Returns stress score, alert level, triggered indicators, and extracted features.
+    """
+    try:
+        result = kenneth_score_stress(request.audio_path, request.frequency)
+        return asdict(result)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Stress scoring failed: {str(e)}")
 
 
 # ==================== MARITIME INTELLIGENCE ====================
@@ -1505,6 +1535,38 @@ async def list_captures(limit: int = Query(100, ge=1, le=500)):
     return list(reversed(CAPTURES[-limit:]))
 
 
+@app.post("/imports/provenance-capture", tags=["capture"], response_model=AlertRecord)
+async def import_provenance_capture(
+    audio_path: str = Query(..., description="Absolute or repo-relative path to a WAV capture"),
+):
+    """
+    Read-only provenance import into the local ALERTS store.
+
+    Does not invoke Mission Control, Telegram, Discord, or websocket dispatch.
+    """
+    candidate = Path(audio_path)
+    if not candidate.is_file():
+        repo_relative = Path(__file__).resolve().parent / audio_path
+        if repo_relative.is_file():
+            candidate = repo_relative
+        else:
+            raise HTTPException(status_code=404, detail="Audio file not found")
+
+    try:
+        imported = import_capture(candidate)
+    except ProvenanceImportError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    alert_fields = imported.as_alert_kwargs()
+    alert_fields["signal_type"] = SignalType.UNKNOWN
+    alert_fields["severity"] = AlertSeverity.INFO
+    record = AlertRecord(**alert_fields)
+    ALERTS.append(record)
+    if len(ALERTS) > MAX_ALERTS:
+        ALERTS.pop(0)
+    return record
+
+
 @app.get("/stress-alerts", tags=["alerts"], response_model=List[AlertRecord])
 async def list_stress_alerts(limit: int = Query(100, ge=1, le=500)):
     """List recent stress/distress alerts for dashboard triage."""
@@ -1807,6 +1869,51 @@ async def health():
         "captures_count": len(CAPTURES),
     }
 
+
+
+
+# ==================== KENNETH ALERT ENDPOINT ====================
+
+from kenneth_alert import KennethEvent, send_alert, process_stress_result, format_alert
+
+class AlertRequest(BaseModel):
+    frequency_mhz: float = Field(..., description="Frequency in MHz")
+    stress_score: int = Field(..., ge=0, le=100, description="Stress score 0-100")
+    alert_level: str = Field(..., description="LOW / MEDIUM / HIGH / CRITICAL")
+    transcript: str = Field("", description="Transcribed speech")
+    timestamp: Optional[str] = Field(None, description="ISO timestamp, defaults to now")
+    indicators: List[str] = Field(default_factory=list)
+    channel_name: Optional[str] = Field(None, description="e.g. CH16 Emergency")
+    ais_info: Optional[str] = Field(None, description="AIS vessel info if available")
+    dry_run: bool = Field(False, description="Format alert but don't send")
+
+
+@app.post("/alert", tags=["Kenneth"])
+async def trigger_alert(request: AlertRequest):
+    """
+    Trigger a Kenneth stress alert. Sends via OpenClaw → Mattie's Telegram if thresholds met.
+    Thresholds: >=70% stress OR MAYDAY/SOS keyword in transcript.
+    """
+    from datetime import datetime, timezone
+    ts = request.timestamp or datetime.now(timezone.utc).strftime("%H:%M:%S")
+    event = KennethEvent(
+        frequency_mhz=request.frequency_mhz,
+        stress_score=request.stress_score,
+        alert_level=request.alert_level,
+        transcript=request.transcript,
+        timestamp=ts,
+        indicators=request.indicators,
+        channel_name=request.channel_name,
+        ais_info=request.ais_info,
+    )
+    sent = send_alert(event, dry_run=request.dry_run)
+    return {
+        "alert_sent": sent,
+        "dry_run": request.dry_run,
+        "message_preview": format_alert(event),
+        "stress_score": request.stress_score,
+        "alert_level": request.alert_level,
+    }
 
 # ==================== ROOT REDIRECT ====================
 

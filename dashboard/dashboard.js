@@ -4,9 +4,10 @@ import {
   plotInnerWidth,
   psdSpan,
   samplePsdAtMhz,
-} from "./spectrum_geometry.mjs?v=20261009-21";
-import { initLiveAis } from "./live_ais.js?v=20261009-21";
-import { formatMalta } from "./time_malta.js?v=20261009-21";
+} from "./spectrum_geometry.mjs?v=20261009-23";
+import { initLiveAis } from "./live_ais.js?v=20261009-23";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261009-23";
+import { GEAR_ICON, TAB_ICONS } from "./tab_icons.js?v=20261009-23";
 const VALLETTA = { lat: 35.8987, lon: 14.5145, span: 0.06 };
 
 const BOOKMARKS = [
@@ -34,7 +35,8 @@ function tickClock() {
   const el = $("#maltaClock");
   if (!el) return;
   const now = new Date();
-  el.textContent = formatMalta(now.getTime() / 1000);
+  const narrow = (document.documentElement.clientWidth || 800) < 720;
+  el.textContent = narrow ? formatMaltaTimeShort(now.getTime() / 1000) : formatMalta(now.getTime() / 1000);
   el.dateTime = now.toISOString();
 }
 
@@ -386,7 +388,7 @@ function drawBurstWaterfall(analysis, psd, colorBlind, durationSec) {
   const canvas = $("#waterfallCanvas");
   const caption = $("#waterfallCaption");
   if (!canvas) return;
-  const { ctx, w, h } = fitCanvas(canvas, 110, true);
+  const { ctx, w, h } = fitCanvas(canvas, 72, true);
   const duration = Math.max(30, durationSec || 600);
   const grid = new Float32Array(w * h);
   const psdVals = psd?.psd_db_per_hz || [];
@@ -503,16 +505,12 @@ function bookmarkMeasurable(mhz, psd) {
 function renderBookmarks(psd) {
   const ul = $("#bookmarkLegend");
   if (!ul) return;
-  const narrow = (document.documentElement.clientWidth || 800) < 420;
   ul.innerHTML = BOOKMARKS.map((b) => {
     const ok = bookmarkMeasurable(b.mhz, psd);
     if (ok) {
-      return `<li>${b.key} ${b.mhz.toFixed(3)} MHz</li>`;
+      return `<li class="legend-chip">${b.key} ${b.mhz.toFixed(3)}</li>`;
     }
-    if (narrow) {
-      return `<li class="legend-unmeasurable">${b.key} ${b.mhz.toFixed(3)}, not measurable here</li>`;
-    }
-    return `<li class="legend-unmeasurable">${b.key} ${b.mhz.toFixed(3)} MHz — not measurable in this capture</li>`;
+    return `<li class="legend-chip legend-unmeasurable" title="Not measurable in this capture">${b.key}</li>`;
   }).join("");
 }
 
@@ -748,7 +746,16 @@ function setupTabs() {
     window.scrollTo(0, 0);
     requestAnimationFrame(() => redrawCharts());
   };
-  buttons.forEach((b) => b.addEventListener("click", () => show(b.dataset.tabTarget)));
+  buttons.forEach((b) => {
+    b.addEventListener("click", (ev) => {
+      const target = ev.currentTarget?.dataset?.tabTarget || b.dataset.tabTarget;
+      show(target);
+    });
+  });
+  document.querySelectorAll(".tab-icon[data-icon]").forEach((icon) => {
+    const key = icon.getAttribute("data-icon");
+    if (TAB_ICONS[key]) icon.innerHTML = TAB_ICONS[key];
+  });
   show("harbour");
 }
 
@@ -780,6 +787,8 @@ function onResize() {
 }
 
 function main() {
+  const gear = $("#settingsBtn");
+  if (gear && GEAR_ICON) gear.innerHTML = GEAR_ICON;
   renderBookmarks();
   setupTabs();
   setupSubtabs();

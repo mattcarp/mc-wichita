@@ -409,8 +409,10 @@ canvas {
   #panel-harbour {
     grid-column: span 12;
   }
-  #panel-heard,
-  #panel-watch {
+  #panel-heard {
+    grid-column: span 6;
+  }
+  #panel-sky {
     grid-column: span 6;
   }
   #panel-recordings {
@@ -704,7 +706,7 @@ canvas {
   height: var(--tab-h);
   padding-bottom: env(safe-area-inset-bottom, 0px);
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   background: #0e1118ee;
   backdrop-filter: blur(8px);
   border-top: 1px solid var(--border);
@@ -712,11 +714,15 @@ canvas {
 }
 .tab-btn {
   font: inherit;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   background: transparent;
   border: 0;
   color: var(--muted);
   cursor: pointer;
+  min-height: 44px;
+}
+.tab-btn span {
+  pointer-events: none;
 }
 .tab-btn.active {
   color: var(--marine);
@@ -1194,4 +1200,208 @@ body.sheet-open .live-ship-list {
 }
 .panel-hero {
   background: linear-gradient(180deg, rgba(14, 24, 40, 0.6), var(--surface));
+}
+
+.timeline-shell {
+  max-height: min(420px, 42vh);
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 0.45rem;
+  padding: 0.35rem 0.55rem;
+  background: var(--surface-2);
+}
+.timeline-shell .timeline li {
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+.timeline-more {
+  display: block;
+  width: 100%;
+  margin-top: 0.35rem;
+  font: inherit;
+  font-size: 0.78rem;
+  padding: 0.45rem;
+  border-radius: 0.35rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--marine);
+  cursor: pointer;
+}
+.timeline-receiver .event-body {
+  color: var(--review);
+}
+.timeline-quiet .event-body {
+  color: var(--muted);
+}
+.event-time {
+  display: inline;
+  margin-right: 0.35rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+.voice-grid-heard {
+  margin-bottom: 0.65rem;
+}
+.summary-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+.summary-chips .chip {
+  font-size: 0.72rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+.harbour-summary-oneline {
+  font-size: 0.82rem;
+  line-height: 1.35;
+  margin: 0 0 0.35rem;
+}
+.ship-fresh-now {
+  color: var(--marine);
+}
+.ship-fresh-recent {
+  color: var(--review);
+}
+.ship-fresh-earlier {
+  color: var(--muted);
+}
+.ship-card-recent {
+  opacity: 0.82;
+}
+.btn-stop-follow {
+  margin-top: 0.35rem;
+  font: inherit;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.55rem;
+  border-radius: 0.35rem;
+  border: 1px solid var(--marine);
+  background: transparent;
+  color: var(--marine);
+  cursor: pointer;
+}
+.bookmark-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  list-style: none;
+  padding: 0;
+  margin: 0.35rem 0 0;
+}
+.legend-chip {
+  font-size: 0.68rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+.legend-unmeasurable {
+  opacity: 0.55;
+}
+.waterfall-details summary {
+  cursor: pointer;
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-bottom: 0.35rem;
+}
+.icon-btn-gear {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+}
+.prov-now {
+  border-color: rgba(62, 198, 201, 0.45);
+  color: var(--marine);
+}
+.prov-recent {
+  border-color: rgba(224, 164, 88, 0.35);
+}
+.prov-earlier {
+  opacity: 0.75;
+}
+
+@media (min-width: 900px) {
+  .live-ship-drawer {
+    position: fixed;
+    top: 3.25rem;
+    right: 0.75rem;
+    width: min(360px, 28vw);
+    max-height: calc(100dvh - 4.5rem);
+    overflow: auto;
+    z-index: 70;
+    margin-top: 0;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+  }
+  .live-ship-drawer[hidden] {
+    display: none !important;
+  }
+}
+
+@media (max-width: 899px) {
+  .site-header-compact {
+    padding: 0.25rem 0.65rem;
+    min-height: 48px;
+    max-height: 48px;
+  }
+  .brand-glyph {
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.85rem;
+  }
+  .header-meta #maltaClock {
+    font-size: 0.75rem;
+  }
+  .harbour-layout {
+    display: block;
+    position: relative;
+  }
+  .harbour-map-col {
+    height: 45vh;
+    min-height: 200px;
+    max-height: 46vh;
+  }
+  .harbour-map-host {
+    max-height: 100%;
+    height: 100%;
+  }
+  .harbour-list-col {
+    position: relative;
+    margin-top: -2.5rem;
+    z-index: 5;
+    pointer-events: none;
+  }
+  .harbour-ship-sheet {
+    pointer-events: auto;
+    --sheet-height: min(52vh, 420px);
+    height: var(--sheet-height);
+    max-height: 72vh;
+    overflow: auto;
+    border-radius: 0.75rem 0.75rem 0 0;
+    border: 1px solid var(--border);
+    background: rgba(10, 14, 22, 0.94);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.35);
+  }
+  .sheet-grab {
+    height: 1.25rem;
+    margin: 0.35rem auto 0.15rem;
+    width: 2.5rem;
+    border-radius: 999px;
+    background: var(--border);
+    touch-action: none;
+    cursor: grab;
+  }
+  .harbour-summary-text,
+  .summary-tiles {
+    display: none;
+  }
+  .shore-stations {
+    margin-top: 0.5rem;
+    pointer-events: auto;
+  }
 }

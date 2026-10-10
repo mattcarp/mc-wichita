@@ -74,7 +74,10 @@ Not yet established:
   other, and consistent with the real path in `rtl_sdr_real_capture.py`. But none
   carries a source record, observation time or analysis method, and the repo also
   holds a `fake_audio_backup/` directory. A filename asserting REAL_ is not
-  provenance. There is still no `rf_captures/` and no live reception.
+  provenance. There is still no `rf_captures/` and no live reception. SigMF-shaped
+  sidecars (`*.sigmf-meta`), hashing, and a read-only import API (`POST
+  /imports/provenance-capture`) now exist; status must still be recorded as
+  `unverified` or `synthetic` until off-air authenticity is established.
 - `wichita-websdr/` currently holds a package manifest and no application source;
   the tested UI is the FastAPI root plus `dashboard/`.
 - Capture and alert stores are process-local, so history dies with the process.
