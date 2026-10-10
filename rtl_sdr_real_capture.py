@@ -10,8 +10,12 @@ import soundfile as sf
 import time
 from pathlib import Path
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 import os
 from scan_config import demod_mode_by_frequency_hz
+from capture_provenance import ProvenanceStatus, write_sidecar
+
+MALTA_TZ = ZoneInfo("Europe/Malta")
 
 class RTLSDRRealCapture:
     def __init__(self):
@@ -282,7 +286,14 @@ def test_rtl_real_capture():
                 audio = np.pad(audio, (0, target_samples - len(audio)))
             
             sf.write(filename, audio, 48000)
-            
+
+            write_sidecar(
+                Path(filename),
+                frequency_hz=int(round(freq_mhz * 1_000_000)),
+                provenance_status=ProvenanceStatus.UNVERIFIED,
+                observation_time=datetime.now(MALTA_TZ),
+            )
+
             print(f"✅ REAL RF saved: {filename}")
             
             # Analyze the capture
