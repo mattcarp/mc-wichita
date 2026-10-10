@@ -100,3 +100,17 @@ For TypeScript inside `symphony/`: `cd symphony && npx tsc --noEmit`.
 - Don't write tests against mocks for hardware-touching code.
 - Don't introduce a new SDR backend or transcription model without surfacing the choice in the issue.
 - Don't use emojis in code or commits. WICHITA_PRD.md has emojis (it's a record); don't propagate them into new code.
+
+## Cursor Cloud specific instructions
+
+- The API listens on port 8000. Start it with `python3 api_server.py`. The README documents port 3000.
+- Pytest collection fails on scripts that exit or open WAV files at import. Run:
+
+```bash
+python3 -m pytest --ignore=test_audio_pipeline.py --ignore=before_after_test.py --ignore=test_api_directly.py --ignore=test_consistency.py --ignore=test_determinism.py --ignore=test_formats.py --ignore=test_maltese.py --ignore=test_maritime.py
+```
+
+`test_audio_pipeline.py` calls `sys.exit` when `audio_preprocessor` is missing. The other ignored scripts open WAV captures at import time.
+
+- Symphony: `npm ci --prefix symphony`, then `npx tsc --noEmit` from `symphony/`.
+- Live AIS and ADS-B decoders are separate processes. The API stays up when they are absent.
