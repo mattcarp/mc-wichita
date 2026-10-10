@@ -333,7 +333,10 @@ def harbour_summary_bundle(
         lead += f"; {move['moving']} moving"
     if move["moored_or_slow"]:
         lead += f", {move['moored_or_slow']} moored or slow"
-    tail = "Receiver live" if online else "Receiver offline"
+    if online:
+        tail = "Quiet (receiver healthy)" if not vessels else "Receiver live"
+    else:
+        tail = "Receiver offline"
     if voice_not_monitored:
         tail += " · voice channels not monitored now (AIS on the SDR)"
     return {

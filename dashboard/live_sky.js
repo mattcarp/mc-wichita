@@ -1,4 +1,4 @@
-import { provenanceBadge } from "./entity_labels.js?v=20261009-23";
+import { provenanceBadge, feedHealthChip } from "./entity_labels.js?v=20261010-gev1";
 
 function $(sel) {
   return document.querySelector(sel);
@@ -11,18 +11,19 @@ export function renderPlanesPanel(adsb) {
     el.innerHTML = "<p class='muted'>Checking ADS-B…</p>";
     return;
   }
+  const health = adsb.receiver_health ? feedHealthChip(adsb.receiver_health) : "";
   if (!adsb.receiver_connected) {
-    el.innerHTML = `<p class="adsb-offline">${adsb.error || "Receiver not connected"}</p>
+    el.innerHTML = `${health}<p class="adsb-offline">${adsb.error || "Receiver not connected"}</p>
       <p class="muted small">Our readsb feed will appear here when the RTL-SDR is on 1090 MHz.</p>`;
     return;
   }
   const planes = adsb.aircraft || [];
   if (!planes.length) {
-    el.innerHTML = `<p class="muted">No aircraft with position from our receiver right now.</p>
-      <p class="prov-badge prov-stale">Heard by our antenna · Live</p>`;
+    el.innerHTML = `${health}<p class="muted">${adsb.coverage_label || "No aircraft with position from our receiver right now."}</p>`;
     return;
   }
-  el.innerHTML = `<p class="mono counts">${planes.length} aircraft with position</p>
+  el.innerHTML = `${health}<p class="mono counts">${planes.length} aircraft with position</p>
+    <p class="muted small observed-caveat">Observed ADS-B only — not ground truth.</p>
     <ul class="live-plane-list">
       ${planes
         .map((p) => {

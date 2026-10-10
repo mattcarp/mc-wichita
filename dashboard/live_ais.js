@@ -1,7 +1,9 @@
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261009-23";
-import { HarbourMap, typeColor } from "./harbour_map.js?v=20261009-23";
-import { provenanceBadge, freshnessClass } from "./entity_labels.js?v=20261009-23";
-import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261009-23";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261010-gev1";
+import { HarbourMap, typeColor } from "./harbour_map.js?v=20261010-gev1";
+import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261010-gev1";
+import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261010-gev1";
+import { initWatchZones } from "./watch_zones.js?v=20261010-gev1";
+import { initIncidentReplay } from "./incident_replay.js?v=20261010-gev1";
 
 const GROUPS = [
   { key: "now", title: "Now" },
@@ -97,7 +99,7 @@ function shipCardHtml(s, selected) {
     <p class="muted ship-meta">${s.shiptype_label}${eta ? ` · ${eta}` : ""}</p>
     <details class="ship-raw-details"><summary>Details</summary>
       <p class="mono muted">MMSI ${s.mmsi_display}${s.callsign ? ` · ${s.callsign}` : ""}</p>
-      <p class="mono muted">${s.destination_raw || "—"} · ${s.message_count ?? 0} msgs · ${s.level_db != null ? s.level_db.toFixed(0) + " dB" : "—"}</p>
+      <p class="mono muted">${s.destination_raw || "—"} · ${s.speed_known === false ? "speed unknown" : `${s.speed_kn ?? "—"} kn`} · ${s.message_count ?? 0} msgs</p>
     </details>
   </li>`;
 }
@@ -389,6 +391,38 @@ function setupTimelinePaging() {
   $("#timelineMore")?.addEventListener("click", () => renderLiveEvents(true));
 }
 
+function renderHeardAndHealth(snapshot, feedHealth) {
+  const badgeEl = $("#heardBadge");
+  const healthEl = $("#feedHealthRow");
+  const merged = {
+    ...(snapshot?.heard_badge || {}),
+    count: (feedHealth?.heard_badge?.count ?? snapshot?.heard_badge?.count) || 0,
+    bands: feedHealth?.heard_badge?.bands || snapshot?.heard_badge?.bands,
+    label: "Heard by my antenna, last 60 s",
+  };
+  if (badgeEl) badgeEl.innerHTML = heardAntennaBadge(merged);
+  if (healthEl && feedHealth) {
+    healthEl.innerHTML = [feedHealth.ais, feedHealth.adsb].map((h) => feedHealthChip(h)).join("");
+  }
+}
+
+async function renderMaltaWeather() {
+  const el = $("#maltaWeather");
+  if (!el) return;
+  try {
+    const res = await fetch("/api/malta/weather");
+    if (!res.ok) throw new Error(String(res.status));
+    const w = await res.json();
+    const flags = w.flags || {};
+    const flag = flags.medican_watch ? "Medicane watch" : flags.gale ? "Gale" : "";
+    el.innerHTML = `<p class="malta-weather-text">${w.plain_english || "—"}</p>
+      ${flag ? `<p class="weather-flag">${flag}</p>` : ""}
+      <p class="muted small weather-attrib">${w.attribution || ""}</p>`;
+  } catch {
+    el.innerHTML = "<p class='muted'>Weather unavailable.</p>";
+  }
+}
+
 function renderStationLive(snapshot) {
   const dl = $("#stationLive");
   if (!dl || !snapshot?.receiver_health) return;
@@ -398,7 +432,8 @@ function renderStationLive(snapshot) {
       ? `${Math.floor(h.run_time_sec / 3600)}h ${Math.floor((h.run_time_sec % 3600) / 60)}m`
       : "—";
   const items = [
-    ["Status", snapshot.online ? "Live" : "Offline"],
+    ["Status", h.state_label || (snapshot.online ? "Live" : "Offline")],
+    ["Coverage", h.coverage_label || h.coverage || "—"],
     ["Hardware", h.hardware || "—"],
     ["AIS-catcher", h.build_version || "—"],
     ["Uptime", run],
@@ -411,10 +446,16 @@ function renderStationLive(snapshot) {
 
 async function pollLive() {
   try {
-    const res = await fetch("/api/live-ais/snapshot");
+    const [res, healthRes] = await Promise.all([
+      fetch("/api/live-ais/snapshot"),
+      fetch("/api/feed-health"),
+    ]);
     if (!res.ok) throw new Error(String(res.status));
     const data = await res.json();
+    const feedHealth = healthRes.ok ? await healthRes.json() : null;
     state.snapshot = data;
+    renderHeardAndHealth(data, feedHealth);
+    await renderMaltaWeather();
     renderHeader(data);
     renderSummary(data);
     const fcEl = $("#freshnessCounts");
@@ -429,6 +470,14 @@ async function pollLive() {
         state.map.setReceiver({ ...data.receiver, label: data.receiver?.label });
         state.map.onSelect((mmsi) => selectShip(mmsi));
         state.map.onPlaneSelect((id) => selectPlane(id));
+        initWatchZones(state.map, {
+          drawBtn: $("#watchZoneDraw"),
+          status: $("#watchZoneStatus"),
+          nameInput: $("#watchZoneName"),
+        });
+        $("#harbourMap")?.addEventListener("wichita-wall-mode", (ev) => {
+          state.map?.setWallMode(Boolean(ev.detail?.on));
+        });
       }
     }
     state.sky = await fetchSkySnapshots();
@@ -482,6 +531,7 @@ function initHarbourSheetDrag() {
 export function initLiveAis() {
   setupTimelinePaging();
   initHarbourSheetDrag();
+  initIncidentReplay();
   pollLive();
   if (state.timer) clearInterval(state.timer);
   state.timer = setInterval(pollLive, 5000);

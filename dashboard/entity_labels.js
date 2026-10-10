@@ -22,3 +22,17 @@ export function freshnessClass(tier) {
   if (tier === "recent") return "fresh-recent";
   return "fresh-earlier";
 }
+
+export function heardAntennaBadge(badge) {
+  if (!badge) return "";
+  const bands = (badge.bands || []).join(" · ") || "AIS / ADS-B";
+  const count = badge.count ?? 0;
+  const active = badge.active ? "heard-60-active" : "heard-60-idle";
+  return `<span class="heard-60-badge ${active}" role="status">${badge.label || "Heard by my antenna, last 60 s"}: <strong>${count}</strong> <span class="muted">${bands}</span></span>`;
+}
+
+export function feedHealthChip(health) {
+  if (!health) return "";
+  const state = health.state || "unknown";
+  return `<span class="feed-health feed-health-${state}" title="${health.coverage_label || health.state_label || ""}">${health.receiver || "Receiver"} · ${health.state_label || state}${health.coverage === "quiet" ? " · quiet" : ""}</span>`;
+}
