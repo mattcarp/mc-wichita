@@ -9,7 +9,17 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
 
-_DEFAULT_HOSTS = {"localhost", "127.0.0.1", "[::1]", "testserver"}
+_DEFAULT_HOSTS = {
+    "localhost",
+    "127.0.0.1",
+    "[::1]",
+    "testserver",
+    # The Mini as reached over the tailnet and the LAN.
+    "matts-mac-mini",
+    "matts-mac-mini.local",
+    "matts-mac-mini.tail6a2168.ts.net",
+    "100.114.183.100",
+}
 
 
 def _parse_hosts(raw: str) -> Set[str]:
