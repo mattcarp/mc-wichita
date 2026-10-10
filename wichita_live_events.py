@@ -112,6 +112,13 @@ class LiveEventEngine:
                 append_event("receiver_down", "AIS receiver went offline.")
             self._last_online = online
 
+            try:
+                from wichita_watch_zones import get_watch_engine
+
+                get_watch_engine().ingest_ships(ships)
+            except Exception as exc:
+                logger.debug("watch zones ingest skipped: %s", exc)
+
             for s in ships:
                 if s.get("is_base_station"):
                     continue

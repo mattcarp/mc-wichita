@@ -1405,3 +1405,121 @@ body.sheet-open .live-ship-list {
     pointer-events: auto;
   }
 }
+
+.heard-60-badge {
+  display: inline-block;
+  font-size: 0.78rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  margin: 0.35rem 0;
+}
+.heard-60-active {
+  border-color: rgba(62, 198, 201, 0.45);
+  color: var(--marine);
+}
+.feed-health-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.35rem;
+}
+.feed-health {
+  font-size: 0.72rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 0.35rem;
+  border: 1px solid var(--border);
+}
+.feed-health-live {
+  border-color: rgba(62, 198, 201, 0.4);
+}
+.feed-health-stale {
+  border-color: rgba(240, 198, 116, 0.45);
+}
+.feed-health-unreachable,
+.feed-health-invalid {
+  border-color: rgba(240, 116, 116, 0.45);
+  color: var(--review);
+}
+.malta-weather {
+  font-size: 0.82rem;
+  margin: 0.25rem 0 0.35rem;
+}
+.weather-flag {
+  color: var(--review);
+  font-size: 0.78rem;
+  margin: 0.15rem 0;
+}
+.watch-zone-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+  margin-bottom: 0.35rem;
+}
+.watch-zone-name {
+  font: inherit;
+  font-size: 0.78rem;
+  padding: 0.35rem 0.45rem;
+  border-radius: 0.35rem;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: inherit;
+  min-width: 8rem;
+}
+.watch-zone-draw {
+  width: auto;
+  padding: 0.35rem 0.65rem;
+}
+.map-watch-zone {
+  fill: rgba(62, 198, 201, 0.12);
+  stroke: rgba(62, 198, 201, 0.65);
+  stroke-width: 1.2;
+}
+.map-watch-draft {
+  fill: none;
+  stroke: rgba(240, 198, 116, 0.9);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 3;
+}
+.incident-replay-panel {
+  margin-top: 0.65rem;
+  padding: 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 0.45rem;
+  background: var(--surface-2);
+}
+.replay-shot-list {
+  list-style: none;
+  margin: 0.35rem 0 0;
+  padding: 0;
+  font-size: 0.8rem;
+}
+.body-radar-wall .harbour-map-host {
+  box-shadow: 0 0 0 1px rgba(62, 198, 201, 0.25), 0 0 24px rgba(62, 198, 201, 0.08);
+}
+.map-radar-disc {
+  fill: none;
+  stroke: rgba(62, 198, 201, 0.15);
+  stroke-width: 1;
+}
+.map-radar-arm {
+  stroke: rgba(62, 198, 201, 0.55);
+  stroke-width: 1.5;
+  transform-origin: center;
+  animation: radar-sweep 6s linear infinite;
+}
+@keyframes radar-sweep {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .map-radar-arm {
+    animation: none;
+    opacity: 0.35;
+  }
+}

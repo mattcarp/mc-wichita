@@ -4,10 +4,10 @@ import {
   plotInnerWidth,
   psdSpan,
   samplePsdAtMhz,
-} from "./spectrum_geometry.mjs?v=20261009-23";
-import { initLiveAis } from "./live_ais.js?v=20261009-23";
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261009-23";
-import { GEAR_ICON, TAB_ICONS } from "./tab_icons.js?v=20261009-23";
+} from "./spectrum_geometry.mjs?v=20261010-gev1";
+import { initLiveAis } from "./live_ais.js?v=20261010-gev1";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261010-gev1";
+import { GEAR_ICON, TAB_ICONS } from "./tab_icons.js?v=20261010-gev1";
 const VALLETTA = { lat: 35.8987, lon: 14.5145, span: 0.06 };
 
 const BOOKMARKS = [
@@ -808,6 +808,11 @@ function main() {
   $("#colorBlindMap")?.addEventListener("change", (e) => {
     state.colorBlind = e.target.checked;
     redrawCharts();
+  });
+  $("#radarWallMode")?.addEventListener("change", (e) => {
+    document.body.classList.toggle("body-radar-wall", e.target.checked);
+    const mapHost = document.querySelector("#harbourMap");
+    mapHost?.dispatchEvent(new CustomEvent("wichita-wall-mode", { detail: { on: e.target.checked } }));
   });
   $("#captureSelect")?.addEventListener("change", (e) => {
     loadCapture(e.target.value).catch(console.error);

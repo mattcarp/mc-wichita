@@ -11,7 +11,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+from wichita_feed_urls import validated_feed_url
 from wichita_provenance import SOURCE_OUR_ANTENNA, provenance_fields
+from wichita_receiver_health import feed_health_payload
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +26,8 @@ EMERGENCY_SQUAWKS = {
 
 
 def adsb_base_url() -> str:
-    return os.environ.get("WICHITA_ADSB_URL", "http://127.0.0.1:8080/data/aircraft.json").rstrip("/")
+    raw = os.environ.get("WICHITA_ADSB_URL", "http://127.0.0.1:8080/data/aircraft.json")
+    return validated_feed_url(raw, "WICHITA_ADSB_URL", "http://127.0.0.1:8080/data/aircraft.json").rstrip("/")
 
 
 def adsb_fixture_path() -> Optional[Path]:
@@ -60,6 +63,8 @@ def fetch_aircraft_json() -> Tuple[Optional[Dict[str, Any]], Optional[str]]:
         return None, "Receiver not connected"
     except json.JSONDecodeError:
         return None, "Receiver returned invalid JSON"
+    except ValueError as exc:
+        return None, str(exc)
     except TimeoutError:
         return None, "Receiver not connected"
 
@@ -123,7 +128,10 @@ def normalize_aircraft(raw: Dict[str, Any], now: Optional[datetime] = None) -> O
 
 def live_adsb_snapshot() -> Dict[str, Any]:
     payload, err = fetch_aircraft_json()
-    online = payload is not None
+    online = payload is not None and err is None
+    invalid = err and "invalid" in (err or "").lower()
+    if payload is None and err and "invalid" not in err.lower():
+        online = False
     now = datetime.now(timezone.utc)
     aircraft_raw = (payload or {}).get("aircraft") or []
     planes: List[Dict[str, Any]] = []
@@ -133,14 +141,32 @@ def live_adsb_snapshot() -> Dict[str, Any]:
         norm = normalize_aircraft(row, now)
         if norm:
             planes.append(norm)
-    planes.sort(key=lambda p: (p.get("freshness") != "live", (p.get("callsign") or p.get("hex") or "").upper()))
+    planes.sort(key=lambda p: (p.get("freshness") != "now", (p.get("callsign") or p.get("hex") or "").upper()))
+    youngest = min((p.get("last_signal_s") for p in planes if p.get("last_signal_s") is not None), default=None)
+    health = feed_health_payload(
+        receiver="readsb",
+        band="ADS-B 1090 MHz",
+        online=online and not invalid,
+        error=err if not online or invalid else None,
+        youngest_signal_s=youngest,
+        entity_count=len(planes),
+    )
+    try:
+        from wichita_adsb_tracks import get_track_store
+
+        get_track_store().record_snapshot(planes, now.isoformat())
+    except Exception:
+        pass
     return {
-        "online": online,
-        "receiver_connected": online,
+        "online": online and not invalid,
+        "receiver_connected": online and not invalid,
         "error": err,
+        "receiver_health": health,
         "source_label": "Heard by our antenna",
         "data_source": SOURCE_OUR_ANTENNA,
         "aircraft": planes,
         "aircraft_count": len(planes),
         "server_time_utc": now.isoformat(),
+        "coverage": health.get("coverage"),
+        "coverage_label": health.get("coverage_label"),
     }

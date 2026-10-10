@@ -105,7 +105,42 @@ export class HarbourMap {
     this._mapW = 400;
     this._mapH = 220;
     this._lastObservedW = 0;
+    this.watchZones = [];
+    this.watchDraft = [];
+    this.wallMode = false;
+    this._watchDraw = null;
     this._init();
+    document.addEventListener("wichita-incident-camera", (ev) => {
+      const { lat, lon } = ev.detail || {};
+      if (lat != null && lon != null) this.focusPoint(lat, lon);
+    });
+  }
+
+  setWatchZones(zones) {
+    this.watchZones = zones || [];
+    this._draw();
+  }
+
+  setWatchDraft(ring) {
+    this.watchDraft = ring || [];
+    this._draw();
+  }
+
+  setWatchDrawMode(on, handlers) {
+    this._watchDraw = on ? handlers : null;
+    this.container.classList.toggle("map-draw-watch", Boolean(on));
+  }
+
+  setWallMode(on) {
+    this.wallMode = Boolean(on);
+    this.container.classList.toggle("radar-wall", this.wallMode);
+    if (this.wallMode && !this._reducedMotion) this._ensureAnimLoop();
+    this._draw();
+  }
+
+  focusPoint(lat, lon, pad = 0.02) {
+    this._centerOn(lat, lon, pad);
+    this._draw();
   }
 
   onSelect(fn) {
@@ -176,6 +211,15 @@ export class HarbourMap {
       this._draw();
     });
     this._resizeObserver.observe(wrap);
+    this._svg.addEventListener("click", (ev) => {
+      if (!this._watchDraw?.onPoint) return;
+      const pt = this._clientToLatLon(ev.clientX, ev.clientY);
+      if (!pt) return;
+      this._watchDraw.onPoint(pt.lon, pt.lat);
+    });
+    this._svg.addEventListener("dblclick", () => {
+      this._watchDraw?.onFinish?.();
+    });
     wrap.querySelectorAll("[data-zoom]").forEach((b) =>
       b.classList.toggle("active", b.getAttribute("data-zoom") === this.zoomMode),
     );
@@ -349,6 +393,20 @@ export class HarbourMap {
     return { x: edgeX, y: edgeY, offFrame: true, angle };
   }
 
+  _clientToLatLon(clientX, clientY) {
+    if (!this._svg) return null;
+    const rect = this._svg.getBoundingClientRect();
+    const { w, h } = this._measure();
+    const x = ((clientX - rect.left) / rect.width) * w;
+    const y = ((clientY - rect.top) / rect.height) * h;
+    const { minLat, maxLat, minLon, maxLon } = this.view;
+    const lonSpan = maxLon - minLon || 1e-6;
+    const latSpan = maxLat - minLat || 1e-6;
+    const lon = minLon + ((x - 8) / (w - 16)) * lonSpan;
+    const lat = minLat + ((h - 8 - y) / (h - 16)) * latSpan;
+    return { lat, lon };
+  }
+
   _project(lat, lon, w, h) {
     const { minLat, maxLat, minLon, maxLon } = this.view;
     const lonSpan = maxLon - minLon || 1e-6;
@@ -391,9 +449,36 @@ export class HarbourMap {
     const latSpan = this.view.maxLat - this.view.minLat;
     const parts = [];
     parts.push(`<rect width="${w}" height="${h}" class="map-sea"/>`);
+    if (this.wallMode && !this._reducedMotion) {
+      const rx = this._project(this.receiver.lat, this.receiver.lon, w, h);
+      const sweepR = Math.min(w, h) * 0.48;
+      parts.push(
+        `<g class="map-radar-sweep"><circle cx="${rx.x}" cy="${rx.y}" r="${sweepR}" class="map-radar-disc"/><line x1="${rx.x}" y1="${rx.y}" x2="${rx.x + sweepR}" y2="${rx.y}" class="map-radar-arm"/></g>`,
+      );
+    }
     parts.push(...this._drawPolygons(coastCache, "map-land", w, h));
     parts.push(...this._drawPolygons(waterCache, "map-water", w, h));
 
+    for (const zone of this.watchZones) {
+      const ring = zone.polygon || [];
+      if (ring.length < 3) continue;
+      const pts = ring
+        .map(([lon, lat]) => {
+          const p = this._project(lat, lon, w, h);
+          return `${p.x.toFixed(1)},${p.y.toFixed(1)}`;
+        })
+        .join(" ");
+      parts.push(`<polygon points="${pts}" class="map-watch-zone" data-zone="${zone.id || ""}"/>`);
+    }
+    if (this.watchDraft.length >= 2) {
+      const pts = this.watchDraft
+        .map(([lon, lat]) => {
+          const p = this._project(lat, lon, w, h);
+          return `${p.x.toFixed(1)},${p.y.toFixed(1)}`;
+        })
+        .join(" ");
+      parts.push(`<polyline points="${pts}" class="map-watch-draft"/>`);
+    }
     for (const km of [5, 10, 20]) {
       const ring = ringCoords(this.receiver.lat, this.receiver.lon, km);
       const pts = ring

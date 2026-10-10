@@ -20,7 +20,10 @@ from wichita_ais_copy import (
     freshness_bucket,
     movement_counts,
 )
+from wichita_ais_nav import normalize_ais_course, normalize_ais_heading, normalize_ais_speed
+from wichita_feed_urls import validated_feed_url
 from wichita_provenance import SOURCE_OUR_ANTENNA, provenance_fields
+from wichita_receiver_health import feed_health_payload, heard_last_60s_badge, count_heard_within
 from wichita_captures import VALLETTA_AIS_BASE_MMSIS, mmsi_label
 
 MALTA_TZ = ZoneInfo("Europe/Malta")
@@ -70,7 +73,8 @@ _SHIPTYPE_WORDS: Dict[int, str] = {
 
 
 def ais_catcher_base_url() -> str:
-    return os.environ.get("WICHITA_AIS_URL", "http://127.0.0.1:8100").rstrip("/")
+    raw = os.environ.get("WICHITA_AIS_URL", "http://127.0.0.1:8100")
+    return validated_feed_url(raw, "WICHITA_AIS_URL", "http://127.0.0.1:8100").rstrip("/")
 
 
 def ais_fixture_dir() -> Optional[Path]:
@@ -128,6 +132,8 @@ def fetch_ais_json(api_path: str, query: str = "") -> Tuple[Optional[Any], Optio
     except json.JSONDecodeError as exc:
         logger.warning("AIS-catcher bad JSON from %s: %s", url, exc)
         return None, "receiver returned invalid JSON"
+    except ValueError as exc:
+        return None, str(exc)
     except TimeoutError:
         return None, "receiver offline"
 
@@ -190,15 +196,32 @@ def stable_sort_key(ship: Dict[str, Any]) -> Tuple[int, str, int]:
     return (moving, name, int(ship.get("mmsi") or 0))
 
 
-def receiver_health(stat: Optional[Dict[str, Any]], online: bool) -> Dict[str, Any]:
+def receiver_health(
+    stat: Optional[Dict[str, Any]],
+    online: bool,
+    *,
+    error: Optional[str] = None,
+    ships: Optional[List[Dict[str, Any]]] = None,
+) -> Dict[str, Any]:
+    vessels = ships or []
+    youngest = min((s.get("last_signal_s") for s in vessels if s.get("last_signal_s") is not None), default=None)
+    feed = feed_health_payload(
+        receiver="AIS-catcher",
+        band="AIS 161.975 / 162.025 MHz",
+        online=online,
+        error=error,
+        youngest_signal_s=youngest,
+        entity_count=len(vessels),
+    )
     if not stat:
-        return {"available": online, "online": online}
+        return {**feed, "available": online, "online": online}
     run_s = stat.get("run_time")
     try:
         run_s = int(run_s) if run_s is not None else None
     except (TypeError, ValueError):
         run_s = None
     return {
+        **feed,
         "available": True,
         "online": online,
         "hardware": stat.get("hardware"),
@@ -228,9 +251,9 @@ def normalize_ship(raw: Dict[str, Any], now: Optional[datetime] = None) -> Dict[
         last_sig_s = None
     label = mmsi_label(mmsi) if mmsi in VALLETTA_AIS_BASE_MMSIS else None
     display_name = label or (name if name else f"Unnamed, MMSI {mmsi:09d}")
-    speed = raw.get("speed")
-    cog = raw.get("cog")
-    heading = raw.get("heading")
+    speed, speed_known = normalize_ais_speed(raw.get("speed"))
+    cog, cog_known = normalize_ais_course(raw.get("cog"))
+    heading, heading_known = normalize_ais_heading(raw.get("heading"))
     eta_malta, eta_stale = format_eta_malta(raw, now)
     ship = {
         "mmsi": mmsi,
@@ -249,8 +272,11 @@ def normalize_ship(raw: Dict[str, Any], now: Optional[datetime] = None) -> Dict[
         "lat": raw.get("lat"),
         "lon": raw.get("lon"),
         "speed_kn": speed,
+        "speed_known": speed_known,
         "cog_deg": cog,
+        "cog_known": cog_known,
         "heading_deg": heading,
+        "heading_known": heading_known,
         "level_db": raw.get("level"),
         "message_count": raw.get("count"),
         "last_signal_s": last_sig_s,
@@ -319,6 +345,7 @@ def live_dashboard_bundle() -> Dict[str, Any]:
     vessels.sort(key=stable_sort_key)
     voice_busy = os.environ.get("WICHITA_VOICE_LIVE", "0").strip() not in ("1", "true", "yes")
     summary_block = harbour_summary_bundle(vessels, online, voice_busy)
+    rx_health = receiver_health(stat_raw, online, error=err, ships=vessels)
     return {
         **status,
         "ships": vessels,
@@ -333,7 +360,10 @@ def live_dashboard_bundle() -> Dict[str, Any]:
             "lon": RECEIVER_LON,
             "label": "Valletta balcony (approx.)",
         },
-        "receiver_health": receiver_health(stat_raw, online),
+        "receiver_health": rx_health,
+        "heard_badge": heard_last_60s_badge(ais_count=count_heard_within(vessels), adsb_count=0),
+        "coverage": rx_health.get("coverage"),
+        "coverage_label": rx_health.get("coverage_label"),
         "paths": paths,
         "paths_error": err_paths,
     }

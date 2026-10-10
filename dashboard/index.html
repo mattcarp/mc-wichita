@@ -6,8 +6,8 @@
   <meta name="color-scheme" content="dark" />
   <title>Wichita · Valletta listener</title>
   <link rel="icon" href="data:," />
-  <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261009-23" />
-  <script type="module" src="/dashboard/dashboard.js?v=20261009-23"></script>
+  <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261010-gev1" />
+  <script type="module" src="/dashboard/dashboard.js?v=20261010-gev1"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to dashboard</a>
@@ -21,6 +21,7 @@
       <button type="button" id="settingsBtn" class="icon-btn icon-btn-gear" aria-haspopup="dialog" aria-expanded="false" aria-controls="settingsMenu" aria-label="Settings" title="Settings"></button>
       <div id="settingsMenu" class="settings-menu" role="dialog" hidden>
         <label class="toggle-chip"><input type="checkbox" id="colorBlindMap" /> Colour-blind waterfall</label>
+        <label class="toggle-chip"><input type="checkbox" id="radarWallMode" /> Ambient radar wall mode</label>
       </div>
     </div>
   </header>
@@ -37,6 +38,14 @@
         <span class="badge badge-live">LIVE</span>
       </div>
       <div id="harbourSummary" class="harbour-summary"></div>
+      <div id="maltaWeather" class="malta-weather" role="status" aria-live="polite"></div>
+      <div id="heardBadge" class="heard-badge-row"></div>
+      <div id="feedHealthRow" class="feed-health-row mono"></div>
+      <div class="watch-zone-bar">
+        <input type="text" id="watchZoneName" class="watch-zone-name" placeholder="Zone name" aria-label="Watch zone name" />
+        <button type="button" id="watchZoneDraw" class="timeline-more watch-zone-draw" aria-pressed="false">Draw watch zone</button>
+        <span id="watchZoneStatus" class="muted small"></span>
+      </div>
       <div class="harbour-layout">
         <div class="harbour-map-col">
           <div id="harbourMap" class="map map-coastline" aria-label="Malta coastline with live ship positions"></div>
@@ -69,6 +78,7 @@
         <ol id="timeline" class="timeline" aria-label="Live event log"></ol>
         <button type="button" id="timelineMore" class="timeline-more" hidden>Show earlier</button>
       </div>
+      <section id="incidentReplayPanel" class="incident-replay-panel" aria-label="Incident replay"></section>
       <ol id="timelineRecorded" class="timeline timeline-recorded-block" aria-label="Recorded capture events" hidden></ol>
     </section>
 
