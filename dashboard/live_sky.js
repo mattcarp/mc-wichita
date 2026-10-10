@@ -1,4 +1,4 @@
-import { provenanceBadge } from "./entity_labels.js?v=20261009-21";
+import { provenanceBadge } from "./entity_labels.js?v=20261009-23";
 
 function $(sel) {
   return document.querySelector(sel);
@@ -53,7 +53,11 @@ export function renderSatellitesPanel(sky) {
     return;
   }
   const header = provenanceBadge(sky);
-  const sats = sky.satellites || [];
+  const sats = [...(sky.satellites || [])].sort((a, b) => {
+    const pa = (a.next_passes || [])[0]?.max_utc || "";
+    const pb = (b.next_passes || [])[0]?.max_utc || "";
+    return pa.localeCompare(pb);
+  });
   if (!sats.length) {
     el.innerHTML = `${header}<p class="muted">No TLE data cached yet.</p>`;
     return;
@@ -64,8 +68,9 @@ export function renderSatellitesPanel(sky) {
       ${sats
         .map((s) => {
           const pass = (s.next_passes || [])[0];
+          const inProg = s.pass_in_progress ? " · in progress" : "";
           const passLine = pass
-            ? `${pass.max_time_malta} · ${pass.max_elevation_deg}° max`
+            ? `${pass.max_time_malta} · ${pass.max_elevation_deg}° max${inProg}`
             : "No pass in the next 36 h";
           return `<li><strong>${s.name}</strong><span class="mono muted">${passLine}</span></li>`;
         })

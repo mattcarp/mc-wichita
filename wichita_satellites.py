@@ -311,15 +311,34 @@ def satellite_overview(force_tle: bool = False) -> Dict[str, Any]:
         sat = Satrec.twoline2rv(lines[1], lines[2])
         passes = next_passes(sat, entry["name"], norad, now)
         track = ground_track(sat, now - timedelta(minutes=45), minutes=90)
+        in_progress = False
+        if passes:
+            try:
+                aos = datetime.fromisoformat(passes[0]["aos_utc"].replace("Z", "+00:00"))
+                los_guess = datetime.fromisoformat(passes[0]["max_utc"].replace("Z", "+00:00")) + timedelta(
+                    minutes=12
+                )
+                in_progress = aos <= now <= los_guess
+            except (KeyError, ValueError):
+                in_progress = False
         out_sats.append(
             {
                 "name": entry["name"],
                 "norad": norad,
                 "next_passes": passes,
+                "pass_in_progress": in_progress,
                 "ground_track": track,
                 **_satellite_provenance(fetched_at, now),
             }
         )
+
+    def _pass_sort_key(sat: Dict[str, Any]) -> str:
+        passes = sat.get("next_passes") or []
+        if not passes:
+            return "9999"
+        return passes[0].get("max_utc") or passes[0].get("aos_utc") or "9999"
+
+    out_sats.sort(key=_pass_sort_key)
     return {
         **prov,
         "source_label": SOURCE_LABELS[SOURCE_COMPUTED],

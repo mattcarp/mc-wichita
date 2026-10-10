@@ -12,11 +12,15 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 
 from wichita_ais_copy import enrich_ship_copy, first_heard_sentence, freshness_bucket
+from wichita_timeline import DEFAULT_HOURS, DEFAULT_LIMIT, paginate_events, prepare_timeline_events
 
 logger = logging.getLogger(__name__)
 
 SILENCE_SEC = 900
+MIN_HEARD_BEFORE_QUIET_SEC = 600
 POLL_SEC = float(os.environ.get("WICHITA_EVENTS_POLL_SEC", "5"))
+HARBOUR_LAT = (35.875, 35.925)
+HARBOUR_LON = (14.48, 14.55)
 
 
 def events_dir() -> Path:
@@ -44,6 +48,12 @@ def append_event(kind: str, sentence: str, **fields: Any) -> Dict[str, Any]:
     return rec
 
 
+def _in_harbour(lat: Optional[float], lon: Optional[float]) -> bool:
+    if lat is None or lon is None:
+        return False
+    return HARBOUR_LAT[0] <= lat <= HARBOUR_LAT[1] and HARBOUR_LON[0] <= lon <= HARBOUR_LON[1]
+
+
 class LiveEventEngine:
     def __init__(self) -> None:
         self._lock = threading.Lock()
@@ -51,6 +61,9 @@ class LiveEventEngine:
         self._last_online: Optional[bool] = None
         self._last_nav: Dict[int, int] = {}
         self._silent_logged: Set[int] = set()
+        self._first_seen_monotonic: Dict[int, float] = {}
+        self._heard_accum_s: Dict[int, float] = {}
+        self._moving_harbour: Dict[int, bool] = {}
         self._thread: Optional[threading.Thread] = None
         self._stop = threading.Event()
 
@@ -75,9 +88,21 @@ class LiveEventEngine:
                 logger.warning("live events poll failed: %s", exc)
             self._stop.wait(POLL_SEC)
 
+    def _should_log_quiet(self, mmsi: int, enriched: Dict[str, Any]) -> bool:
+        if self._moving_harbour.get(mmsi):
+            return True
+        heard = self._heard_accum_s.get(mmsi, 0.0)
+        if heard >= MIN_HEARD_BEFORE_QUIET_SEC:
+            return True
+        last = enriched.get("last_signal_s")
+        if last is not None and last >= SILENCE_SEC + 300:
+            return True
+        return False
+
     def ingest_snapshot(self, bundle: Dict[str, Any]) -> None:
         online = bool(bundle.get("online"))
         ships = bundle.get("ships") or []
+        now_mono = time.monotonic()
         with self._lock:
             if self._last_online is None:
                 self._last_online = online
@@ -93,6 +118,15 @@ class LiveEventEngine:
                 mmsi = int(s["mmsi"])
                 enriched = enrich_ship_copy(s)
                 name = enriched.get("display_name") or f"MMSI {mmsi:09d}"
+                if mmsi not in self._first_seen_monotonic:
+                    self._first_seen_monotonic[mmsi] = now_mono
+                if freshness_bucket(enriched.get("last_signal_s")) != "earlier":
+                    self._heard_accum_s[mmsi] = self._heard_accum_s.get(mmsi, 0.0) + POLL_SEC
+                    self._silent_logged.discard(mmsi)
+                spd = enriched.get("speed_kn") or 0
+                if spd >= 0.5 and _in_harbour(enriched.get("lat"), enriched.get("lon")):
+                    self._moving_harbour[mmsi] = True
+
                 if mmsi not in self._seen_mmsi:
                     self._seen_mmsi.add(mmsi)
                     sentence = first_heard_sentence(enriched)
@@ -115,14 +149,20 @@ class LiveEventEngine:
                     self._last_nav[mmsi] = int(nav)
 
                 if freshness_bucket(enriched.get("last_signal_s")) != "earlier":
-                    self._silent_logged.discard(mmsi)
-                elif mmsi not in self._silent_logged and enriched.get("last_signal_s", 0) >= SILENCE_SEC:
-                    self._silent_logged.add(mmsi)
-                    append_event(
-                        "ship_silent",
-                        f"{name} has gone quiet (no AIS for {int(enriched['last_signal_s'] // 60)} min).",
-                        mmsi=mmsi,
-                    )
+                    continue
+                if mmsi in self._silent_logged:
+                    continue
+                if enriched.get("last_signal_s", 0) < SILENCE_SEC:
+                    continue
+                if not self._should_log_quiet(mmsi, enriched):
+                    continue
+                self._silent_logged.add(mmsi)
+                append_event(
+                    "ship_silent",
+                    f"{name} has gone quiet (no AIS for {int(enriched['last_signal_s'] // 60)} min).",
+                    mmsi=mmsi,
+                    display_name=name,
+                )
 
     def read_events(self, hours: int = 24) -> List[Dict[str, Any]]:
         cutoff = datetime.now(timezone.utc) - timedelta(hours=hours)
@@ -141,6 +181,20 @@ class LiveEventEngine:
                 continue
         out.sort(key=lambda r: r.get("ts_utc", ""), reverse=True)
         return out
+
+    def events_page(
+        self,
+        *,
+        hours: int = DEFAULT_HOURS,
+        limit: int = DEFAULT_LIMIT,
+        before: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        raw = self.read_events(hours=hours)
+        prepared = prepare_timeline_events(raw)
+        page = paginate_events(prepared, limit=limit, before=before)
+        page["activity_hourly"] = self.activity_hourly(hours=max(hours, 24))
+        page["hours"] = hours
+        return page
 
     def activity_hourly(self, hours: int = 24) -> List[Dict[str, Any]]:
         now = datetime.now(timezone.utc)

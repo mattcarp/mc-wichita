@@ -13,7 +13,13 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from zoneinfo import ZoneInfo
 
-from wichita_ais_copy import count_freshness, enrich_ship_copy, harbour_summary, freshness_bucket, movement_counts
+from wichita_ais_copy import (
+    count_freshness,
+    enrich_ship_copy,
+    harbour_summary_bundle,
+    freshness_bucket,
+    movement_counts,
+)
 from wichita_provenance import SOURCE_OUR_ANTENNA, provenance_fields
 from wichita_captures import VALLETTA_AIS_BASE_MMSIS, mmsi_label
 
@@ -132,11 +138,14 @@ def shiptype_label(code: Any) -> str:
     except (TypeError, ValueError):
         return "unknown type"
     if c in _SHIPTYPE_WORDS:
-        return _SHIPTYPE_WORDS[c]
+        label = _SHIPTYPE_WORDS[c]
+        if label == "not available":
+            return "Unknown type"
+        return label
     tens = (c // 10) * 10
     if tens in _SHIPTYPE_WORDS:
         return _SHIPTYPE_WORDS[tens]
-    return f"type {c}"
+    return "Unknown type"
 
 
 def format_eta(raw: Dict[str, Any]) -> Optional[str]:
@@ -167,7 +176,9 @@ def format_eta_malta(raw: Dict[str, Any], now: Optional[datetime] = None) -> Tup
         local = eta_utc.astimezone(MALTA_TZ)
         label = local.strftime("%d %b %H:%M")
         if eta_utc < now.astimezone(timezone.utc):
-            return f"{local.strftime('%d %b %H:%M')} (out of date)", True
+            return None, True
+        if (eta_utc - now.astimezone(timezone.utc)).days > 30:
+            return None, True
         return label, False
     except (TypeError, ValueError):
         return None, False
@@ -250,9 +261,12 @@ def normalize_ship(raw: Dict[str, Any], now: Optional[datetime] = None) -> Dict[
         else None,
         "is_base_station": mmsi in VALLETTA_AIS_BASE_MMSIS,
         "nav_status": raw.get("status"),
-        "freshness": freshness_bucket(last_sig_s),
     }
+    tier = freshness_bucket(last_sig_s)
+    ship["freshness"] = tier
     ship.update(provenance_fields(SOURCE_OUR_ANTENNA, last_sig_s))
+    ship["freshness"] = tier
+    ship["freshness_label"] = {"now": "Now", "recent": "Recent", "earlier": "Earlier"}.get(tier, "Earlier")
     return enrich_ship_copy(ship, raw)
 
 
@@ -303,16 +317,17 @@ def live_dashboard_bundle() -> Dict[str, Any]:
     vessels = [s for s in normalized if not s.get("is_base_station")]
     bases = [s for s in normalized if s.get("is_base_station")]
     vessels.sort(key=stable_sort_key)
-    fresh = count_freshness(vessels)
-    move = movement_counts(vessels)
     voice_busy = os.environ.get("WICHITA_VOICE_LIVE", "0").strip() not in ("1", "true", "yes")
+    summary_block = harbour_summary_bundle(vessels, online, voice_busy)
     return {
         **status,
         "ships": vessels,
         "base_stations": bases,
-        "freshness_counts": fresh,
-        "movement_counts": move,
-        "summary": harbour_summary(vessels, online, voice_busy),
+        "freshness_counts": summary_block["freshness_counts"],
+        "movement_counts": summary_block["movement_counts"],
+        "summary": summary_block["text"],
+        "type_breakdown": summary_block["type_breakdown"],
+        "nearby_now": summary_block["nearby_now"],
         "receiver": {
             "lat": RECEIVER_LAT,
             "lon": RECEIVER_LON,
