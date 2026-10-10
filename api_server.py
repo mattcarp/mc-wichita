@@ -58,7 +58,6 @@ async def _wichita_lifespan(app):  # noqa: ARG001
     yield
     get_engine().stop()
 
-from stress_scorer import score_stress as kenneth_score_stress
 
 # Initialize FastAPI with rich metadata
 app = FastAPI(
@@ -1111,6 +1110,9 @@ async def score_voice_stress(request: StressScoreRequest):
     Returns stress score, alert level, triggered indicators, and extracted features.
     """
     try:
+        # Imported lazily: stress_scorer needs librosa, which the dashboard venv does not ship.
+        from stress_scorer import score_stress as kenneth_score_stress
+
         result = kenneth_score_stress(request.audio_path, request.frequency)
         return asdict(result)
     except ValueError as e:
