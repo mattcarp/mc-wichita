@@ -6,8 +6,8 @@
   <meta name="color-scheme" content="dark" />
   <title>Wichita · Valletta listener</title>
   <link rel="icon" href="data:," />
-  <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261009-23" />
-  <script type="module" src="/dashboard/dashboard.js?v=20261009-23"></script>
+  <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261010-01" />
+  <script type="module" src="/dashboard/dashboard.js?v=20261010-01"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to dashboard</a>
@@ -15,6 +15,7 @@
     <div class="brand brand-compact">
       <span class="brand-glyph" aria-hidden="true">W</span>
       <div id="headerLive" class="header-live mono" role="status">Checking AIS…</div>
+      <div id="headerHeardBadge" class="header-heard-badge" hidden></div>
     </div>
     <div class="header-meta">
       <time id="maltaClock" class="mono" datetime="">—</time>
@@ -42,6 +43,10 @@
           <div id="harbourMap" class="map map-coastline" aria-label="Malta coastline with live ship positions"></div>
           <div id="mapFollowCard" class="map-follow-card" hidden></div>
           <p class="map-attrib muted">OpenStreetMap land and water (ODbL) · offline · not for navigation</p>
+          <div class="watch-zone-bar">
+            <button type="button" id="watchZoneDraw" class="btn-ghost">Draw watch zone</button>
+            <span id="watchZoneStatus" class="muted small"></span>
+          </div>
         </div>
         <div class="harbour-list-col">
           <p id="freshnessCounts" class="mono counts harbour-counts-chips"></p>
@@ -65,6 +70,13 @@
       </div>
       <div id="voiceTiles" class="voice-grid voice-grid-heard"></div>
       <div id="activityStrip" class="activity-strip mono" aria-label="New ships per hour (24h)"></div>
+      <section class="replay-shell" aria-labelledby="replay-heading">
+        <h3 id="replay-heading" class="eyebrow">Incident replay</h3>
+        <p id="replayCaveat" class="muted small"></p>
+        <p id="replayLabel" class="replay-label">Loading heard timeline…</p>
+        <input type="range" id="replayScrub" class="replay-scrub" min="0" max="0" value="0" hidden aria-label="Replay timeline scrubber" />
+        <p class="muted small"><a href="/api/gev/replay/export?hours=6">Download static replay bundle (JSON)</a></p>
+      </section>
       <div class="timeline-shell">
         <ol id="timeline" class="timeline" aria-label="Live event log"></ol>
         <button type="button" id="timelineMore" class="timeline-more" hidden>Show earlier</button>
@@ -142,8 +154,12 @@
           <h2 id="station-heading">Health &amp; provenance</h2>
         </div>
       </div>
-      <h3 class="station-section-title"><span class="badge badge-live">LIVE</span> Receiver (AIS-catcher)</h3>
+      <h3 class="station-section-title"><span class="badge badge-live">LIVE</span> Receivers</h3>
+      <div id="stationReceivers" class="station-receivers"></div>
       <dl id="stationLive" class="station-strip mono"></dl>
+      <h3 class="station-section-title">Malta weather · sea context</h3>
+      <div id="maltaWeather" class="weather-card"></div>
+      <p class="muted small"><a href="/dashboard/radar_wall.html">Open ambient radar wall mode</a></p>
       <h3 class="station-section-title"><span class="badge badge-recorded">RECORDED</span> Capture library</h3>
       <dl id="stationStrip" class="station-strip mono"></dl>
       <div id="captureCompare" class="compare"></div>

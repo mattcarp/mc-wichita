@@ -1,7 +1,14 @@
 import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261009-23";
-import { HarbourMap, typeColor } from "./harbour_map.js?v=20261009-23";
+import { HarbourMap, typeColor } from "./harbour_map.js?v=20261010-01";
 import { provenanceBadge, freshnessClass } from "./entity_labels.js?v=20261009-23";
-import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261009-23";
+import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261010-01";
+import {
+  initIncidentReplay,
+  initWatchZoneDraw,
+  loadWatchZones,
+  receiverStatePill,
+  renderMaltaWeather,
+} from "./gev_ui.js?v=20261010-01";
 
 const GROUPS = [
   { key: "now", title: "Now" },
@@ -49,9 +56,15 @@ function renderHeader(snapshot) {
     return;
   }
   const fc = snapshot.freshness_counts || {};
-  const dot = snapshot.online ? "live" : "offline";
-  live.innerHTML = `<span class="pill pill-${dot}">${snapshot.online ? "Live" : "Offline"}</span>
+  const h = snapshot.receiver_health || {};
+  const state = h.state || (snapshot.online ? "live" : "unreachable");
+  live.innerHTML = `<span class="pill pill-${state}">${h.badge?.label || state}</span>
     <span class="header-ship-count">${fc.now ?? 0} ships now · ${fc.today ?? 0} today</span>`;
+  const badgeHost = $("#headerHeardBadge");
+  if (badgeHost) {
+    badgeHost.hidden = false;
+    badgeHost.innerHTML = receiverStatePill(h);
+  }
 }
 
 function renderSummary(snapshot) {
@@ -389,7 +402,25 @@ function setupTimelinePaging() {
   $("#timelineMore")?.addEventListener("click", () => renderLiveEvents(true));
 }
 
-function renderStationLive(snapshot) {
+function renderStationLive(snapshot, adsbHealth) {
+  const recv = $("#stationReceivers");
+  if (recv) {
+    recv.innerHTML = [snapshot?.receiver_health, adsbHealth]
+      .filter(Boolean)
+      .map((h) => {
+        const run =
+          h.run_time_sec != null
+            ? `${Math.floor(h.run_time_sec / 3600)}h ${Math.floor((h.run_time_sec % 3600) / 60)}m`
+            : "—";
+        return `<div class="receiver-card">
+          ${receiverStatePill(h)}
+          <p class="mono muted">${h.service || ""} · ${h.band || ""}</p>
+          <p class="muted small">State: ${h.state} · contacts ${h.contact_count ?? 0}${h.quiet ? " (quiet)" : ""}</p>
+          ${h.build_version ? `<p class="mono muted">Build ${h.build_version} · uptime ${run}</p>` : ""}
+        </div>`;
+      })
+      .join("");
+  }
   const dl = $("#stationLive");
   if (!dl || !snapshot?.receiver_health) return;
   const h = snapshot.receiver_health;
@@ -398,7 +429,7 @@ function renderStationLive(snapshot) {
       ? `${Math.floor(h.run_time_sec / 3600)}h ${Math.floor((h.run_time_sec % 3600) / 60)}m`
       : "—";
   const items = [
-    ["Status", snapshot.online ? "Live" : "Offline"],
+    ["AIS state", h.state || "—"],
     ["Hardware", h.hardware || "—"],
     ["AIS-catcher", h.build_version || "—"],
     ["Uptime", run],
@@ -429,6 +460,11 @@ async function pollLive() {
         state.map.setReceiver({ ...data.receiver, label: data.receiver?.label });
         state.map.onSelect((mmsi) => selectShip(mmsi));
         state.map.onPlaneSelect((id) => selectPlane(id));
+        loadWatchZones(state.map);
+        initWatchZoneDraw(state.map);
+        window.addEventListener("wichita-replay-camera", (ev) => {
+          state.map?.focusCamera(ev.detail);
+        });
       }
     }
     state.sky = await fetchSkySnapshots();
@@ -449,7 +485,8 @@ async function pollLive() {
       follow: state.follow,
     });
     refreshSelectedShipPanels();
-    renderStationLive(data);
+    renderStationLive(data, state.sky?.adsb?.receiver_health);
+    renderMaltaWeather($("#maltaWeather"));
     await renderLiveEvents();
   } catch {
     renderHeader({ online: false, freshness_counts: { now: 0, today: 0 } });
@@ -482,6 +519,7 @@ function initHarbourSheetDrag() {
 export function initLiveAis() {
   setupTimelinePaging();
   initHarbourSheetDrag();
+  initIncidentReplay();
   pollLive();
   if (state.timer) clearInterval(state.timer);
   state.timer = setInterval(pollLive, 5000);

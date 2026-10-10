@@ -10,6 +10,7 @@ def test_adsb_fixture_snapshot(monkeypatch):
     monkeypatch.setenv("WICHITA_ADSB_FIXTURE_DIR", str(FIXTURE))
     snap = wad.live_adsb_snapshot()
     assert snap["receiver_connected"] is True
+    assert snap["receiver_health"]["service"] == "readsb"
     assert snap["aircraft_count"] == 2
     assert snap["data_source"] == "our_antenna"
     emergency = [p for p in snap["aircraft"] if p.get("squawk") == "7700"]

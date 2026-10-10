@@ -1,0 +1,64 @@
+.radar-wall {
+  margin: 0;
+  min-height: 100vh;
+  background: #020408;
+  color: #9fd4a8;
+  font-family: system-ui, sans-serif;
+}
+
+.radar-wall header,
+.radar-wall footer {
+  padding: 1rem 1.5rem;
+}
+
+.radar-canvas {
+  position: relative;
+  margin: 0 auto;
+  width: min(96vw, 1200px);
+  aspect-ratio: 1;
+  border: 1px solid #1a3d2a;
+  border-radius: 50%;
+  overflow: hidden;
+  background: radial-gradient(circle, #04120a 0%, #020408 70%);
+}
+
+.radar-canvas::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0deg, rgba(80, 255, 140, 0.12) 12deg, transparent 24deg);
+  animation: radar-sweep 6s linear infinite;
+  pointer-events: none;
+}
+
+.radar-canvas.reduced-motion::before {
+  animation: none;
+  opacity: 0.15;
+}
+
+.radar-ring {
+  position: absolute;
+  border: 1px solid rgba(80, 255, 140, 0.25);
+  border-radius: 50%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.radar-blip {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  margin: -4px;
+  border-radius: 50%;
+  background: #6cff9a;
+  box-shadow: 0 0 8px #6cff9a;
+}
+
+@keyframes radar-sweep {
+  to {
+    transform: rotate(360deg);
+  }
+}

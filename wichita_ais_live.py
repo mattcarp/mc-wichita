@@ -21,6 +21,12 @@ from wichita_ais_copy import (
     movement_counts,
 )
 from wichita_provenance import SOURCE_OUR_ANTENNA, provenance_fields
+from wichita_receiver_health import (
+    classify_receiver_state,
+    receiver_health_block,
+    sanitize_ais_motion,
+)
+from wichita_upstream import assert_private_upstream
 from wichita_captures import VALLETTA_AIS_BASE_MMSIS, mmsi_label
 
 MALTA_TZ = ZoneInfo("Europe/Malta")
@@ -114,7 +120,11 @@ def fetch_ais_json(api_path: str, query: str = "") -> Tuple[Optional[Any], Optio
                 return None, str(exc)
         return None, f"no fixture for {api_path}"
 
-    url = f"{ais_catcher_base_url()}{api_path}"
+    base = ais_catcher_base_url()
+    ok, why = assert_private_upstream(base)
+    if not ok:
+        return None, why or "upstream blocked"
+    url = f"{base}{api_path}"
     if query and "?" not in api_path:
         url = f"{url}?{query}" if query else url
     req = urllib.request.Request(url, headers={"Accept": "application/json"})
@@ -190,28 +200,62 @@ def stable_sort_key(ship: Dict[str, Any]) -> Tuple[int, str, int]:
     return (moving, name, int(ship.get("mmsi") or 0))
 
 
-def receiver_health(stat: Optional[Dict[str, Any]], online: bool) -> Dict[str, Any]:
-    if not stat:
-        return {"available": online, "online": online}
-    run_s = stat.get("run_time")
+def receiver_health(
+    stat: Optional[Dict[str, Any]],
+    online: bool,
+    ships: Optional[List[Dict[str, Any]]] = None,
+    fetch_error: Optional[str] = None,
+) -> Dict[str, Any]:
+    ships = ships or []
+    vessels = [s for s in ships if not s.get("is_base_station")]
+    min_last = min(
+        (s.get("last_signal_s") for s in ships if s.get("last_signal_s") is not None),
+        default=None,
+    )
+    feed_age = min_last
+    if fetch_error == "receiver offline":
+        reachable = False
+        payload_valid = False
+    elif fetch_error == "receiver returned invalid JSON":
+        reachable = True
+        payload_valid = False
+    else:
+        reachable = True
+        payload_valid = True
+    state = classify_receiver_state(
+        reachable=reachable,
+        payload_valid=payload_valid,
+        feed_age_sec=feed_age,
+        contact_count=len(vessels),
+    )
+    run_s = stat.get("run_time") if stat else None
     try:
         run_s = int(run_s) if run_s is not None else None
     except (TypeError, ValueError):
         run_s = None
-    return {
-        "available": True,
-        "online": online,
-        "hardware": stat.get("hardware"),
-        "build_version": stat.get("build_version"),
+    extra = {
+        "hardware": (stat or {}).get("hardware"),
+        "build_version": (stat or {}).get("build_version"),
         "run_time_sec": run_s,
-        "msg_rate": stat.get("msg_rate"),
-        "memory_bytes": stat.get("memory"),
-        "vessel_count": stat.get("vessel_count"),
-        "sample_rate": stat.get("sample_rate"),
-        "product": stat.get("product"),
-        "device_label": stat.get("device_label"),
-        "tcp_clients": stat.get("tcp_clients"),
+        "msg_rate": (stat or {}).get("msg_rate"),
+        "memory_bytes": (stat or {}).get("memory"),
+        "vessel_count": (stat or {}).get("vessel_count"),
+        "sample_rate": (stat or {}).get("sample_rate"),
+        "product": (stat or {}).get("product"),
+        "device_label": (stat or {}).get("device_label"),
+        "tcp_clients": (stat or {}).get("tcp_clients"),
+        "error": fetch_error,
     }
+    return receiver_health_block(
+        service="ais-catcher",
+        band="AIS 161.975 / 162.025 MHz",
+        source=SOURCE_OUR_ANTENNA,
+        state=state,
+        feed_age_sec=feed_age,
+        contact_count=len(vessels),
+        last_signal_s=min_last,
+        extra=extra,
+    )
 
 
 def normalize_ship(raw: Dict[str, Any], now: Optional[datetime] = None) -> Dict[str, Any]:
@@ -228,9 +272,10 @@ def normalize_ship(raw: Dict[str, Any], now: Optional[datetime] = None) -> Dict[
         last_sig_s = None
     label = mmsi_label(mmsi) if mmsi in VALLETTA_AIS_BASE_MMSIS else None
     display_name = label or (name if name else f"Unnamed, MMSI {mmsi:09d}")
-    speed = raw.get("speed")
-    cog = raw.get("cog")
-    heading = raw.get("heading")
+    motion = sanitize_ais_motion(raw.get("speed"), raw.get("cog"), raw.get("heading"))
+    speed = motion["speed_kn"]
+    cog = motion["cog_deg"]
+    heading = motion["heading_deg"]
     eta_malta, eta_stale = format_eta_malta(raw, now)
     ship = {
         "mmsi": mmsi,
@@ -251,6 +296,9 @@ def normalize_ship(raw: Dict[str, Any], now: Optional[datetime] = None) -> Dict[
         "speed_kn": speed,
         "cog_deg": cog,
         "heading_deg": heading,
+        "speed_unknown": motion["speed_unknown"],
+        "cog_unknown": motion["cog_unknown"],
+        "heading_unknown": motion["heading_unknown"],
         "level_db": raw.get("level"),
         "message_count": raw.get("count"),
         "last_signal_s": last_sig_s,
@@ -307,7 +355,7 @@ def live_dashboard_bundle() -> Dict[str, Any]:
     ships_raw, err_ships = fetch_ais_json("/api/ships.json")
     stat_raw, err_stat = fetch_ais_json("/api/stat.json")
     paths_raw, err_paths = fetch_ais_json("/api/allpath.geojson")
-    online = ships_raw is not None
+    online = ships_raw is not None and err_ships is None
     err = err_ships or (None if stat_raw else err_stat)
     ships = (ships_raw or {}).get("ships") or []
     status = live_status_payload(stat_raw, ships, online, err)
@@ -333,7 +381,7 @@ def live_dashboard_bundle() -> Dict[str, Any]:
             "lon": RECEIVER_LON,
             "label": "Valletta balcony (approx.)",
         },
-        "receiver_health": receiver_health(stat_raw, online),
+        "receiver_health": receiver_health(stat_raw, online, ships, err_ships or err_stat),
         "paths": paths,
         "paths_error": err_paths,
     }
