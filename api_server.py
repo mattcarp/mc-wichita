@@ -32,6 +32,7 @@ import json
 import uuid
 import io
 import wave
+import tempfile
 import shlex
 import urllib.request
 import urllib.error
@@ -48,6 +49,13 @@ from wichita_capture_routes import router as capture_feed_router
 from capture_provenance import ProvenanceImportError, import_capture
 from whisper_transcription import WhisperConfig, transcribe_audio_file
 from ai_analysis_pipeline import analyze_audio_file, extract_stress_features, score_stress
+from alert_store import append_alert_record, load_alert_records
+from voice_lab import (
+    SOURCE_TAG as VOICE_LAB_SOURCE,
+    analyze_voice_lab_clip,
+    capture_mic_clip,
+    mic_capture_enabled,
+)
 
 from contextlib import asynccontextmanager
 
@@ -56,6 +64,7 @@ from wichita_live_events import get_engine
 
 @asynccontextmanager
 async def _wichita_lifespan(app):  # noqa: ARG001
+    _bootstrap_alerts_from_disk()
     get_engine().start()
     yield
     get_engine().stop()
@@ -273,6 +282,14 @@ class AlertSeverity(str, Enum):
     CRITICAL = "critical"
 
 
+class AlertReviewStatus(str, Enum):
+    """Human review gate before any outbound notification."""
+
+    PENDING_REVIEW = "pending_review"
+    CONFIRMED = "confirmed"
+    DISMISSED = "dismissed"
+
+
 class AlertCreate(BaseModel):
     """Inbound alert creation request"""
 
@@ -322,6 +339,9 @@ class AlertRecord(BaseModel):
     tags: List[str]
     metadata: Dict[str, Any]
     source: str
+    review_status: AlertReviewStatus = AlertReviewStatus.PENDING_REVIEW
+    reviewed_at: Optional[datetime] = None
+    review_note: Optional[str] = None
 
 
 class CaptureRecord(BaseModel):
@@ -343,6 +363,40 @@ ALERT_CLIENTS: List[WebSocket] = []
 MAX_ALERTS = 500
 CAPTURES: List[CaptureRecord] = []
 MAX_CAPTURES = 500
+
+
+def _bootstrap_alerts_from_disk() -> None:
+    if ALERTS:
+        return
+    for row in load_alert_records(MAX_ALERTS):
+        try:
+            ALERTS.append(AlertRecord(**row))
+        except (TypeError, ValueError):
+            continue
+
+
+def _persist_alert_record(record: AlertRecord) -> None:
+    append_alert_record(record.dict())
+
+
+def _find_alert_index(alert_id: str) -> int:
+    for idx, alert in enumerate(ALERTS):
+        if alert.id == alert_id:
+            return idx
+    return -1
+
+
+def _replace_alert(record: AlertRecord) -> None:
+    idx = _find_alert_index(record.id)
+    if idx >= 0:
+        ALERTS[idx] = record
+    else:
+        ALERTS.append(record)
+        if len(ALERTS) > MAX_ALERTS:
+            ALERTS.pop(0)
+    _persist_alert_record(record)
+
+
 DISTRESS_KEYWORDS = {
     "mayday",
     "pan-pan",
@@ -1470,34 +1524,125 @@ async def create_alert(
         tags=payload.tags,
         metadata=payload.metadata,
         source=payload.source,
+        review_status=AlertReviewStatus.PENDING_REVIEW,
     )
 
-    ALERTS.append(record)
-    if len(ALERTS) > MAX_ALERTS:
-        ALERTS.pop(0)
-
-    background_tasks.add_task(_dispatch_alert_to_mission_control, record)
-    if stress_score is not None and stress_score > 70.0:
-        preview = _transcription_preview(payload)
-        indicators = payload.metadata or {}
-        background_tasks.add_task(
-            send_stress_alert,
-            stress_score,
-            payload.frequency_hz or payload.frequency_mhz,
-            preview,
-            indicators,
-        )
-        background_tasks.add_task(
-            send_discord_alert,
-            "High-stress voice alert detected",
-            stress_score,
-            preview,
-        )
-    if _is_high_priority_audio_event(payload, severity, stress_score, is_distress):
-        background_tasks.add_task(_dispatch_spotify_audio_alert, record, stress_score)
+    _replace_alert(record)
     await _broadcast_alert(record)
 
     return record
+
+
+def _notify_telegram_for_confirmed_alert(alert: AlertRecord) -> bool:
+    stress_score = _extract_stress_score_from_record(alert)
+    if stress_score is None:
+        return False
+    preview = alert.transcript or alert.description or alert.title
+    indicators = alert.metadata or {}
+    frequency = alert.frequency_mhz
+    if frequency is not None and frequency < 1e6:
+        frequency = frequency * 1e6
+    return send_stress_alert(stress_score, frequency, preview, indicators)
+
+
+def _extract_stress_score_from_record(alert: AlertRecord) -> Optional[float]:
+    metadata = alert.metadata or {}
+    candidates = [
+        metadata.get("stress_score"),
+        metadata.get("stress_level"),
+        metadata.get("stress"),
+        (metadata.get("emotions") or {}).get("stress_level"),
+    ]
+    for candidate in candidates:
+        score = _coerce_stress_percent(candidate)
+        if score is not None:
+            return score
+    return None
+
+
+@app.post("/alerts/{alert_id}/confirm", tags=["alerts"], response_model=AlertRecord)
+async def confirm_alert(alert_id: str, background_tasks: BackgroundTasks):
+    """
+    Operator confirms an alert after listening. Only this path may send Telegram
+    to the configured operator chat. Nothing is sent to authorities.
+    """
+    idx = _find_alert_index(alert_id)
+    if idx < 0:
+        raise HTTPException(status_code=404, detail="Alert not found")
+    current = ALERTS[idx]
+    if current.review_status == AlertReviewStatus.DISMISSED:
+        raise HTTPException(status_code=409, detail="Alert already dismissed")
+    if current.review_status == AlertReviewStatus.CONFIRMED:
+        return current
+
+    updated = current.copy(
+        update={
+            "review_status": AlertReviewStatus.CONFIRMED,
+            "reviewed_at": datetime.now(timezone.utc),
+        }
+    )
+    _replace_alert(updated)
+    background_tasks.add_task(_notify_telegram_for_confirmed_alert, updated)
+
+    if _is_truthy_env(os.getenv("WICHITA_ALERTS_SPOTIFY_ON_CONFIRM"), default=False):
+        stress_score = _extract_stress_score_from_record(updated)
+        if _is_high_priority_audio_event(
+            AlertCreate(
+                title=updated.title,
+                description=updated.description,
+                transcript=updated.transcript,
+                signal_type=updated.signal_type,
+                severity=updated.severity,
+                frequency_mhz=updated.frequency_mhz,
+                tags=updated.tags,
+                metadata=updated.metadata,
+                source=updated.source,
+            ),
+            updated.severity,
+            stress_score,
+            _is_distress_alert(
+                AlertCreate(
+                    title=updated.title,
+                    description=updated.description,
+                    transcript=updated.transcript,
+                    signal_type=updated.signal_type,
+                    source=updated.source,
+                )
+            ),
+        ):
+            background_tasks.add_task(_dispatch_spotify_audio_alert, updated, stress_score)
+
+    await _broadcast_alert(updated)
+    return updated
+
+
+class AlertDismissBody(BaseModel):
+    note: Optional[str] = Field(default=None, description="Optional operator note")
+
+
+@app.post("/alerts/{alert_id}/dismiss", tags=["alerts"], response_model=AlertRecord)
+async def dismiss_alert(alert_id: str, body: Optional[AlertDismissBody] = None):
+    """Operator dismisses a pending alert. No outbound notifications."""
+    idx = _find_alert_index(alert_id)
+    if idx < 0:
+        raise HTTPException(status_code=404, detail="Alert not found")
+    current = ALERTS[idx]
+    if current.review_status == AlertReviewStatus.CONFIRMED:
+        raise HTTPException(status_code=409, detail="Alert already confirmed")
+    if current.review_status == AlertReviewStatus.DISMISSED:
+        return current
+
+    note = body.note if body else None
+    updated = current.copy(
+        update={
+            "review_status": AlertReviewStatus.DISMISSED,
+            "reviewed_at": datetime.now(timezone.utc),
+            "review_note": note,
+        }
+    )
+    _replace_alert(updated)
+    await _broadcast_alert(updated)
+    return updated
 
 
 @app.get("/alerts", tags=["alerts"], response_model=List[AlertRecord])
@@ -1566,10 +1711,74 @@ async def import_provenance_capture(
     alert_fields["signal_type"] = SignalType.UNKNOWN
     alert_fields["severity"] = AlertSeverity.INFO
     record = AlertRecord(**alert_fields)
-    ALERTS.append(record)
-    if len(ALERTS) > MAX_ALERTS:
-        ALERTS.pop(0)
+    _replace_alert(record)
     return record
+
+
+# ==================== VOICE LAB (test mic only; never creates alerts) ====================
+
+
+@app.get("/voice-lab/status", tags=["voice-lab"])
+async def voice_lab_status():
+    return {
+        "mic_enabled": mic_capture_enabled(),
+        "banner": "TEST MICROPHONE - not radio, not evidence",
+        "source_tag": VOICE_LAB_SOURCE,
+        "feeds_alerts": False,
+    }
+
+
+@app.post("/voice-lab/analyze", tags=["voice-lab"])
+async def voice_lab_analyze(
+    file: Optional[UploadFile] = File(None),
+    use_mic: bool = Form(False),
+    frequency_mhz: Optional[float] = Form(None),
+    mic_seconds: float = Form(3.0),
+):
+    """
+    Analyze uploaded audio or a short local mic capture (when WICHITA_VOICE_LAB_MIC is set).
+    Results are for the Voice Lab panel only and never enqueue /alerts or Telegram.
+    """
+    temp_paths: List[Path] = []
+    try:
+        if use_mic:
+            if not mic_capture_enabled():
+                raise HTTPException(
+                    status_code=400,
+                    detail="Mic capture disabled. Set WICHITA_VOICE_LAB_MIC=1 to enable.",
+                )
+            clip = capture_mic_clip(duration_sec=mic_seconds)
+            temp_paths.append(clip)
+            audio_path = clip
+        elif file is not None and file.filename:
+            suffix = Path(file.filename).suffix or ".wav"
+            fd, tmp = tempfile.mkstemp(suffix=suffix, prefix="wichita-voice-lab-upload-")
+            os.close(fd)
+            audio_path = Path(tmp)
+            temp_paths.append(audio_path)
+            content = await file.read()
+            audio_path.write_bytes(content)
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail="Provide an audio file upload or set use_mic=true with WICHITA_VOICE_LAB_MIC.",
+            )
+
+        return analyze_voice_lab_clip(audio_path, frequency_mhz=frequency_mhz)
+    except HTTPException:
+        raise
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Voice Lab analysis failed: {exc}") from exc
+    finally:
+        for path in temp_paths:
+            try:
+                path.unlink(missing_ok=True)
+            except OSError:
+                pass
 
 
 @app.get("/stress-alerts", tags=["alerts"], response_model=List[AlertRecord])

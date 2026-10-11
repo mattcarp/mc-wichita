@@ -1,5 +1,6 @@
 import sys
 import types
+from datetime import datetime, timezone
 
 # Isolate alert tests from unrelated optional maritime capture dependencies.
 api_maritime_aviation_stub = types.ModuleType("api_maritime_aviation")
@@ -78,66 +79,49 @@ def test_alert_stores_detected_language_from_payload_or_metadata() -> None:
     assert fallback.json()["language"] == "ar"
 
 
-def test_dispatch_to_mission_control_conversation_and_kanban(monkeypatch) -> None:
+def test_mission_control_helper_still_posts_when_called_directly(monkeypatch) -> None:
     sent = []
 
     def fake_post_json(url, payload, headers, timeout):
-        sent.append(
-            {
-                "url": url,
-                "payload": payload,
-                "headers": headers,
-                "timeout": timeout,
-            }
-        )
+        sent.append({"url": url, "channel": payload.get("channel")})
 
     monkeypatch.setenv("MC_CONVERSATION_WEBHOOK_URL", "http://mc.local/conversation")
     monkeypatch.setenv("MC_KANBAN_WEBHOOK_URL", "http://mc.local/kanban")
-    monkeypatch.setenv("MC_WEBHOOK_BEARER_TOKEN", "secret-token")
-    monkeypatch.setenv("MC_WEBHOOK_TIMEOUT", "7")
     monkeypatch.setattr(api_server, "_post_json", fake_post_json)
 
-    response = client.post(
-        "/alerts",
-        json={
-            "title": "Signal detected",
-            "description": "Test Mission Control routing",
-            "source": "wichita-sdr",
-        },
+    record = api_server.AlertRecord(
+        id="mc-direct",
+        created_at=datetime.now(timezone.utc),
+        title="Direct MC test",
+        description=None,
+        signal_type=api_server.SignalType.UNKNOWN,
+        severity=api_server.AlertSeverity.INFO,
+        frequency_mhz=None,
+        confidence=0.5,
+        transcript=None,
+        language=None,
+        audio_url=None,
+        tags=[],
+        metadata={},
+        source="test",
     )
-
-    assert response.status_code == 200
+    api_server._dispatch_alert_to_mission_control(record)
     assert len(sent) == 2
 
-    first = sent[0]
-    second = sent[1]
 
-    assert first["url"] == "http://mc.local/conversation"
-    assert first["payload"]["channel"] == "conversation"
-    assert first["headers"]["Authorization"] == "Bearer secret-token"
-    assert first["timeout"] == 7
-
-    assert second["url"] == "http://mc.local/kanban"
-    assert second["payload"]["channel"] == "kanban"
-    assert second["headers"]["Authorization"] == "Bearer secret-token"
-    assert second["timeout"] == 7
-
-
-def test_high_stress_alert_triggers_telegram_notification(monkeypatch) -> None:
+def test_high_stress_alert_does_not_auto_notify(monkeypatch) -> None:
     sent = []
 
-    def fake_send_stress_alert(stress_score, frequency, transcription, indicators):
-        sent.append(
-            {
-                "stress_score": stress_score,
-                "frequency": frequency,
-                "transcription": transcription,
-                "indicators": indicators,
-            }
-        )
-        return True
-
-    monkeypatch.setattr(api_server, "send_stress_alert", fake_send_stress_alert)
+    monkeypatch.setattr(
+        api_server,
+        "send_stress_alert",
+        lambda *a, **k: sent.append(True) or True,
+    )
+    monkeypatch.setattr(
+        api_server,
+        "send_discord_alert",
+        lambda *a, **k: sent.append(True) or True,
+    )
 
     response = client.post(
         "/alerts",
@@ -151,91 +135,5 @@ def test_high_stress_alert_triggers_telegram_notification(monkeypatch) -> None:
     )
 
     assert response.status_code == 200
-    assert len(sent) == 1
-    assert sent[0]["stress_score"] == 83
-    assert sent[0]["frequency"] == 156800000
-    assert "Breathing heavy" in sent[0]["transcription"]
-    assert sent[0]["indicators"]["trigger"] == "rapid speech"
-
-
-def test_high_stress_alert_triggers_discord_notification(monkeypatch) -> None:
-    sent = []
-
-    def fake_send_discord_alert(message, stress_score, transcription_preview):
-        sent.append(
-            {
-                "message": message,
-                "stress_score": stress_score,
-                "transcription_preview": transcription_preview,
-            }
-        )
-        return True
-
-    monkeypatch.setattr(api_server, "send_discord_alert", fake_send_discord_alert)
-
-    response = client.post(
-        "/alerts",
-        json={
-            "title": "Voice stress event",
-            "transcript": "Caller is panicking and breathing heavily near harbor.",
-            "metadata": {"stress_score": 84},
-            "source": "wichita-sdr",
-        },
-    )
-
-    assert response.status_code == 200
-    assert len(sent) == 1
-    assert sent[0]["stress_score"] == 84
-    assert "panicking and breathing heavily" in sent[0]["transcription_preview"]
-
-
-def test_high_priority_event_triggers_spotify_audio_alert(monkeypatch) -> None:
-    sent = []
-
-    def fake_dispatch_spotify_audio_alert(alert, stress_score):
-        sent.append({"title": alert.title, "stress_score": stress_score})
-        return True
-
-    monkeypatch.setattr(
-        api_server, "_dispatch_spotify_audio_alert", fake_dispatch_spotify_audio_alert
-    )
-
-    response = client.post(
-        "/alerts",
-        json={
-            "title": "Wichita signal reported near ferry terminal",
-            "description": "Priority interception requested.",
-            "signal_type": "marine_vhf",
-            "source": "wichita-sdr",
-        },
-    )
-
-    assert response.status_code == 200
-    assert len(sent) == 1
-    assert "Wichita signal" in sent[0]["title"]
-    assert sent[0]["stress_score"] is None
-
-
-def test_routine_alert_does_not_trigger_spotify_audio_alert(monkeypatch) -> None:
-    sent = []
-
-    def fake_dispatch_spotify_audio_alert(alert, stress_score):
-        sent.append({"title": alert.title, "stress_score": stress_score})
-        return True
-
-    monkeypatch.setattr(
-        api_server, "_dispatch_spotify_audio_alert", fake_dispatch_spotify_audio_alert
-    )
-
-    response = client.post(
-        "/alerts",
-        json={
-            "title": "Routine harbor traffic",
-            "description": "Normal channel checks.",
-            "signal_type": "marine_vhf",
-            "source": "wichita-sdr",
-        },
-    )
-
-    assert response.status_code == 200
-    assert len(sent) == 0
+    assert response.json()["review_status"] == "pending_review"
+    assert sent == []

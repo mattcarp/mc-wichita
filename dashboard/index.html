@@ -176,6 +176,32 @@
       </div>
     </section>
 
+    <section id="panel-voicelab" class="panel tab-panel" data-tab="voicelab" aria-labelledby="voicelab-heading">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Voice Lab</p>
+          <h2 id="voicelab-heading">Test microphone</h2>
+        </div>
+      </div>
+      <p id="voiceLabBanner" class="voice-lab-banner" role="status" data-test-id="voice-lab-banner"></p>
+      <p id="voiceLabMicNote" class="muted small"></p>
+      <div class="voice-lab-controls">
+        <label class="voice-lab-upload">
+          <span class="sr-only">Upload WAV for Voice Lab</span>
+          <input type="file" id="voiceLabFile" accept="audio/*" data-test-id="voice-lab-file" />
+        </label>
+        <button type="button" id="voiceLabUploadBtn" class="timeline-more" data-test-id="voice-lab-analyze-upload">Analyze upload</button>
+        <button type="button" id="voiceLabMicBtn" class="timeline-more" data-test-id="voice-lab-analyze-mic">Capture mic (3s)</button>
+      </div>
+      <p class="eyebrow">Stress score</p>
+      <p id="voiceLabStress" class="mono voice-lab-stress" data-test-id="voice-lab-stress">—</p>
+      <pre id="voiceLabOutput" class="voice-lab-output mono" aria-label="Voice Lab analysis JSON"></pre>
+      <section class="alert-review-panel" aria-labelledby="alert-review-heading">
+        <h3 id="alert-review-heading" class="eyebrow">Alert review queue</h3>
+        <ul id="alertReviewList" class="alert-review-list"></ul>
+      </section>
+    </section>
+
     <section id="panel-station" class="panel tab-panel" data-tab="station" aria-labelledby="station-heading">
       <div class="panel-head">
         <div>
@@ -204,6 +230,7 @@
     <button type="button" class="tab-btn" data-tab-target="heard" aria-label="Heard"><span class="tab-icon" data-icon="heard"></span><span>Heard</span></button>
     <button type="button" class="tab-btn" data-tab-target="sky" aria-label="Sky"><span class="tab-icon" data-icon="sky"></span><span>Sky</span></button>
     <button type="button" class="tab-btn" data-tab-target="recordings" aria-label="Recordings"><span class="tab-icon" data-icon="recordings"></span><span>Recordings</span></button>
+    <button type="button" class="tab-btn" data-tab-target="voicelab" aria-label="Voice Lab"><span class="tab-icon" data-icon="voicelab"></span><span>Voice Lab</span></button>
     <button type="button" class="tab-btn" data-tab-target="station" aria-label="Station"><span class="tab-icon" data-icon="station"></span><span>Station</span></button>
   </nav>
 </body>
