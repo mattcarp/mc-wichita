@@ -1,0 +1,8 @@
+# Wichita API server (see INSTALL.md)
+fastapi
+uvicorn[standard]
+python-multipart
+numpy
+pydantic
+httpx
+PyJWT[crypto]  # Clerk session JWT verification (RS256 + JWKS)

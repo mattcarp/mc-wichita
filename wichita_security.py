@@ -42,12 +42,12 @@ def allowed_hosts() -> Set[str]:
 
 
 def security_headers() -> dict[str, str]:
-    csp = os.environ.get(
-        "WICHITA_CSP",
-        "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; "
-        "img-src 'self' data:; connect-src 'self'; font-src 'self'; frame-ancestors 'none'; "
-        "base-uri 'self'; form-action 'self'",
-    )
+    if os.environ.get("WICHITA_CSP", "").strip():
+        csp = os.environ["WICHITA_CSP"].strip()
+    else:
+        from wichita_clerk_auth import clerk_csp_directives
+
+        csp = clerk_csp_directives()
     return {
         "Content-Security-Policy": csp,
         "X-Content-Type-Options": "nosniff",

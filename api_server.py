@@ -45,6 +45,7 @@ from wichita_ais_routes import router as live_ais_router
 from wichita_gods_eye_routes import router as sky_router
 from wichita_platform_routes import router as platform_router
 from wichita_security import WichitaSecurityMiddleware
+from wichita_clerk_auth import ClerkAuthMiddleware, clerk_public_config, require_websocket_auth
 from wichita_capture_routes import router as capture_feed_router
 from capture_provenance import ProvenanceImportError, import_capture
 from whisper_transcription import WhisperConfig, transcribe_audio_file
@@ -118,6 +119,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.add_middleware(WichitaSecurityMiddleware)
+app.add_middleware(ClerkAuthMiddleware)
 
 # ==================== ENUMS & MODELS ====================
 
@@ -1960,6 +1962,8 @@ async def alerts_stream(websocket: WebSocket):
 
     Pushes alerts to Mission Control panels.
     """
+    if not await require_websocket_auth(websocket):
+        return
     await websocket.accept()
     ALERT_CLIENTS.append(websocket)
 
@@ -2025,6 +2029,8 @@ async def waterfall_stream(websocket: WebSocket):
 
     Streams FFT data for visualization.
     """
+    if not await require_websocket_auth(websocket):
+        return
     await websocket.accept()
 
     try:
@@ -2130,6 +2136,12 @@ async def trigger_alert(request: AlertRequest):
     }
 
 # ==================== ROOT REDIRECT ====================
+
+
+@app.get("/dashboard/clerk-env.json", include_in_schema=False)
+async def dashboard_clerk_env():
+    """Public Clerk publishable config for the dashboard shell."""
+    return clerk_public_config()
 
 
 @app.get("/dashboard/{filename:path}", include_in_schema=False)

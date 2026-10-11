@@ -1639,3 +1639,47 @@ body.sheet-open .live-ship-list {
   gap: 0.5rem;
   margin-top: 0.5rem;
 }
+
+.auth-gate {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: var(--bg);
+}
+
+.auth-gate-inner {
+  width: min(100%, 22rem);
+}
+
+.auth-gate-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin: 0 0 0.35rem;
+}
+
+.auth-gate-tagline {
+  margin: 0 0 1.25rem;
+  font-size: 0.9rem;
+}
+
+.auth-gate-message {
+  text-align: center;
+  color: var(--muted);
+}
+
+body.auth-pending .site-header,
+body.auth-pending .site-footer,
+body.auth-pending .tab-bar {
+  display: none;
+}
+
+.clerk-user-button {
+  display: flex;
+  align-items: center;
+  min-height: 1.75rem;
+}

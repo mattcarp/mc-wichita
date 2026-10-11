@@ -6,10 +6,18 @@
   <meta name="color-scheme" content="dark" />
   <title>Wichita · Valletta listener</title>
   <link rel="icon" href="data:," />
-  <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261010-gev1" />
-  <script type="module" src="/dashboard/dashboard.js?v=20261010-gev1"></script>
+  <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261011-clerk1" />
+  <script type="module" src="/dashboard/clerk_gate.js?v=20261011-clerk1"></script>
 </head>
-<body>
+<body class="auth-pending">
+  <div id="authGate" class="auth-gate" role="main" aria-label="Sign in">
+    <div class="auth-gate-inner">
+      <p class="auth-gate-brand"><span class="brand-glyph" aria-hidden="true">W</span> Wichita</p>
+      <p class="auth-gate-tagline muted">Valletta listener · sign in with email</p>
+      <div id="clerkSignIn"></div>
+    </div>
+  </div>
+  <div id="appShell" hidden>
   <a class="skip-link" href="#main">Skip to dashboard</a>
   <header class="site-header site-header-compact">
     <div class="brand brand-compact">
@@ -17,6 +25,7 @@
       <div id="headerLive" class="header-live mono" role="status">Checking AIS…</div>
     </div>
     <div class="header-meta">
+      <div id="clerkUserButton" class="clerk-user-button" aria-label="Account"></div>
       <time id="maltaClock" class="mono" datetime="">—</time>
       <button type="button" id="settingsBtn" class="icon-btn icon-btn-gear" aria-haspopup="dialog" aria-expanded="false" aria-controls="settingsMenu" aria-label="Settings" title="Settings"></button>
       <div id="settingsMenu" class="settings-menu" role="dialog" hidden>
@@ -233,5 +242,6 @@
     <button type="button" class="tab-btn" data-tab-target="voicelab" aria-label="Voice Lab"><span class="tab-icon" data-icon="voicelab"></span><span>Voice Lab</span></button>
     <button type="button" class="tab-btn" data-tab-target="station" aria-label="Station"><span class="tab-icon" data-icon="station"></span><span>Station</span></button>
   </nav>
+  </div>
 </body>
 </html>

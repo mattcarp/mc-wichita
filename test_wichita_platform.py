@@ -15,6 +15,7 @@ sys.modules.setdefault("api_maritime_aviation", api_maritime_aviation_stub)
 os.environ.setdefault("WICHITA_CAPTURES_DIRS", str(FIXTURES))
 os.environ["WICHITA_AIS_FIXTURE_DIR"] = str(LIVE_AIS)
 os.environ["WICHITA_ADSB_FIXTURE_DIR"] = str(FIXTURES / "live_adsb")
+os.environ["WICHITA_AUTH_REQUIRED"] = "false"
 
 import api_server
 
