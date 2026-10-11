@@ -240,13 +240,17 @@ def clerk_public_config() -> Dict[str, str]:
 
 def clerk_csp_directives() -> str:
     api = clerk_frontend_api()
+    turnstile = "https://challenges.cloudflare.com"
+    protect_cdn = "https://cdn.protect.clerk.com"
+    protect_hosts = "https://*.protect.clerk.com"
+    protect_connect = "https://*.protect.clerk.com:*"
     return (
         "default-src 'self'; "
-        f"script-src 'self' {api}; "
+        f"script-src 'self' {api} {turnstile} {protect_cdn} {protect_hosts}; "
         "style-src 'self' 'unsafe-inline'; "
         "img-src 'self' data: https://img.clerk.com; "
-        f"connect-src 'self' {api} https://api.clerk.com; "
-        f"frame-src 'self' {api}; "
+        f"connect-src 'self' {api} https://api.clerk.com {protect_cdn} {protect_connect}; "
+        f"frame-src 'self' {api} {turnstile} {protect_hosts}; "
         "font-src 'self'; "
         "worker-src 'self' blob:; "
         "frame-ancestors 'none'; "

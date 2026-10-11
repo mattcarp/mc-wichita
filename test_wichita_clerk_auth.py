@@ -119,6 +119,25 @@ def test_valid_test_jwt_passes(tmp_path):
         assert res.status_code == 200
 
 
+def test_clerk_csp_allows_bot_protection():
+    from wichita_clerk_auth import clerk_csp_directives
+
+    csp = clerk_csp_directives()
+    assert "https://cdn.protect.clerk.com" in csp
+    assert "https://*.protect.clerk.com:*" in csp
+    assert "https://challenges.cloudflare.com" in csp
+    assert "script-src" in csp and "frame-src" in csp and "connect-src" in csp
+    for directive in ("script-src", "connect-src"):
+        part = csp.split(f"{directive} ")[1].split(";")[0]
+        assert "https://cdn.protect.clerk.com" in part
+    script_part = csp.split("script-src ")[1].split(";")[0]
+    frame_part = csp.split("frame-src ")[1].split(";")[0]
+    assert "https://challenges.cloudflare.com" in script_part
+    assert "https://challenges.cloudflare.com" in frame_part
+    assert "https://*.protect.clerk.com" in script_part
+    assert "https://*.protect.clerk.com" in frame_part
+
+
 def test_wrong_iss_or_azp_fails(tmp_path):
     kid, pem, jwks_path = _make_test_jwks(tmp_path)
     iss = "https://clerk.test.example"

@@ -33,4 +33,8 @@ def test_security_headers():
     client = TestClient(api_server.app)
     res = client.get("/health")
     assert res.headers.get("x-content-type-options") == "nosniff"
-    assert res.headers.get("content-security-policy")
+    csp = res.headers.get("content-security-policy") or ""
+    assert csp
+    assert "https://cdn.protect.clerk.com" in csp
+    assert "https://challenges.cloudflare.com" in csp
+    assert "https://*.protect.clerk.com:*" in csp
