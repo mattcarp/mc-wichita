@@ -1683,3 +1683,9 @@ body.auth-pending .tab-bar {
   align-items: center;
   min-height: 1.75rem;
 }
+
+/* Fallback if Clerk appearance props miss a sign-up footer node */
+#clerkSignIn .cl-footerAction,
+#clerkSignIn [class*="footerAction"] {
+  display: none !important;
+}

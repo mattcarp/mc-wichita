@@ -2,7 +2,7 @@
  * Clerk sign-in gate: loads dashboard modules only after a valid session exists.
  */
 
-const CLERK_APPEARANCE = {
+const CLERK_THEME = {
   variables: {
     colorBackground: "#070b14",
     colorInputBackground: "#0e1420",
@@ -12,6 +12,10 @@ const CLERK_APPEARANCE = {
     colorTextSecondary: "#9aa3b2",
     borderRadius: "0.5rem",
   },
+};
+
+const CLERK_APPEARANCE = {
+  ...CLERK_THEME,
   elements: {
     rootBox: { width: "100%" },
     card: {
@@ -19,6 +23,19 @@ const CLERK_APPEARANCE = {
       border: "1px solid #252a36",
       boxShadow: "0 12px 40px rgba(0,0,0,0.45)",
     },
+  },
+};
+
+/** Sign-in only: allowlisted emails via Clerk dashboard; no sign-up path in UI. */
+const SIGN_IN_APPEARANCE = {
+  ...CLERK_THEME,
+  elements: {
+    ...CLERK_APPEARANCE.elements,
+    socialButtonsRoot: { display: "none" },
+    dividerRow: { display: "none" },
+    footerAction: { display: "none" },
+    footerActionText: { display: "none" },
+    footerActionLink: { display: "none" },
   },
 };
 
@@ -104,9 +121,9 @@ function mountSignIn(Clerk) {
   if (!el) return;
   el.innerHTML = "";
   Clerk.mountSignIn(el, {
-    appearance: CLERK_APPEARANCE,
+    appearance: SIGN_IN_APPEARANCE,
     routing: "hash",
-    signUpUrl: undefined,
+    withSignUp: false,
   });
 }
 
