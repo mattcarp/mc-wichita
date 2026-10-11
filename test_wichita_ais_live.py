@@ -55,6 +55,8 @@ def test_live_ship_detail_fixture():
     import api_server
 
     client = TestClient(api_server.app)
+    meta = client.get("/api/live-ais/history/meta")
+    assert meta.status_code == 200
     res = client.get("/api/live-ais/ships/2155001")
     assert res.status_code == 200
     assert res.json()["mmsi"] == 2155001

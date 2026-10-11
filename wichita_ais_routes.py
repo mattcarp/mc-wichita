@@ -7,6 +7,7 @@ import os
 from fastapi import APIRouter, HTTPException
 
 import wichita_ais_live as wal
+import wichita_ais_tracks as wat
 import wichita_captures as wc
 from wichita_ais_voice import voice_channel_tiles
 from wichita_live_events import get_engine
@@ -41,6 +42,31 @@ async def live_ais_ship(mmsi: int):
 async def live_ais_events(hours: int = 2, limit: int = 20, before: str | None = None):
     engine = get_engine()
     return engine.events_page(hours=hours, limit=limit, before=before)
+
+
+@router.get("/history/meta")
+async def live_ais_history_meta(hours: float | None = None):
+    store = wat.get_snapshot_store()
+    return store.timeline_meta(hours=hours)
+
+
+@router.get("/history/at")
+async def live_ais_history_at(ts_utc: str, max_delta_s: float = 120.0):
+    snap = wat.get_snapshot_store().snapshot_nearest(ts_utc, max_delta_s=max_delta_s)
+    if snap is None:
+        raise HTTPException(status_code=404, detail="no snapshot near requested time")
+    return snap
+
+
+@router.get("/activity")
+async def live_ais_activity(hours: int = 24):
+    if hours not in (24, 168):
+        raise HTTPException(status_code=400, detail="hours must be 24 or 168")
+    return {
+        "hours": hours,
+        "buckets": wat.get_snapshot_store().activity_by_type(hours=hours),
+        "caveat": "Counts unique MMSI heard per hour from stored AIS snapshots — incomplete if receiver was offline.",
+    }
 
 
 @router.get("/voice-watch")

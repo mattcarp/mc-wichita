@@ -12,6 +12,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 
 from wichita_ais_copy import enrich_ship_copy, first_heard_sentence, freshness_bucket
+from wichita_ais_patterns import AisPatternObserver
+from wichita_ais_tracks import get_snapshot_store
 from wichita_timeline import DEFAULT_HOURS, DEFAULT_LIMIT, paginate_events, prepare_timeline_events
 
 logger = logging.getLogger(__name__)
@@ -57,6 +59,7 @@ def _in_harbour(lat: Optional[float], lon: Optional[float]) -> bool:
 class LiveEventEngine:
     def __init__(self) -> None:
         self._lock = threading.Lock()
+        self._patterns = AisPatternObserver(append_event)
         self._seen_mmsi: Set[int] = set()
         self._last_online: Optional[bool] = None
         self._last_nav: Dict[int, int] = {}
@@ -118,6 +121,16 @@ class LiveEventEngine:
                 get_watch_engine().ingest_ships(ships)
             except Exception as exc:
                 logger.debug("watch zones ingest skipped: %s", exc)
+
+            try:
+                get_snapshot_store().record_ships(ships)
+            except Exception as exc:
+                logger.debug("ais snapshot store skipped: %s", exc)
+
+            try:
+                self._patterns.ingest(ships, POLL_SEC)
+            except Exception as exc:
+                logger.debug("ais pattern observer skipped: %s", exc)
 
             for s in ships:
                 if s.get("is_base_station"):
@@ -199,7 +212,11 @@ class LiveEventEngine:
         raw = self.read_events(hours=hours)
         prepared = prepare_timeline_events(raw)
         page = paginate_events(prepared, limit=limit, before=before)
-        page["activity_hourly"] = self.activity_hourly(hours=max(hours, 24))
+        act_hours = max(hours, 24)
+        page["activity_hourly"] = self.activity_hourly(hours=act_hours)
+        page["activity_vessels_by_type"] = get_snapshot_store().activity_by_type(
+            hours=168 if act_hours >= 168 else act_hours
+        )
         page["hours"] = hours
         return page
 

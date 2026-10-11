@@ -241,7 +241,9 @@ export class HarbourMap {
     satelliteTracks,
     selectedPlaneId,
     follow,
+    replayMode,
   }) {
+    this.replayMode = Boolean(replayMode);
     const now = performance.now();
     for (const s of ships || []) {
       if (s.lat == null || s.lon == null) continue;
@@ -554,6 +556,16 @@ export class HarbourMap {
             `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" class="map-estimated" />`,
           );
         }
+      }
+      const ghostTrail = motion?.trail?.length > 1 ? motion.trail : null;
+      if (ghostTrail && !this.replayMode) {
+        const gpts = ghostTrail
+          .map((pt) => {
+            const p = this._project(pt.lat, pt.lon, w, h);
+            return `${p.x.toFixed(1)},${p.y.toFixed(1)}`;
+          })
+          .join(" ");
+        parts.push(`<polyline points="${gpts}" class="map-ghost-trail"/>`);
       }
       const followTrail =
         this.follow?.kind === "ship" && this.follow.id === s.mmsi ? motion?.trail : null;

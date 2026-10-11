@@ -1482,6 +1482,66 @@ body.sheet-open .live-ship-list {
   stroke-width: 1.5;
   stroke-dasharray: 4 3;
 }
+.harbour-replay-bar {
+  margin: 0.5rem 0;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 0.45rem;
+  background: var(--surface-2);
+}
+.replay-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+.replay-scrub-label {
+  flex: 1 1 12rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+}
+.entity-search-row {
+  margin: 0.35rem 0 0.5rem;
+}
+.entity-search-input {
+  width: 100%;
+  max-width: 22rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.35rem;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: inherit;
+}
+.activity-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+}
+.activity-toggle button {
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: inherit;
+  padding: 0.2rem 0.45rem;
+  border-radius: 0.35rem;
+  font-size: 0.72rem;
+}
+.activity-toggle button.active {
+  border-color: rgba(62, 198, 201, 0.65);
+}
+.timeline-pattern .event-body {
+  color: var(--mac-text-muted, #a8b0c0);
+  font-style: italic;
+}
+.map-ghost-trail {
+  fill: none;
+  stroke: rgba(94, 184, 255, 0.22);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+}
 .incident-replay-panel {
   margin-top: 0.65rem;
   padding: 0.55rem;

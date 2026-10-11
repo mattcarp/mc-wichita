@@ -1931,6 +1931,9 @@ async def dashboard_asset(filename: str):
         raise HTTPException(status_code=404, detail="Dashboard asset not found")
     if not asset.is_file():
         raise HTTPException(status_code=404, detail="Dashboard asset not found")
+    base_name = Path(filename).name
+    if base_name.startswith("test_") or base_name.endswith("_test.mjs"):
+        raise HTTPException(status_code=404, detail="Dashboard asset not found")
     if filename.endswith(".css"):
         media_type = "text/css"
     elif filename.endswith(".js") or filename.endswith(".mjs"):
