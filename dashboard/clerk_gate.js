@@ -104,6 +104,19 @@ function installAuthenticatedFetch(Clerk) {
 }
 
 let dashboardBooted = false;
+let signInMounted = false;
+
+function signInHomeUrl() {
+  return `${window.location.origin}/`;
+}
+
+/** Drop stale hash routes from earlier hash-based SignIn mounts. */
+function clearStaleClerkHashRoute() {
+  const hash = window.location.hash;
+  if (!hash || hash === "#" || !hash.startsWith("#/")) return;
+  const path = window.location.pathname + window.location.search;
+  window.history.replaceState(null, "", path);
+}
 
 async function bootDashboard(Clerk) {
   if (dashboardBooted) return;
@@ -116,15 +129,31 @@ async function bootDashboard(Clerk) {
   await import("./dashboard.js?v=20261011-clerk1");
 }
 
-function mountSignIn(Clerk) {
+function mountSignInOnce(Clerk) {
+  if (signInMounted) return;
   const el = $("#clerkSignIn");
   if (!el) return;
-  el.innerHTML = "";
+  clearStaleClerkHashRoute();
+  const home = signInHomeUrl();
   Clerk.mountSignIn(el, {
     appearance: SIGN_IN_APPEARANCE,
-    routing: "hash",
+    routing: "virtual",
     withSignUp: false,
+    fallbackRedirectUrl: home,
+    signInFallbackRedirectUrl: home,
   });
+  signInMounted = true;
+}
+
+function unmountSignIn(Clerk) {
+  if (!signInMounted) return;
+  const el = $("#clerkSignIn");
+  if (el && typeof Clerk.unmountSignIn === "function") {
+    Clerk.unmountSignIn(el);
+  } else if (el) {
+    el.innerHTML = "";
+  }
+  signInMounted = false;
 }
 
 async function main() {
@@ -144,14 +173,23 @@ async function main() {
   const Clerk = await loadClerkScript(env.frontendApi, env.publishableKey);
   await Clerk.load();
 
+  let hadUser = Boolean(Clerk.user);
+
   const sync = () => {
     if (Clerk.user) {
+      unmountSignIn(Clerk);
       setAppVisible(true);
       bootDashboard(Clerk);
-    } else {
+      hadUser = true;
+      return;
+    }
+
+    setAppVisible(false);
+    mountSignInOnce(Clerk);
+
+    if (hadUser) {
+      hadUser = false;
       dashboardBooted = false;
-      setAppVisible(false);
-      mountSignIn(Clerk);
     }
   };
 
