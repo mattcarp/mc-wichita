@@ -4,6 +4,7 @@ import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } fr
 import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261010-gev1";
 import { initWatchZones } from "./watch_zones.js?v=20261010-gev1";
 import { initIncidentReplay } from "./incident_replay.js?v=20261010-gev1";
+import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261010-gev1";
 
 const GROUPS = [
   { key: "now", title: "Now" },
@@ -24,6 +25,8 @@ const state = {
   follow: null,
   map: null,
   timer: null,
+  entityQuery: "",
+  activityHours: 24,
 };
 
 function $(sel) {
@@ -104,10 +107,27 @@ function shipCardHtml(s, selected) {
   </li>`;
 }
 
+function matchesEntityQuery(item, q) {
+  if (!q) return true;
+  const hay = [
+    item.display_name,
+    item.shipname,
+    item.mmsi_display,
+    String(item.mmsi),
+    item.callsign,
+    item.id,
+    item.hex,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+  return hay.includes(q);
+}
+
 function renderShipList(snapshot) {
   const ul = $("#liveShipList");
   if (!ul) return;
-  const ships = snapshot?.ships || [];
+  const ships = (snapshot?.ships || []).filter((s) => matchesEntityQuery(s, state.entityQuery));
   if (!ships.length) {
     ul.innerHTML = "<li class='muted'>No vessels in the AIS window.</li>";
     return;
@@ -339,15 +359,43 @@ async function selectPlane(id) {
 function timelineItemHtml(e) {
   const t = e.ts_utc ? formatMaltaTimeShort(e.ts_utc) : "—";
   const kind = e.kind || "";
-  const cls =
-    kind.startsWith("receiver") ? "timeline-receiver" : kind.includes("silent") ? "timeline-quiet" : "timeline-live";
+  const cls = kind.startsWith("receiver")
+    ? "timeline-receiver"
+    : kind.startsWith("pattern_")
+      ? "timeline-pattern"
+      : kind.includes("silent")
+        ? "timeline-quiet"
+        : "timeline-live";
   const tsAttr = e.ts_utc ? ` data-ts="${e.ts_utc}"` : "";
   return `<li class="${cls}"${tsAttr}><span class="event-time mono">${t}</span> <span class="event-body">${e.sentence}</span></li>`;
 }
 
+async function renderActivityStrip() {
+  const strip = $("#activityStrip");
+  if (!strip) return;
+  try {
+    const res = await fetch(`/api/live-ais/activity?hours=${state.activityHours}`);
+    if (!res.ok) throw new Error(String(res.status));
+    const data = await res.json();
+    const buckets = data.buckets || [];
+    const max = Math.max(...buckets.map((b) => b.vessels_total ?? 0), 1);
+    strip.innerHTML = buckets
+      .map((b) => {
+        const n = b.vessels_total ?? 0;
+        const h = n ? Math.max(8, Math.round((n / max) * 100)) : 2;
+        const types = Object.entries(b.by_type || {})
+          .map(([k, v]) => `${k}:${v}`)
+          .join(", ");
+        return `<span class="activity-bar" style="height:${h}%" title="${b.hour_utc}: ${n} vessels (${types || "—"})"></span>`;
+      })
+      .join("");
+  } catch {
+    strip.innerHTML = "";
+  }
+}
+
 export async function renderLiveEvents(append = false) {
   const ol = $("#timeline");
-  const strip = $("#activityStrip");
   const moreBtn = $("#timelineMore");
   if (!ol) return;
   try {
@@ -360,19 +408,7 @@ export async function renderLiveEvents(append = false) {
     const res = await fetch(`/api/live-ais/events?${qs}`);
     if (!res.ok) throw new Error(String(res.status));
     const data = await res.json();
-    if (strip && data.activity_hourly?.length) {
-      const buckets = data.activity_hourly;
-      const max = Math.max(...buckets.map((b) => b.events ?? 0), 1);
-      strip.innerHTML = buckets
-        .map((b) => {
-          const n = b.events ?? 0;
-          const h = n ? Math.max(8, Math.round((n / max) * 100)) : 2;
-          return `<span class="activity-bar" style="height:${h}%" title="${b.hour_utc}: ${n} events"></span>`;
-        })
-        .join("");
-    } else if (strip) {
-      strip.innerHTML = "";
-    }
+    if (!append) await renderActivityStrip();
     const events = data.events || [];
     const html = events.length ? events.map(timelineItemHtml).join("") : "<li class='muted'>No live events logged yet.</li>";
     if (append) ol.innerHTML += html;
@@ -389,6 +425,29 @@ export async function renderLiveEvents(append = false) {
 
 function setupTimelinePaging() {
   $("#timelineMore")?.addEventListener("click", () => renderLiveEvents(true));
+  document.querySelectorAll(".activity-window").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".activity-window").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      state.activityHours = Number(btn.getAttribute("data-activity-hours")) || 24;
+      renderActivityStrip();
+    });
+  });
+}
+
+function setupEntitySearch() {
+  const input = $("#entitySearch");
+  if (!input) return;
+  input.addEventListener("input", () => {
+    state.entityQuery = input.value.trim().toLowerCase();
+    renderShipList(state.snapshot);
+    const planes = state.sky?.adsb?.aircraft || [];
+    const panel = $("#planesPanel");
+    if (panel && planes.length) {
+      const filtered = planes.filter((p) => matchesEntityQuery(p, state.entityQuery));
+      renderPlanesPanel({ ...state.sky.adsb, aircraft: filtered });
+    }
+  });
 }
 
 function renderHeardAndHealth(snapshot, feedHealth) {
@@ -481,14 +540,20 @@ async function pollLive() {
       }
     }
     state.sky = await fetchSkySnapshots();
-    renderPlanesPanel(state.sky.adsb);
+    const planes = state.sky?.adsb?.aircraft || [];
+    const planesView = state.entityQuery
+      ? planes.filter((p) => matchesEntityQuery(p, state.entityQuery))
+      : planes;
+    renderPlanesPanel({ ...state.sky.adsb, aircraft: planesView });
     renderSatellitesPanel(state.sky.satellites);
     $("#planesPanel")?.querySelectorAll(".live-plane-card").forEach((li) => {
       li.addEventListener("click", () => selectPlane(li.getAttribute("data-plane-id")));
     });
     state.map?.setReceiver({ ...data.receiver, label: data.receiver?.label });
+    const replayShips = isReplayActive() ? replayShipsNow() : null;
+    const shipsForMap = replayShips || data.ships;
     state.map?.update({
-      ships: data.ships,
+      ships: shipsForMap,
       baseStations: data.base_stations,
       paths: data.paths,
       planes: state.sky?.adsb?.aircraft,
@@ -496,6 +561,7 @@ async function pollLive() {
       selectedMmsi: state.selectedMmsi,
       selectedPlaneId: state.selectedPlaneId,
       follow: state.follow,
+      replayMode: Boolean(replayShips),
     });
     refreshSelectedShipPanels();
     renderStationLive(data);
@@ -528,11 +594,32 @@ function initHarbourSheetDrag() {
   grab.addEventListener("pointerup", (ev) => grab.releasePointerCapture(ev.pointerId));
 }
 
+function refreshMapFromState() {
+  const replayShips = isReplayActive() ? replayShipsNow() : null;
+  state.map?.update({
+    ships: replayShips || state.snapshot?.ships,
+    baseStations: state.snapshot?.base_stations,
+    paths: state.snapshot?.paths,
+    planes: state.sky?.adsb?.aircraft,
+    satelliteTracks: satelliteTracksForMap(state.sky?.satellites),
+    selectedMmsi: state.selectedMmsi,
+    selectedPlaneId: state.selectedPlaneId,
+    follow: state.follow,
+    replayMode: Boolean(replayShips),
+  });
+}
+
 export function initLiveAis() {
   setupTimelinePaging();
+  setupEntitySearch();
   initHarbourSheetDrag();
   initIncidentReplay();
-  pollLive();
+  pollLive().then(() => {
+    initHarbourReplay(
+      () => refreshMapFromState(),
+      () => pollLive(),
+    );
+  });
   if (state.timer) clearInterval(state.timer);
   state.timer = setInterval(pollLive, 5000);
   document.addEventListener("keydown", (ev) => {

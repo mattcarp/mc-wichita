@@ -139,7 +139,8 @@ def first_heard_sentence(ship: Dict[str, Any]) -> str:
     dest = ship.get("destination_display") or ship.get("destination_raw")
     unnamed = name.startswith("Unnamed") or name.startswith("An unnamed")
     if unnamed and mmsi:
-        base = f"Unnamed MMSI {ship.get('mmsi_display') or f'{int(mmsi):09d}'} ({phrase}) heard for the first time today"
+        mmsi_disp = ship.get("mmsi_display") or f"{int(mmsi):09d}"
+        base = f"An unnamed vessel (MMSI {mmsi_disp}, {phrase}) heard for the first time today"
     else:
         base = f"{name} ({phrase}) heard for the first time today"
     if dest:

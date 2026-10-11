@@ -41,6 +41,30 @@
       <div id="maltaWeather" class="malta-weather" role="status" aria-live="polite"></div>
       <div id="heardBadge" class="heard-badge-row"></div>
       <div id="feedHealthRow" class="feed-health-row mono"></div>
+      <div class="entity-search-row">
+        <label class="entity-search-label" for="entitySearch">Find vessel or aircraft</label>
+        <input type="search" id="entitySearch" class="entity-search-input" placeholder="Name, MMSI, callsign, hex…" autocomplete="off" data-test-id="entity-search" />
+      </div>
+      <div id="harbourReplayBar" class="harbour-replay-bar" hidden>
+        <p class="eyebrow">Harbour replay <span class="muted small">(stored AIS snapshots)</span></p>
+        <div class="replay-controls">
+          <button type="button" id="replayPlay" class="timeline-more" aria-pressed="false">Play</button>
+          <label class="replay-scrub-label mono">
+            <span id="replayTimeLabel">—</span>
+            <input type="range" id="replayScrub" min="0" max="0" value="0" aria-label="Replay time" />
+          </label>
+          <label class="replay-speed-label mono">
+            Speed
+            <select id="replaySpeed" aria-label="Replay speed">
+              <option value="1">1×</option>
+              <option value="2">2×</option>
+              <option value="4">4×</option>
+              <option value="8">8×</option>
+            </select>
+          </label>
+          <button type="button" id="replayExit" class="timeline-more">Live</button>
+        </div>
+      </div>
       <div class="watch-zone-bar">
         <input type="text" id="watchZoneName" class="watch-zone-name" placeholder="Zone name" aria-label="Watch zone name" />
         <button type="button" id="watchZoneDraw" class="timeline-more watch-zone-draw" aria-pressed="false">Draw watch zone</button>
@@ -73,7 +97,14 @@
         <span class="badge badge-live">LIVE</span>
       </div>
       <div id="voiceTiles" class="voice-grid voice-grid-heard"></div>
-      <div id="activityStrip" class="activity-strip mono" aria-label="New ships per hour (24h)"></div>
+      <div class="activity-head">
+        <span class="eyebrow">Harbour busyness</span>
+        <div class="activity-toggle mono" role="group" aria-label="Activity window">
+          <button type="button" class="activity-window active" data-activity-hours="24">24 h</button>
+          <button type="button" class="activity-window" data-activity-hours="168">7 d</button>
+        </div>
+      </div>
+      <div id="activityStrip" class="activity-strip mono" aria-label="Vessels heard per hour by type"></div>
       <div class="timeline-shell">
         <ol id="timeline" class="timeline" aria-label="Live event log"></ol>
         <button type="button" id="timelineMore" class="timeline-more" hidden>Show earlier</button>
