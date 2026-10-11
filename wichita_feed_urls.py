@@ -15,6 +15,17 @@ _ALLOW_PUBLIC = os.environ.get("WICHITA_ALLOW_PUBLIC_FEED_URLS", "").strip().low
 )
 
 
+# Tailscale assigns tailnet addresses from the CGNAT range, which Python does not
+# count as private. Feeds on the Mini are reached from Hetzner over the tailnet.
+_TAILNET = ipaddress.ip_network("100.64.0.0/10")
+
+
+def _addr_allowed(addr) -> bool:
+    return addr.is_private or addr.is_loopback or addr.is_link_local or (
+        addr.version == 4 and addr in _TAILNET
+    )
+
+
 def _hostname_allowed(host: str) -> bool:
     if not host:
         return False
@@ -23,7 +34,7 @@ def _hostname_allowed(host: str) -> bool:
         return True
     try:
         addr = ipaddress.ip_address(host)
-        return addr.is_private or addr.is_loopback or addr.is_link_local
+        return _addr_allowed(addr)
     except ValueError:
         pass
     try:
@@ -36,7 +47,7 @@ def _hostname_allowed(host: str) -> bool:
             addr = ipaddress.ip_address(ip)
         except ValueError:
             continue
-        if addr.is_private or addr.is_loopback or addr.is_link_local:
+        if _addr_allowed(addr):
             return True
     return False
 
