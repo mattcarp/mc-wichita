@@ -231,10 +231,16 @@ async def require_websocket_auth(websocket) -> bool:
     return True
 
 
+def clerk_email_link_redirect() -> str:
+    raw = os.environ.get("WICHITA_CLERK_EMAIL_LINK_REDIRECT", "https://wichitawire.com/").strip()
+    return raw if raw.endswith("/") else f"{raw}/"
+
+
 def clerk_public_config() -> Dict[str, str]:
     return {
         "publishableKey": clerk_publishable_key(),
         "frontendApi": clerk_frontend_api(),
+        "emailLinkRedirectUrl": clerk_email_link_redirect(),
     }
 
 

@@ -1672,6 +1672,79 @@ body.sheet-open .live-ship-list {
   color: var(--muted);
 }
 
+.auth-form-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.auth-form-label {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.auth-form-input {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+.auth-form-input:focus {
+  outline: 2px solid color-mix(in srgb, var(--marine) 55%, transparent);
+  outline-offset: 1px;
+}
+
+.auth-form-btn {
+  margin-top: 0.15rem;
+  padding: 0.65rem 0.85rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: var(--marine);
+  color: #041014;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.auth-form-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.auth-form-btn-ghost {
+  background: transparent;
+  color: var(--marine);
+  border: 1px solid var(--border);
+}
+
+.auth-form-lead {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.auth-form-status {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--fault);
+}
+
+.auth-form-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
 body.auth-pending .site-header,
 body.auth-pending .site-footer,
 body.auth-pending .tab-bar {
