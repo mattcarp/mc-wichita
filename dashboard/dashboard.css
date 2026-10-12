@@ -1748,6 +1748,10 @@ body.auth-pending #authGate:not([hidden]) {
   cursor: not-allowed;
 }
 
+.auth-form-shell.auth-form-busy .auth-form-btn[type="submit"] {
+  cursor: wait;
+}
+
 .auth-form-btn-ghost {
   background: transparent;
   color: var(--marine);

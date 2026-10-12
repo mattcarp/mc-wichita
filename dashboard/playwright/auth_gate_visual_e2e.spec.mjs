@@ -5,14 +5,13 @@ import {
   assertGateVisible,
   assertDashboardVisible,
   assertDashboardHidden,
+  assertUserMenuAbsent,
   saveShot,
+  waitVisualHarnessReady,
 } from "./helpers/auth_visibility.mjs";
 
-const HARNESS = "/dashboard/playwright/fixtures/visual_auth.harness.html";
-
 async function waitReady(page) {
-  await page.goto(HARNESS);
-  await page.waitForFunction(() => window.__wichitaAuthReady === true);
+  await waitVisualHarnessReady(page);
 }
 
 async function ui(page) {
@@ -25,6 +24,7 @@ test.describe("auth gate visual e2e (mocked Clerk)", () => {
     await assertGateVisible(page);
     await assertOnlyAuthStep(page, "email");
     await assertDashboardHidden(page);
+    await assertUserMenuAbsent(page);
     await saveShot(page, "auth-visual-01-signed-out-email.png");
   });
 
@@ -114,7 +114,7 @@ test.describe("auth gate visual e2e (mocked Clerk)", () => {
     await assertGateVisible(page);
     await assertOnlyAuthStep(page, "email");
     await assertDashboardHidden(page);
-    await expect(page.getByTestId("wichita-user-trigger")).toBeHidden();
+    await assertUserMenuAbsent(page);
     await saveShot(page, "auth-visual-08-signed-out-after-signout.png");
   });
 });

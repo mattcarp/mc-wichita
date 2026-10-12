@@ -45,6 +45,13 @@ export function installFetchMocks({ dashboardJs = "export {};" } = {}) {
 export function createMockClerk(config = {}) {
   const listeners = new Set();
   let rateLimitOnCode = Boolean(config.rateLimitOnCode);
+  let operationDelayMs = Number(config.operationDelayMs) || 0;
+
+  async function delay() {
+    if (operationDelayMs > 0) {
+      await new Promise((resolve) => setTimeout(resolve, operationDelayMs));
+    }
+  }
 
   const signIn = {
     supportedFirstFactors: [
@@ -52,9 +59,11 @@ export function createMockClerk(config = {}) {
       { strategy: "email_code", emailAddressId: "ea_harness" },
     ],
     async create() {
+      await delay();
       return signIn;
     },
     async prepareFirstFactor({ strategy } = {}) {
+      await delay();
       if (strategy === "email_code" && rateLimitOnCode) {
         rateLimitOnCode = false;
         throw {
@@ -71,6 +80,7 @@ export function createMockClerk(config = {}) {
       return signIn;
     },
     async attemptFirstFactor({ code }) {
+      await delay();
       if (code === "000000") {
         throw {
           errors: [
@@ -78,6 +88,17 @@ export function createMockClerk(config = {}) {
               code: "too_many_requests",
               message: "Too many requests",
               longMessage: "Too many requests. Wait a minute, then try again.",
+            },
+          ],
+        };
+      }
+      if (code !== "123456") {
+        throw {
+          errors: [
+            {
+              code: "form_code_incorrect",
+              message: "Incorrect code",
+              longMessage: "Incorrect code. Try again.",
             },
           ],
         };
@@ -110,6 +131,9 @@ export function createMockClerk(config = {}) {
     mountUserButton() {},
     setRateLimitOnCode(on) {
       rateLimitOnCode = Boolean(on);
+    },
+    setOperationDelay(ms) {
+      operationDelayMs = Math.max(0, Number(ms) || 0);
     },
     setUser(next) {
       clerk.user = next;

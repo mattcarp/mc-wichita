@@ -4,7 +4,7 @@
 
 import { mountPasswordlessAuthUI } from "./auth_gate_ui.mjs";
 import { setAppVisible } from "./auth_gate_shell.mjs";
-import { mountUserMenu } from "./auth_user_menu.mjs";
+import { clearUserMenuHost, mountUserMenu } from "./auth_user_menu.mjs";
 
 function $(sel) {
   return document.querySelector(sel);
@@ -177,6 +177,7 @@ function updateUserMenu(Clerk) {
   if (!Clerk.user) {
     userMenuHandle?.destroy();
     userMenuHandle = null;
+    clearUserMenuHost(mount);
     return;
   }
   if (!userMenuHandle) {
@@ -185,6 +186,7 @@ function updateUserMenu(Clerk) {
         dashboardBooted = false;
         userMenuHandle?.destroy();
         userMenuHandle = null;
+        clearUserMenuHost($("#wichitaUserMenu"));
       },
     });
   } else {
@@ -279,6 +281,7 @@ function resetPasswordlessUi() {
 
 export async function bootstrapAuthGate() {
   setAppVisible(false);
+  clearUserMenuHost($("#wichitaUserMenu"));
   let env;
   try {
     env = await fetchClerkEnv();
@@ -335,11 +338,12 @@ export async function bootstrapAuthGate() {
     }
 
     setAppVisible(false);
+    userMenuHandle?.destroy();
+    userMenuHandle = null;
+    clearUserMenuHost($("#wichitaUserMenu"));
     if (hadUser) {
       hadUser = false;
       dashboardBooted = false;
-      userMenuHandle?.destroy();
-      userMenuHandle = null;
       resetPasswordlessUi();
     }
     mountPasswordlessOnce(Clerk, env);

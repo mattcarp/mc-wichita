@@ -31,7 +31,7 @@
       globalThis.__WICHITA_SKIP_AUTH_GATE_AUTOMAIN__ = true;
       import { installFetchMocks, createMockClerk } from "/dashboard/playwright/mock_clerk.mjs";
 
-      installFetchMocks();
+      installFetchMocks({ dashboardJs: "export {};" });
       const mock = createMockClerk({ user: null });
       window.Clerk = mock;
       window.__wichitaMockClerk = mock;

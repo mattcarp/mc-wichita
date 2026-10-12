@@ -30,8 +30,21 @@ export function userInitial(user) {
  * @param {object} Clerk
  * @param {{ onSignOut?: () => void | Promise<void> }} options
  */
+/** Remove all account UI from the DOM (signed-out / pre-sign-in). */
+export function clearUserMenuHost(container) {
+  if (!container) return;
+  container.replaceChildren();
+  container.hidden = true;
+  container.setAttribute("aria-hidden", "true");
+}
+
 export function mountUserMenu(container, Clerk, options = {}) {
   if (!container) return { update() {}, destroy() {} };
+  if (!Clerk.user) {
+    clearUserMenuHost(container);
+    return { update() {}, destroy() {} };
+  }
+  container.removeAttribute("aria-hidden");
 
   let menuOpen = false;
   let docListener = null;
@@ -118,11 +131,12 @@ export function mountUserMenu(container, Clerk, options = {}) {
 
   function paint(user) {
     if (!user) {
-      container.hidden = true;
       closeMenu();
+      clearUserMenuHost(container);
       return;
     }
     container.hidden = false;
+    container.removeAttribute("aria-hidden");
     avatar.textContent = userInitial(user);
     label.textContent = userDisplayName(user);
     emailLine.textContent = primaryEmail(user) || "—";
@@ -140,8 +154,7 @@ export function mountUserMenu(container, Clerk, options = {}) {
     },
     destroy() {
       closeMenu();
-      container.replaceChildren();
-      container.hidden = true;
+      clearUserMenuHost(container);
     },
   };
 }
