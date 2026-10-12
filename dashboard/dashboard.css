@@ -1776,10 +1776,104 @@ body.auth-pending .tab-bar {
   display: none;
 }
 
-.clerk-user-button {
+.wichita-user-menu-host {
+  position: relative;
   display: flex;
   align-items: center;
   min-height: 1.75rem;
+}
+
+.wichita-user-menu-host[hidden] {
+  display: none !important;
+}
+
+.wichita-user-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.2rem 0.45rem 0.2rem 0.2rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.wichita-user-trigger:hover {
+  border-color: color-mix(in srgb, var(--marine) 45%, var(--border));
+}
+
+.wichita-user-avatar {
+  width: 1.65rem;
+  height: 1.65rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--marine) 22%, var(--surface-2));
+  color: var(--marine);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.wichita-user-name {
+  max-width: 7rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wichita-user-chevron {
+  font-size: 0.65rem;
+  color: var(--muted);
+  margin-left: -0.1rem;
+}
+
+.wichita-user-dropdown {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  z-index: 40;
+  min-width: 12rem;
+  padding: 0.65rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+}
+
+.wichita-user-dropdown[hidden] {
+  display: none !important;
+}
+
+.wichita-user-dropdown-email {
+  margin: 0 0 0.55rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  word-break: break-all;
+}
+
+.wichita-user-signout {
+  width: 100%;
+  text-align: left;
+  padding: 0.45rem 0.5rem;
+  border: none;
+  border-radius: 0.35rem;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.wichita-user-signout:hover {
+  background: var(--surface-2);
+}
+
+.auth-form-status-visible {
+  display: block !important;
+  color: var(--fault);
 }
 
 /* Fallback if Clerk appearance props miss a sign-up footer node */

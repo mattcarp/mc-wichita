@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261011-clerk6" />
+    <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261011-clerk7" />
   </head>
   <body class="auth-pending">
     <div id="authGate" class="auth-gate">
@@ -12,7 +12,9 @@
     <div id="appShell" hidden>
       <header class="site-header site-header-compact">
         <div id="headerLive" class="header-live mono">Live</div>
+        <div id="wichitaUserMenu" class="wichita-user-menu-host" hidden></div>
       </header>
+      <main id="main"><p id="dashboardProbe">Harbour · live AIS</p></main>
     </div>
     <script type="module">
       globalThis.__WICHITA_SKIP_AUTH_GATE_AUTOMAIN__ = true;
@@ -35,16 +37,23 @@
       };
 
       window.Clerk = {
-        user: { id: "reload_user" },
+        user: {
+          id: "reload_user",
+          firstName: "Mattie",
+          primaryEmailAddress: { emailAddress: "mattie@wichitawire.com" },
+        },
         session: { getToken: async () => "jwt" },
         client: { signIn: {} },
         async load() {},
         addListener() {},
-        mountUserButton() {},
+        async signOut() {
+          this.user = null;
+        },
       };
 
-      const { bootstrapAuthGate } = await import("/dashboard/clerk_gate.js?v=20261011-clerk6");
+      const { bootstrapAuthGate } = await import("/dashboard/clerk_gate.js?v=20261011-clerk7");
       await bootstrapAuthGate();
+      window.__wichitaAuthReady = true;
     </script>
   </body>
 </html>

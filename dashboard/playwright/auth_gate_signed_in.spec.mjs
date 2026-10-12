@@ -13,6 +13,7 @@ test.describe("signed-in auth gate shell", () => {
     await page.goto("/dashboard/playwright/fixtures/clerk_signed_in_harness.html");
     await assertGateHidden(page);
     await expect(page.locator("#headerLive")).toBeVisible();
+    await expect(page.locator(".wichita-user-name")).toHaveText("Mattie");
     await expect(page.locator("#dashboardProbe")).toBeVisible();
     await expect(page.locator("body")).toHaveClass(/dashboard-ready/);
     await expect(page.locator("body")).not.toHaveClass(/auth-pending/);
@@ -23,5 +24,6 @@ test.describe("signed-in auth gate shell", () => {
     await page.goto("/dashboard/playwright/fixtures/clerk_signed_in_reload_harness.html");
     await assertGateHidden(page);
     await expect(page.locator("#headerLive")).toBeVisible();
+    await expect(page.locator(".wichita-user-name")).toHaveText("Mattie");
   });
 });

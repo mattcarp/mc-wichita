@@ -66,6 +66,7 @@ export function mountPasswordlessAuthUI(mount, handlers = {}) {
   function showError(message) {
     status.textContent = message;
     status.hidden = !message;
+    status.classList.toggle("auth-form-status-visible", Boolean(message));
   }
 
   function setView(next) {
@@ -156,6 +157,7 @@ export function mountPasswordlessAuthUI(mount, handlers = {}) {
     setView,
     getView: () => view,
     showError,
+    clearError: () => showError(""),
     shell,
     emailForm,
     linkPanel,

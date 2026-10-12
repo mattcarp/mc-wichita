@@ -4,30 +4,7 @@
 
 import { mountPasswordlessAuthUI } from "./auth_gate_ui.mjs";
 import { setAppVisible } from "./auth_gate_shell.mjs";
-
-const CLERK_THEME = {
-  variables: {
-    colorBackground: "#070b14",
-    colorInputBackground: "#0e1420",
-    colorNeutral: "#e8eaef",
-    colorPrimary: "#3ec6c9",
-    colorText: "#e8eaef",
-    colorTextSecondary: "#9aa3b2",
-    borderRadius: "0.5rem",
-  },
-};
-
-const CLERK_APPEARANCE = {
-  ...CLERK_THEME,
-  elements: {
-    rootBox: { width: "100%" },
-    card: {
-      backgroundColor: "#0e1420",
-      border: "1px solid #252a36",
-      boxShadow: "0 12px 40px rgba(0,0,0,0.45)",
-    },
-  },
-};
+import { mountUserMenu } from "./auth_user_menu.mjs";
 
 function $(sel) {
   return document.querySelector(sel);
@@ -192,16 +169,35 @@ async function waitForEmailLinkCompletion(Clerk) {
 let dashboardBooted = false;
 let passwordlessUiMounted = false;
 let linkWaitAbort = null;
+let userMenuHandle = null;
+
+function updateUserMenu(Clerk) {
+  const mount = $("#wichitaUserMenu");
+  if (!mount) return;
+  if (!Clerk.user) {
+    userMenuHandle?.destroy();
+    userMenuHandle = null;
+    return;
+  }
+  if (!userMenuHandle) {
+    userMenuHandle = mountUserMenu(mount, Clerk, {
+      onSignOut: () => {
+        dashboardBooted = false;
+        userMenuHandle?.destroy();
+        userMenuHandle = null;
+      },
+    });
+  } else {
+    userMenuHandle.update(Clerk.user);
+  }
+}
 
 async function bootDashboard(Clerk) {
+  installAuthenticatedFetch(Clerk);
+  updateUserMenu(Clerk);
   if (dashboardBooted) return;
   dashboardBooted = true;
-  installAuthenticatedFetch(Clerk);
-  const userMount = $("#clerkUserButton");
-  if (userMount) {
-    Clerk.mountUserButton(userMount, { appearance: CLERK_APPEARANCE });
-  }
-  await import("./dashboard.js?v=20261011-clerk6");
+  await import("./dashboard.js?v=20261011-clerk7");
 }
 
 function revealSignedInDashboard(Clerk) {
@@ -342,6 +338,8 @@ export async function bootstrapAuthGate() {
     if (hadUser) {
       hadUser = false;
       dashboardBooted = false;
+      userMenuHandle?.destroy();
+      userMenuHandle = null;
       resetPasswordlessUi();
     }
     mountPasswordlessOnce(Clerk, env);
