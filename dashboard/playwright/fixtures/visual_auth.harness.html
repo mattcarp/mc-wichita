@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="dark" />
     <title>Visual auth harness</title>
-    <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261011-clerk7" />
+    <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261011-clerk8" />
   </head>
   <body class="auth-pending">
     <div id="authGate" class="auth-gate" role="main" aria-label="Sign in">
@@ -29,6 +29,7 @@
     </div>
     <script type="module">
       globalThis.__WICHITA_SKIP_AUTH_GATE_AUTOMAIN__ = true;
+      globalThis.__WICHITA_SKIP_SIGN_OUT_RELOAD__ = true;
       import { installFetchMocks, createMockClerk } from "/dashboard/playwright/mock_clerk.mjs";
 
       installFetchMocks({ dashboardJs: "export {};" });
@@ -36,7 +37,7 @@
       window.Clerk = mock;
       window.__wichitaMockClerk = mock;
 
-      const { bootstrapAuthGate } = await import("/dashboard/clerk_gate.js?v=20261011-clerk7");
+      const { bootstrapAuthGate } = await import("/dashboard/clerk_gate.js?v=20261011-clerk8");
       await bootstrapAuthGate();
       window.__wichitaAuthReady = true;
     </script>

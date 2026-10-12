@@ -60,6 +60,24 @@ test.describe("auth gate UX (mocked Clerk)", () => {
       await assertDashboardHidden(page);
       await assertUserMenuAbsent(page);
     });
+
+    test("sign-out hard-resets when Clerk listener does not fire", async ({ page }) => {
+      await waitVisualHarnessReady(page);
+      await page.locator("#authEmail").fill("mattie@wichitawire.com");
+      await page.getByRole("button", { name: "Continue with email" }).click();
+      await page.getByRole("button", { name: "Use a code instead" }).click();
+      await page.locator("#authCode").fill("123456");
+      await page.getByRole("button", { name: "Verify" }).click();
+      await assertGateHidden(page);
+      await page.evaluate(() => window.__wichitaMockClerk.setSignOutNotifiesListener(false));
+      await page.getByTestId("wichita-user-trigger").click();
+      await page.getByTestId("wichita-user-signout").click();
+      await assertGateVisible(page);
+      await assertOnlyAuthStep(page, "email");
+      await assertDashboardHidden(page);
+      await assertUserMenuAbsent(page);
+      await expect(page.locator("#authEmail")).toBeFocused();
+    });
   });
 
   test.describe("keyboard flow and focus", () => {

@@ -41,25 +41,38 @@ async function fetchClerkEnv() {
   return res.json();
 }
 
+let restoreNativeFetch = null;
+
 function installAuthenticatedFetch(Clerk) {
+  if (restoreNativeFetch) return;
   const nativeFetch = window.fetch.bind(window);
+  restoreNativeFetch = () => {
+    window.fetch = nativeFetch;
+    restoreNativeFetch = null;
+  };
   window.fetch = async (input, init = {}) => {
     const nextInit = { ...init, credentials: init.credentials ?? "include" };
     const headers = new Headers(nextInit.headers || {});
-    try {
-      const session = Clerk.session;
-      if (session) {
-        const token = await session.getToken();
-        if (token && !headers.has("Authorization")) {
-          headers.set("Authorization", `Bearer ${token}`);
+    if (Clerk.user) {
+      try {
+        const session = Clerk.session;
+        if (session) {
+          const token = await session.getToken();
+          if (token && !headers.has("Authorization")) {
+            headers.set("Authorization", `Bearer ${token}`);
+          }
         }
+      } catch {
+        /* session ended */
       }
-    } catch {
-      /* session not ready */
     }
     nextInit.headers = headers;
     return nativeFetch(input, nextInit);
   };
+}
+
+function tearDownAuthenticatedFetch() {
+  restoreNativeFetch?.();
 }
 
 function clerkErrorMessage(err) {
@@ -153,7 +166,7 @@ async function submitEmailCode(Clerk, code) {
     throw new Error("Invalid or expired code.");
   }
   if (Clerk.user || activated) {
-    revealSignedInDashboard(Clerk);
+    revealSignedInDashboard(Clerk, gateEnv);
   }
 }
 
@@ -170,8 +183,64 @@ let dashboardBooted = false;
 let passwordlessUiMounted = false;
 let linkWaitAbort = null;
 let userMenuHandle = null;
+let signingOut = false;
+let gateEnv = null;
 
-function updateUserMenu(Clerk) {
+function applySignedOutShell(Clerk, env) {
+  if (linkWaitAbort) {
+    linkWaitAbort.aborted = true;
+    linkWaitAbort = null;
+  }
+  dashboardBooted = false;
+  userMenuHandle?.destroy();
+  userMenuHandle = null;
+  clearUserMenuHost($("#wichitaUserMenu"));
+  tearDownAuthenticatedFetch();
+  resetPasswordlessUi();
+  passwordlessUiMounted = false;
+  setAppVisible(false);
+  const gate = $("#authGate");
+  if (gate) {
+    gate.hidden = false;
+    gate.removeAttribute("hidden");
+  }
+  mountPasswordlessOnce(Clerk, env);
+}
+
+async function waitForClerkSignedOut(Clerk, timeoutMs = 8000) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    if (!Clerk.user) return true;
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+  return !Clerk.user;
+}
+
+async function handleUserSignOut(Clerk, env) {
+  signingOut = true;
+  applySignedOutShell(Clerk, env);
+  try {
+    if (typeof Clerk.signOut === "function") {
+      await Clerk.signOut();
+    }
+  } catch (err) {
+    console.warn("Wichita sign-out:", err);
+  }
+  await waitForClerkSignedOut(Clerk);
+
+  if (globalThis.__WICHITA_SKIP_SIGN_OUT_RELOAD__) {
+    signingOut = false;
+    if (!Clerk.user) {
+      applySignedOutShell(Clerk, env);
+    }
+    return;
+  }
+
+  signingOut = false;
+  window.location.replace(`${window.location.origin}/`);
+}
+
+function updateUserMenu(Clerk, env) {
   const mount = $("#wichitaUserMenu");
   if (!mount) return;
   if (!Clerk.user) {
@@ -182,30 +251,25 @@ function updateUserMenu(Clerk) {
   }
   if (!userMenuHandle) {
     userMenuHandle = mountUserMenu(mount, Clerk, {
-      onSignOut: () => {
-        dashboardBooted = false;
-        userMenuHandle?.destroy();
-        userMenuHandle = null;
-        clearUserMenuHost($("#wichitaUserMenu"));
-      },
+      onSignOut: () => handleUserSignOut(Clerk, env),
     });
   } else {
     userMenuHandle.update(Clerk.user);
   }
 }
 
-async function bootDashboard(Clerk) {
+async function bootDashboard(Clerk, env) {
   installAuthenticatedFetch(Clerk);
-  updateUserMenu(Clerk);
+  updateUserMenu(Clerk, env);
   if (dashboardBooted) return;
   dashboardBooted = true;
-  await import("./dashboard.js?v=20261011-clerk7");
+  await import("./dashboard.js?v=20261011-clerk8");
 }
 
-function revealSignedInDashboard(Clerk) {
+function revealSignedInDashboard(Clerk, env) {
   resetPasswordlessUi();
   setAppVisible(true);
-  bootDashboard(Clerk);
+  bootDashboard(Clerk, env);
 }
 
 function renderPasswordlessForm(Clerk, env) {
@@ -285,6 +349,7 @@ export async function bootstrapAuthGate() {
   let env;
   try {
     env = await fetchClerkEnv();
+    gateEnv = env;
   } catch {
     const gate = $("#authGate");
     if (gate) {
@@ -331,22 +396,16 @@ export async function bootstrapAuthGate() {
   let hadUser = Boolean(Clerk.user);
 
   const sync = () => {
+    if (signingOut) return;
+
     if (Clerk.user) {
-      revealSignedInDashboard(Clerk);
+      revealSignedInDashboard(Clerk, env);
       hadUser = true;
       return;
     }
 
-    setAppVisible(false);
-    userMenuHandle?.destroy();
-    userMenuHandle = null;
-    clearUserMenuHost($("#wichitaUserMenu"));
-    if (hadUser) {
-      hadUser = false;
-      dashboardBooted = false;
-      resetPasswordlessUi();
-    }
-    mountPasswordlessOnce(Clerk, env);
+    applySignedOutShell(Clerk, env);
+    if (hadUser) hadUser = false;
   };
 
   Clerk.addListener(sync);

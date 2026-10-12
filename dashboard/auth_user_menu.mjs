@@ -123,10 +123,12 @@ export function mountUserMenu(container, Clerk, options = {}) {
   signOutBtn.addEventListener("click", async (ev) => {
     ev.preventDefault();
     closeMenu();
-    if (typeof Clerk.signOut === "function") {
-      await Clerk.signOut();
+    signOutBtn.disabled = true;
+    try {
+      await options.onSignOut?.();
+    } finally {
+      signOutBtn.disabled = false;
     }
-    await options.onSignOut?.();
   });
 
   function paint(user) {

@@ -46,6 +46,7 @@ export function createMockClerk(config = {}) {
   const listeners = new Set();
   let rateLimitOnCode = Boolean(config.rateLimitOnCode);
   let operationDelayMs = Number(config.operationDelayMs) || 0;
+  let signOutNotifiesListener = config.signOutNotifiesListener !== false;
 
   async function delay() {
     if (operationDelayMs > 0) {
@@ -125,8 +126,14 @@ export function createMockClerk(config = {}) {
       clerk._notify();
     },
     async signOut() {
+      await delay();
       clerk.user = null;
-      clerk._notify();
+      if (signOutNotifiesListener) {
+        clerk._notify();
+      }
+    },
+    setSignOutNotifiesListener(on) {
+      signOutNotifiesListener = Boolean(on);
     },
     mountUserButton() {},
     setRateLimitOnCode(on) {
