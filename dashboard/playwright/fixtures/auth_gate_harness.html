@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Auth gate harness</title>
+    <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261011-clerk5" />
+    <style>
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        background: var(--bg);
+        color: var(--text);
+      }
+      .harness-wrap {
+        max-width: 22rem;
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
+    </style>
+  </head>
+  <body class="auth-pending">
+    <div class="harness-wrap">
+      <div id="mount"></div>
+    </div>
+    <script type="module">
+      import { mountPasswordlessAuthUI } from "/dashboard/auth_gate_ui.mjs";
+
+      const ui = mountPasswordlessAuthUI(document.getElementById("mount"), {
+        onSubmitEmail: async () => {
+          ui.setView("link");
+        },
+        onUseCodeInstead: async () => {
+          ui.setView("code");
+        },
+        onSubmitCode: async () => {},
+        onRestart: () => {},
+      });
+
+      window.__wichitaAuthUi = ui;
+    </script>
+  </body>
+</html>

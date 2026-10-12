@@ -1,0 +1,10 @@
+{
+  "name": "wichita-dashboard",
+  "private": true,
+  "scripts": {
+    "test:auth-gate": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.1"
+  }
+}

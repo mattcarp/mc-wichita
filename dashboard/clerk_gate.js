@@ -2,6 +2,8 @@
  * Passwordless Clerk gate (email link, then email code). Never mounts <SignIn />.
  */
 
+import { mountPasswordlessAuthUI } from "./auth_gate_ui.mjs";
+
 const CLERK_THEME = {
   variables: {
     colorBackground: "#070b14",
@@ -211,118 +213,31 @@ function renderPasswordlessForm(Clerk, env) {
   if (!mount) return;
 
   const redirectUrl = emailLinkRedirectUrl(env);
-  let view = "email";
-  let busy = false;
+  let ui;
 
-  const shell = document.createElement("div");
-  shell.className = "auth-form-shell";
-
-  const status = document.createElement("p");
-  status.className = "auth-form-status muted";
-  status.hidden = true;
-  status.setAttribute("role", "status");
-
-  const emailForm = document.createElement("form");
-  emailForm.className = "auth-form";
-  emailForm.noValidate = true;
-  emailForm.innerHTML = `
-    <label class="auth-form-label" for="authEmail">Email</label>
-    <input id="authEmail" class="auth-form-input" type="email" name="email" autocomplete="email" required placeholder="you@example.com" />
-    <button type="submit" class="auth-form-btn">Continue with email</button>
-  `;
-
-  const linkPanel = document.createElement("div");
-  linkPanel.className = "auth-form-panel";
-  linkPanel.hidden = true;
-  linkPanel.innerHTML = `
-    <p class="auth-form-lead">Check your email for a sign-in link.</p>
-    <p class="muted small">Open the link on this device if asked. The link returns you to Wichita.</p>
-    <button type="button" class="auth-form-btn auth-form-btn-ghost" data-action="use-code">Use a code instead</button>
-    <button type="button" class="auth-form-btn auth-form-btn-ghost" data-action="restart">Use a different email</button>
-  `;
-
-  const codeForm = document.createElement("form");
-  codeForm.className = "auth-form";
-  codeForm.hidden = true;
-  codeForm.noValidate = true;
-  codeForm.innerHTML = `
-    <p class="auth-form-lead">Enter the code from your email.</p>
-    <label class="auth-form-label" for="authCode">Verification code</label>
-    <input id="authCode" class="auth-form-input mono" type="text" name="code" inputmode="numeric" autocomplete="one-time-code" required placeholder="123456" />
-    <button type="submit" class="auth-form-btn">Verify</button>
-    <button type="button" class="auth-form-btn auth-form-btn-ghost" data-action="restart">Start over</button>
-  `;
-
-  const verifyPanel = document.createElement("div");
-  verifyPanel.className = "auth-form-panel";
-  verifyPanel.hidden = true;
-  verifyPanel.innerHTML = `<p class="auth-form-lead">Completing sign-in…</p>`;
-
-  function showError(message) {
-    status.textContent = message;
-    status.hidden = !message;
-  }
-
-  function setView(next) {
-    view = next;
-    emailForm.hidden = next !== "email";
-    linkPanel.hidden = next !== "link";
-    codeForm.hidden = next !== "code";
-    verifyPanel.hidden = next !== "verify";
-  }
-
-  function setBusy(on) {
-    busy = on;
-    emailForm.querySelector("button[type=submit]").disabled = on;
-    codeForm.querySelector("button[type=submit]").disabled = on;
-  }
-
-  function restart() {
-    if (linkWaitAbort) {
-      linkWaitAbort.aborted = true;
-      linkWaitAbort = null;
-    }
-    showError("");
-    setView("email");
-    emailForm.reset();
-    codeForm.reset();
-  }
-
-  emailForm.addEventListener("submit", async (ev) => {
-    ev.preventDefault();
-    if (busy) return;
-    showError("");
-    const email = emailForm.email.value;
-    if (!email?.trim()) return;
-    setBusy(true);
-    try {
-      const result = await startPasswordlessSignIn(Clerk, email, redirectUrl);
-      if (result.mode === "link") {
-        setView("link");
-        const token = { aborted: false };
-        linkWaitAbort = token;
-        waitForEmailLinkCompletion(Clerk).catch(() => {});
-      } else {
-        setView("code");
-        codeForm.code.focus();
+  ui = mountPasswordlessAuthUI(mount, {
+    onRestart: () => {
+      if (linkWaitAbort) {
+        linkWaitAbort.aborted = true;
+        linkWaitAbort = null;
       }
-    } catch (err) {
-      showError(clerkErrorMessage(err));
-    } finally {
-      setBusy(false);
-    }
-  });
-
-  linkPanel.addEventListener("click", async (ev) => {
-    const btn = ev.target.closest("[data-action]");
-    if (!btn) return;
-    if (btn.dataset.action === "restart") {
-      restart();
-      return;
-    }
-    if (btn.dataset.action === "use-code") {
-      showError("");
-      setBusy(true);
+    },
+    onSubmitEmail: async (email) => {
+      try {
+        const result = await startPasswordlessSignIn(Clerk, email, redirectUrl);
+        if (result.mode === "link") {
+          ui.setView("link");
+          linkWaitAbort = { aborted: false };
+          waitForEmailLinkCompletion(Clerk).catch(() => {});
+        } else {
+          ui.setView("code");
+          ui.codeForm.code.focus();
+        }
+      } catch (err) {
+        throw new Error(clerkErrorMessage(err));
+      }
+    },
+    onUseCodeInstead: async () => {
       try {
         const signIn = Clerk.client.signIn;
         const factors = signIn.supportedFirstFactors || [];
@@ -334,36 +249,21 @@ function renderPasswordlessForm(Clerk, env) {
           strategy: "email_code",
           emailAddressId: codeFactor.emailAddressId,
         });
-        setView("code");
-        codeForm.code.focus();
+        ui.setView("code");
+        ui.codeForm.code.focus();
       } catch (err) {
-        showError(clerkErrorMessage(err));
-      } finally {
-        setBusy(false);
+        throw new Error(clerkErrorMessage(err));
       }
-    }
+    },
+    onSubmitCode: async (code) => {
+      try {
+        await submitEmailCode(Clerk, code);
+      } catch (err) {
+        throw new Error(clerkErrorMessage(err));
+      }
+    },
   });
-
-  codeForm.addEventListener("submit", async (ev) => {
-    ev.preventDefault();
-    if (busy) return;
-    showError("");
-    const code = codeForm.code.value;
-    if (!code?.trim()) return;
-    setBusy(true);
-    try {
-      await submitEmailCode(Clerk, code);
-    } catch (err) {
-      showError(clerkErrorMessage(err));
-    } finally {
-      setBusy(false);
-    }
-  });
-
-  codeForm.querySelector('[data-action="restart"]').addEventListener("click", restart);
-
-  shell.append(status, emailForm, linkPanel, codeForm, verifyPanel);
-  mount.replaceChildren(shell);
+  mount.__wichitaAuthUi = ui;
 }
 
 function mountPasswordlessOnce(Clerk, env) {
