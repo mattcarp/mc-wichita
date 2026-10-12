@@ -1,4 +1,5 @@
 import path from "node:path";
+import { expect } from "@playwright/test";
 
 export const ARTIFACTS = "/opt/cursor/artifacts";
 export const AUTH_STEPS = ["email", "link", "code", "verify"];
@@ -49,4 +50,55 @@ export async function assertDashboardHidden(page) {
 
 export async function saveShot(page, filename) {
   await page.screenshot({ path: path.join(ARTIFACTS, filename), fullPage: true });
+}
+
+/** Account chip must not exist before sign-in or after sign-out. */
+export async function assertUserMenuAbsent(page) {
+  const host = page.locator("#wichitaUserMenu");
+  await expect(host).toBeAttached();
+  await expect(host).toBeHidden();
+  const hostState = await host.evaluate((el) => ({
+    childCount: el.children.length,
+    ariaHidden: el.getAttribute("aria-hidden"),
+    text: el.textContent?.trim() ?? "",
+  }));
+  expect(hostState.childCount).toBe(0);
+  expect(hostState.text).toBe("");
+  expect(hostState.ariaHidden === "true" || hostState.ariaHidden === "").toBeTruthy();
+  await expect(page.locator(".wichita-user-menu")).toHaveCount(0);
+  await expect(page.locator(".wichita-user-trigger")).toHaveCount(0);
+  await expect(page.locator(".wichita-user-name")).toHaveCount(0);
+  await expect(page.locator(".wichita-user-avatar")).toHaveCount(0);
+  const bodyText = await page.locator("body").innerText();
+  expect(bodyText).not.toMatch(/\bMattie\b/);
+}
+
+export async function assertNoHorizontalOverflow(page) {
+  const overflow = await page.evaluate(() => {
+    const doc = document.documentElement;
+    return doc.scrollWidth - doc.clientWidth;
+  });
+  expect(overflow).toBeLessThanOrEqual(1);
+}
+
+export function attachConsoleErrorCollector(page) {
+  const errors = [];
+  page.on("pageerror", (err) => errors.push(String(err?.message || err)));
+  page.on("console", (msg) => {
+    if (msg.type() === "error") errors.push(msg.text());
+  });
+  return errors;
+}
+
+export function expectNoConsoleErrors(errors) {
+  expect(errors, errors.join("\n")).toEqual([]);
+}
+
+export const VISUAL_HARNESS = "/dashboard/playwright/fixtures/visual_auth.harness.html";
+export const SIGNED_OUT_RELOAD_HARNESS =
+  "/dashboard/playwright/fixtures/clerk_signed_out_reload_harness.html";
+
+export async function waitVisualHarnessReady(page, url = VISUAL_HARNESS) {
+  await page.goto(url);
+  await page.waitForFunction(() => window.__wichitaAuthReady === true);
 }

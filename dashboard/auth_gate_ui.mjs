@@ -69,6 +69,16 @@ export function mountPasswordlessAuthUI(mount, handlers = {}) {
     status.classList.toggle("auth-form-status-visible", Boolean(message));
   }
 
+  function focusStep(step) {
+    if (step === "email") {
+      emailForm.email.focus();
+      return;
+    }
+    if (step === "code") {
+      codeForm.code.focus();
+    }
+  }
+
   function setView(next) {
     if (!AUTH_STEPS.includes(next)) return;
     view = next;
@@ -79,12 +89,19 @@ export function mountPasswordlessAuthUI(mount, handlers = {}) {
       el.classList.toggle("is-visible", active);
       el.toggleAttribute("hidden", !active);
     }
+    requestAnimationFrame(() => focusStep(next));
   }
 
   function setBusy(on) {
     busy = on;
-    emailForm.querySelector("button[type=submit]").disabled = on;
-    codeForm.querySelector("button[type=submit]").disabled = on;
+    shell.classList.toggle("auth-form-busy", on);
+    shell.setAttribute("aria-busy", on ? "true" : "false");
+    const emailBtn = emailForm.querySelector("button[type=submit]");
+    const codeBtn = codeForm.querySelector("button[type=submit]");
+    emailBtn.disabled = on;
+    codeBtn.disabled = on;
+    emailBtn.setAttribute("aria-busy", on ? "true" : "false");
+    codeBtn.setAttribute("aria-busy", on ? "true" : "false");
   }
 
   function restart() {
@@ -152,8 +169,11 @@ export function mountPasswordlessAuthUI(mount, handlers = {}) {
   shell.append(status, emailForm, linkPanel, codeForm, verifyPanel);
   mount.replaceChildren(shell);
   setView("email");
+  emailForm.email.focus();
 
   return {
+    setBusy,
+    focusStep,
     setView,
     getView: () => view,
     showError,
