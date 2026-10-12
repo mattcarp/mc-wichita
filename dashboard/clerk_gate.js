@@ -3,6 +3,7 @@
  */
 
 import { mountPasswordlessAuthUI } from "./auth_gate_ui.mjs";
+import { setAppVisible } from "./auth_gate_shell.mjs";
 
 const CLERK_THEME = {
   variables: {
@@ -30,14 +31,6 @@ const CLERK_APPEARANCE = {
 
 function $(sel) {
   return document.querySelector(sel);
-}
-
-function setAppVisible(visible) {
-  const shell = $("#appShell");
-  const gate = $("#authGate");
-  if (shell) shell.hidden = !visible;
-  if (gate) gate.hidden = visible;
-  document.body.classList.toggle("auth-pending", !visible);
 }
 
 function loadClerkScript(frontendApi, publishableKey) {
@@ -178,9 +171,12 @@ async function submitEmailCode(Clerk, code) {
     strategy: "email_code",
     code: code.trim(),
   });
-  await activateSignInSession(Clerk, result);
-  if (!Clerk.user && result?.status !== "complete") {
+  const activated = await activateSignInSession(Clerk, result);
+  if (!activated && !Clerk.user && result?.status !== "complete") {
     throw new Error("Invalid or expired code.");
+  }
+  if (Clerk.user || activated) {
+    revealSignedInDashboard(Clerk);
   }
 }
 
@@ -205,7 +201,13 @@ async function bootDashboard(Clerk) {
   if (userMount) {
     Clerk.mountUserButton(userMount, { appearance: CLERK_APPEARANCE });
   }
-  await import("./dashboard.js?v=20261011-clerk1");
+  await import("./dashboard.js?v=20261011-clerk6");
+}
+
+function revealSignedInDashboard(Clerk) {
+  resetPasswordlessUi();
+  setAppVisible(true);
+  bootDashboard(Clerk);
 }
 
 function renderPasswordlessForm(Clerk, env) {
@@ -279,7 +281,7 @@ function resetPasswordlessUi() {
   if (el) el.replaceChildren();
 }
 
-async function main() {
+export async function bootstrapAuthGate() {
   setAppVisible(false);
   let env;
   try {
@@ -331,9 +333,7 @@ async function main() {
 
   const sync = () => {
     if (Clerk.user) {
-      resetPasswordlessUi();
-      setAppVisible(true);
-      bootDashboard(Clerk);
+      revealSignedInDashboard(Clerk);
       hadUser = true;
       return;
     }
@@ -351,4 +351,6 @@ async function main() {
   sync();
 }
 
-main();
+if (!globalThis.__WICHITA_SKIP_AUTH_GATE_AUTOMAIN__) {
+  bootstrapAuthGate();
+}

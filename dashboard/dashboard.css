@@ -1640,7 +1640,16 @@ body.sheet-open .live-ship-list {
   margin-top: 0.5rem;
 }
 
-.auth-gate {
+#authGate[hidden],
+body.dashboard-ready #authGate {
+  display: none !important;
+}
+
+body.auth-pending #appShell {
+  display: none !important;
+}
+
+body.auth-pending #authGate:not([hidden]) {
   min-height: 100dvh;
   display: flex;
   align-items: center;

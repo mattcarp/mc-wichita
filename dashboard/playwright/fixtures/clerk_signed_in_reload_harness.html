@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261011-clerk6" />
+  </head>
+  <body class="auth-pending">
+    <div id="authGate" class="auth-gate">
+      <p class="auth-gate-brand">W Wichita</p>
+    </div>
+    <div id="appShell" hidden>
+      <header class="site-header site-header-compact">
+        <div id="headerLive" class="header-live mono">Live</div>
+      </header>
+    </div>
+    <script type="module">
+      globalThis.__WICHITA_SKIP_AUTH_GATE_AUTOMAIN__ = true;
+
+      window.fetch = async (input) => {
+        if (String(input).includes("clerk-env.json")) {
+          return new Response(
+            JSON.stringify({
+              publishableKey: "pk_test",
+              frontendApi: "https://example.clerk.accounts.dev",
+              emailLinkRedirectUrl: "/",
+            }),
+            { headers: { "Content-Type": "application/json" } },
+          );
+        }
+        if (String(input).includes("dashboard.js")) {
+          return new Response("export {};", { headers: { "Content-Type": "text/javascript" } });
+        }
+        throw new Error(`unexpected fetch ${input}`);
+      };
+
+      window.Clerk = {
+        user: { id: "reload_user" },
+        session: { getToken: async () => "jwt" },
+        client: { signIn: {} },
+        async load() {},
+        addListener() {},
+        mountUserButton() {},
+      };
+
+      const { bootstrapAuthGate } = await import("/dashboard/clerk_gate.js?v=20261011-clerk6");
+      await bootstrapAuthGate();
+    </script>
+  </body>
+</html>

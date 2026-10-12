@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Clerk signed-in harness</title>
+    <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261011-clerk6" />
+  </head>
+  <body class="auth-pending">
+    <div id="authGate" class="auth-gate" role="main" aria-label="Sign in">
+      <div class="auth-gate-inner">
+        <p class="auth-gate-brand"><span class="brand-glyph" aria-hidden="true">W</span> Wichita</p>
+        <p class="auth-gate-tagline muted">Valletta listener · email link or code only</p>
+        <div id="clerkSignIn"></div>
+      </div>
+    </div>
+    <div id="appShell" hidden>
+      <header class="site-header site-header-compact">
+        <div class="brand brand-compact">
+          <span class="brand-glyph" aria-hidden="true">W</span>
+          <div id="headerLive" class="header-live mono" role="status">Checking AIS…</div>
+        </div>
+      </header>
+      <main id="main" class="app"><p id="dashboardProbe">Harbour · live AIS</p></main>
+    </div>
+    <script type="module">
+      globalThis.__WICHITA_SKIP_AUTH_GATE_AUTOMAIN__ = true;
+
+      const clerkEnv = {
+        publishableKey: "pk_test_harness",
+        frontendApi: "https://example.clerk.accounts.dev",
+        emailLinkRedirectUrl: "https://wichitawire.com/",
+      };
+
+      const nativeFetch = window.fetch.bind(window);
+      window.fetch = async (input, init) => {
+        const url = String(input);
+        if (url.includes("/dashboard/clerk-env.json")) {
+          return new Response(JSON.stringify(clerkEnv), {
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+        if (url.includes("/dashboard/dashboard.js")) {
+          return new Response("export {};", {
+            headers: { "Content-Type": "text/javascript" },
+          });
+        }
+        return nativeFetch(input, init);
+      };
+
+      window.Clerk = {
+        user: { id: "user_harness_1" },
+        session: { getToken: async () => "harness-session-jwt" },
+        client: { signIn: {} },
+        async load() {},
+        addListener(callback) {
+          this._listener = callback;
+        },
+        mountUserButton() {},
+      };
+
+      const { bootstrapAuthGate } = await import("/dashboard/clerk_gate.js?v=20261011-clerk6");
+      await bootstrapAuthGate();
+    </script>
+  </body>
+</html>
