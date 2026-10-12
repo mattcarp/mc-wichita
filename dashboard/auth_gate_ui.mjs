@@ -122,7 +122,13 @@ export function mountPasswordlessAuthUI(mount, handlers = {}) {
     try {
       await handlers.onSubmitEmail(email.trim());
     } catch (err) {
-      showError(err?.message || "Sign-in failed.");
+      const message =
+        typeof err?.message === "string" && err.message.trim()
+          ? err.message.trim()
+          : "Sign-in failed. Please try again.";
+      showError(message);
+      setView("email");
+      focusStep("email");
     } finally {
       setBusy(false);
     }

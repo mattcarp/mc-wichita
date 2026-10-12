@@ -47,6 +47,22 @@ export function createMockClerk(config = {}) {
   let rateLimitOnCode = Boolean(config.rateLimitOnCode);
   let operationDelayMs = Number(config.operationDelayMs) || 0;
   let signOutNotifiesListener = config.signOutNotifiesListener !== false;
+  let rateLimitOnCreate = Boolean(config.rateLimitOnCreate);
+  let rateLimitOnPrepareLink = Boolean(config.rateLimitOnPrepareLink);
+
+  function rateLimitError() {
+    return {
+      status: 429,
+      clerkError: true,
+      errors: [
+        {
+          code: "too_many_requests",
+          message: "Too many requests",
+          longMessage: "Too many requests. Please try again later.",
+        },
+      ],
+    };
+  }
 
   async function delay() {
     if (operationDelayMs > 0) {
@@ -61,10 +77,16 @@ export function createMockClerk(config = {}) {
     ],
     async create() {
       await delay();
+      if (rateLimitOnCreate) {
+        throw rateLimitError();
+      }
       return signIn;
     },
     async prepareFirstFactor({ strategy } = {}) {
       await delay();
+      if (strategy === "email_link" && rateLimitOnPrepareLink) {
+        throw rateLimitError();
+      }
       if (strategy === "email_code" && rateLimitOnCode) {
         rateLimitOnCode = false;
         throw {
@@ -134,6 +156,12 @@ export function createMockClerk(config = {}) {
     },
     setSignOutNotifiesListener(on) {
       signOutNotifiesListener = Boolean(on);
+    },
+    setRateLimitOnCreate(on) {
+      rateLimitOnCreate = Boolean(on);
+    },
+    setRateLimitOnPrepareLink(on) {
+      rateLimitOnPrepareLink = Boolean(on);
     },
     mountUserButton() {},
     setRateLimitOnCode(on) {

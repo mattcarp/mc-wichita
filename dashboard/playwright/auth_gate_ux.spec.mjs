@@ -141,6 +141,39 @@ test.describe("auth gate UX (mocked Clerk)", () => {
   });
 
   test.describe("error states", () => {
+    test("HTTP 429 on signIn.create shows rate limit on email step", async ({ page }) => {
+      await waitVisualHarnessReady(page);
+      await page.evaluate(() => window.__wichitaMockClerk.setRateLimitOnCreate(true));
+      await page.locator("#authEmail").fill("mattie@wichitawire.com");
+      const submit = page.getByRole("button", { name: "Continue with email" });
+      await submit.click();
+      const status = page.locator(".auth-form-status-visible");
+      await expect(status).toBeVisible();
+      await expect(status).toHaveText(
+        "Too many sign-in attempts. Please wait a few minutes and try again.",
+      );
+      await assertOnlyAuthStep(page, "email");
+      await expect(submit).toBeEnabled();
+      await expect(page.locator(".auth-form-shell")).toHaveAttribute("aria-busy", "false");
+      await page.evaluate(() => window.__wichitaMockClerk.setRateLimitOnCreate(false));
+    });
+
+    test("HTTP 429 on prepareFirstFactor shows rate limit on email step", async ({ page }) => {
+      await waitVisualHarnessReady(page);
+      await page.evaluate(() => window.__wichitaMockClerk.setRateLimitOnPrepareLink(true));
+      await page.locator("#authEmail").fill("mattie@wichitawire.com");
+      const submit = page.getByRole("button", { name: "Continue with email" });
+      await submit.click();
+      const status = page.locator(".auth-form-status-visible");
+      await expect(status).toBeVisible();
+      await expect(status).toHaveText(
+        "Too many sign-in attempts. Please wait a few minutes and try again.",
+      );
+      await assertOnlyAuthStep(page, "email");
+      await expect(submit).toBeEnabled();
+      await page.evaluate(() => window.__wichitaMockClerk.setRateLimitOnPrepareLink(false));
+    });
+
     test("incorrect code shows status and stays on code step", async ({ page }) => {
       await waitVisualHarnessReady(page);
       await page.locator("#authEmail").fill("mattie@wichitawire.com");
@@ -161,7 +194,9 @@ test.describe("auth gate UX (mocked Clerk)", () => {
       await page.getByRole("button", { name: "Continue with email" }).click();
       await page.evaluate(() => window.__wichitaMockClerk.setRateLimitOnCode(true));
       await page.getByRole("button", { name: "Use a code instead" }).click();
-      await expect(page.locator(".auth-form-status-visible")).toContainText(/too many requests/i);
+      await expect(page.locator(".auth-form-status-visible")).toContainText(
+        /too many sign-in attempts/i,
+      );
       await assertOnlyAuthStep(page, "link");
     });
   });

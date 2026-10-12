@@ -75,9 +75,36 @@ function tearDownAuthenticatedFetch() {
   restoreNativeFetch?.();
 }
 
-function clerkErrorMessage(err) {
-  const first = err?.errors?.[0];
-  return first?.longMessage || first?.message || err?.message || "Sign-in failed.";
+export const CLERK_RATE_LIMIT_MESSAGE =
+  "Too many sign-in attempts. Please wait a few minutes and try again.";
+
+function clerkErrorEntries(err) {
+  if (Array.isArray(err?.errors) && err.errors.length) return err.errors;
+  if (err?.error) return [err.error];
+  return [];
+}
+
+export function isClerkRateLimitError(err) {
+  if (!err) return false;
+  if (err.status === 429) return true;
+  const first = clerkErrorEntries(err)[0];
+  const code = String(first?.code || "").toLowerCase();
+  if (code === "too_many_requests" || code.includes("rate")) return true;
+  const msg = `${first?.message || ""} ${first?.longMessage || ""} ${err?.message || ""}`.toLowerCase();
+  return msg.includes("too many") || msg.includes("rate limit");
+}
+
+export function clerkErrorMessage(err) {
+  if (isClerkRateLimitError(err)) return CLERK_RATE_LIMIT_MESSAGE;
+  const first = clerkErrorEntries(err)[0];
+  const fromClerk = first?.longMessage || first?.message;
+  if (fromClerk) return fromClerk;
+  if (typeof err?.message === "string" && err.message.trim()) return err.message.trim();
+  return "Sign-in failed. Please try again.";
+}
+
+function throwClerkSignInError(err) {
+  throw new Error(clerkErrorMessage(err));
 }
 
 function isEmailLinkReturnUrl() {
@@ -298,7 +325,7 @@ function renderPasswordlessForm(Clerk, env) {
           ui.codeForm.code.focus();
         }
       } catch (err) {
-        throw new Error(clerkErrorMessage(err));
+        throwClerkSignInError(err);
       }
     },
     onUseCodeInstead: async () => {
@@ -316,14 +343,14 @@ function renderPasswordlessForm(Clerk, env) {
         ui.setView("code");
         ui.codeForm.code.focus();
       } catch (err) {
-        throw new Error(clerkErrorMessage(err));
+        throwClerkSignInError(err);
       }
     },
     onSubmitCode: async (code) => {
       try {
         await submitEmailCode(Clerk, code);
       } catch (err) {
-        throw new Error(clerkErrorMessage(err));
+        throwClerkSignInError(err);
       }
     },
   });

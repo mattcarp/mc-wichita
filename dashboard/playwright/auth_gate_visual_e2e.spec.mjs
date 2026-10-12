@@ -56,7 +56,7 @@ test.describe("auth gate visual e2e (mocked Clerk)", () => {
     await page.getByRole("button", { name: "Use a code instead" }).click();
     const status = page.locator(".auth-form-status-visible");
     await expect(status).toBeVisible();
-    await expect(status).toContainText(/too many requests/i);
+    await expect(status).toContainText(/too many sign-in attempts/i);
     await assertOnlyAuthStep(page, "link");
     await saveShot(page, "auth-visual-04-rate-limit-on-link.png");
   });
