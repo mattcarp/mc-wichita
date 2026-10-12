@@ -48,6 +48,18 @@ For symphony harness work specifically (TS, lives in `symphony/`):
 cd symphony && npm install && npx tsc --noEmit
 ```
 
+## Cloud Agent environment
+
+Cloud Agents have no rooftop SDR, no Infisical, and no live receiver. `rf_captures/` and `*.wav` are gitignored, so a fresh checkout has no capture audio.
+
+- The saved environment starts the API on boot: `python3 -m uvicorn api_server:app --host 0.0.0.0 --port 8000`. Readiness is `GET /health`. The dashboard is `GET /` (port 8000, not 3000).
+- `POST /alerts` works without API keys. A transcript containing MAYDAY is stored as severity `critical`.
+- Do not start `ais_decoder_live.py` or `adsb_decoder_live.py` here. They expect rooftop SDR hardware that is not attached.
+- Python packages install for the `ubuntu` user. `~/.local/bin` is not on PATH, so use `python3 -m pytest` and `python3 -m uvicorn`. There is no root `requirements.txt`. Satellite pass tests need `sgp4` from `requirements-gods-eye.txt`.
+- Boot sets `WICHITA_TLE_CACHE=/tmp/wichita-tle-cache.json` so a CelesTrak refresh does not write `dashboard/data/celestrak_tle_cache.json`. `alerts.json` (keyword hits) is gitignored; do not commit it.
+- Symphony typecheck uses the command above. Node 22 is on PATH. The harness is not started on boot; it needs `LINEAR_API_KEY`.
+- `wichita-websdr/` is a package manifest without application source. Exercise the FastAPI dashboard.
+
 ## Layout (key directories — there are many supporting files)
 
 ```
