@@ -147,7 +147,7 @@ test.describe("auth gate UX (mocked Clerk)", () => {
       await page.locator("#authEmail").fill("mattie@wichitawire.com");
       const submit = page.getByRole("button", { name: "Continue with email" });
       await submit.click();
-      const status = page.locator(".auth-form-status-visible");
+      const status = page.locator('[data-auth-notice="true"].auth-form-status-visible');
       await expect(status).toBeVisible();
       await expect(status).toHaveText(
         "Too many sign-in attempts. Please wait a few minutes and try again.",
@@ -164,7 +164,7 @@ test.describe("auth gate UX (mocked Clerk)", () => {
       await page.locator("#authEmail").fill("mattie@wichitawire.com");
       const submit = page.getByRole("button", { name: "Continue with email" });
       await submit.click();
-      const status = page.locator(".auth-form-status-visible");
+      const status = page.locator('[data-auth-notice="true"].auth-form-status-visible');
       await expect(status).toBeVisible();
       await expect(status).toHaveText(
         "Too many sign-in attempts. Please wait a few minutes and try again.",
@@ -181,7 +181,7 @@ test.describe("auth gate UX (mocked Clerk)", () => {
       await page.getByRole("button", { name: "Use a code instead" }).click();
       await page.locator("#authCode").fill("999999");
       await page.getByRole("button", { name: "Verify" }).click();
-      const status = page.locator(".auth-form-status-visible");
+      const status = page.locator('[data-auth-notice="true"].auth-form-status-visible');
       await expect(status).toBeVisible();
       await expect(status).toContainText(/incorrect code/i);
       await assertOnlyAuthStep(page, "code");

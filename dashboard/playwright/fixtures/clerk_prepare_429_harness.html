@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Prepare 429 route harness</title>
+    <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261011-clerk8" />
+  </head>
+  <body class="auth-pending">
+    <div id="authGate" class="auth-gate" role="main" aria-label="Sign in">
+      <div class="auth-gate-inner">
+        <p class="auth-gate-brand"><span class="brand-glyph" aria-hidden="true">W</span> Wichita</p>
+        <p class="auth-gate-tagline muted">Valletta listener · email link or code only</p>
+        <div id="clerkSignIn"></div>
+      </div>
+    </div>
+    <div id="appShell" hidden>
+      <header class="site-header site-header-compact">
+        <div class="brand brand-compact">
+          <span class="brand-glyph" aria-hidden="true">W</span>
+          <div id="headerLive" class="header-live mono" role="status">Checking AIS…</div>
+        </div>
+        <div class="header-meta">
+          <div id="wichitaUserMenu" class="wichita-user-menu-host" hidden></div>
+        </div>
+      </header>
+      <main id="main" class="app"><p id="dashboardProbe">Harbour · live AIS</p></main>
+    </div>
+    <script type="module">
+      globalThis.__WICHITA_SKIP_AUTH_GATE_AUTOMAIN__ = true;
+      globalThis.__WICHITA_SKIP_SIGN_OUT_RELOAD__ = true;
+      import { installFetchMocks, createMockClerk } from "/dashboard/playwright/mock_clerk.mjs";
+
+      installFetchMocks({ dashboardJs: "export {};" });
+      const mock = createMockClerk({ user: null, useNetworkPrepare: true, notifyOnSignInCreate: true });
+      window.Clerk = mock;
+      window.__wichitaMockClerk = mock;
+
+      const { bootstrapAuthGate } = await import("/dashboard/clerk_gate.js?v=20261011-clerk8");
+      await bootstrapAuthGate();
+      window.__wichitaAuthReady = true;
+    </script>
+  </body>
+</html>

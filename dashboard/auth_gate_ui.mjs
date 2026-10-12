@@ -19,8 +19,8 @@ export function mountPasswordlessAuthUI(mount, handlers = {}) {
   shell.className = "auth-form-shell";
 
   const status = document.createElement("p");
-  status.className = "auth-form-status muted";
-  status.dataset.authStep = "status";
+  status.className = "auth-form-status";
+  status.dataset.authNotice = "true";
   status.hidden = true;
   status.setAttribute("role", "status");
 

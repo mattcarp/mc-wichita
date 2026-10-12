@@ -1765,9 +1765,14 @@ body.auth-pending #authGate:not([hidden]) {
 }
 
 .auth-form-status {
-  margin: 0;
+  display: block;
+  margin: 0 0 0.35rem;
   font-size: 0.9rem;
   color: var(--fault);
+}
+
+.auth-form-shell .auth-form-status[hidden] {
+  display: none !important;
 }
 
 .auth-form-panel {

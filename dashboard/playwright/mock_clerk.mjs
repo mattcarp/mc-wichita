@@ -1,5 +1,13 @@
 /** Minimal Clerk mock for dashboard Playwright flows. */
 
+import {
+  clerkAPIResponseError,
+  CLERK_VERIFICATION_CODE_RATE_LIMIT_BODY,
+} from "../clerk_errors.mjs";
+
+const PREPARE_FIRST_FACTOR_URL =
+  "https://example.clerk.accounts.dev/v1/client/sign_ins/sign_in_harness/prepare_first_factor";
+
 const DEFAULT_USER = {
   id: "user_harness",
   firstName: "Mattie",
@@ -49,19 +57,11 @@ export function createMockClerk(config = {}) {
   let signOutNotifiesListener = config.signOutNotifiesListener !== false;
   let rateLimitOnCreate = Boolean(config.rateLimitOnCreate);
   let rateLimitOnPrepareLink = Boolean(config.rateLimitOnPrepareLink);
+  const useNetworkPrepare = Boolean(config.useNetworkPrepare);
+  let notifyOnSignInCreate = config.notifyOnSignInCreate !== false;
 
-  function rateLimitError() {
-    return {
-      status: 429,
-      clerkError: true,
-      errors: [
-        {
-          code: "too_many_requests",
-          message: "Too many requests",
-          longMessage: "Too many requests. Please try again later.",
-        },
-      ],
-    };
+  function verificationCodeRateLimitError() {
+    return clerkAPIResponseError(429, CLERK_VERIFICATION_CODE_RATE_LIMIT_BODY);
   }
 
   async function delay() {
@@ -78,42 +78,41 @@ export function createMockClerk(config = {}) {
     async create() {
       await delay();
       if (rateLimitOnCreate) {
-        throw rateLimitError();
+        throw verificationCodeRateLimitError();
+      }
+      if (notifyOnSignInCreate) {
+        clerk._notify();
       }
       return signIn;
     },
     async prepareFirstFactor({ strategy } = {}) {
       await delay();
+      if (useNetworkPrepare && strategy === "email_link") {
+        const res = await fetch(PREPARE_FIRST_FACTOR_URL, { method: "POST" });
+        let body = {};
+        try {
+          body = await res.json();
+        } catch {
+          body = {};
+        }
+        if (!res.ok) {
+          throw clerkAPIResponseError(res.status, body);
+        }
+        return signIn;
+      }
       if (strategy === "email_link" && rateLimitOnPrepareLink) {
-        throw rateLimitError();
+        throw verificationCodeRateLimitError();
       }
       if (strategy === "email_code" && rateLimitOnCode) {
         rateLimitOnCode = false;
-        throw {
-          errors: [
-            {
-              code: "too_many_requests",
-              message: "Too many requests",
-              longMessage:
-                "Too many requests. Wait a minute, then try again or use the sign-in link already in your email.",
-            },
-          ],
-        };
+        throw verificationCodeRateLimitError();
       }
       return signIn;
     },
     async attemptFirstFactor({ code }) {
       await delay();
       if (code === "000000") {
-        throw {
-          errors: [
-            {
-              code: "too_many_requests",
-              message: "Too many requests",
-              longMessage: "Too many requests. Wait a minute, then try again.",
-            },
-          ],
-        };
+        throw verificationCodeRateLimitError();
       }
       if (code !== "123456") {
         throw {
@@ -162,6 +161,9 @@ export function createMockClerk(config = {}) {
     },
     setRateLimitOnPrepareLink(on) {
       rateLimitOnPrepareLink = Boolean(on);
+    },
+    setNotifyOnSignInCreate(on) {
+      notifyOnSignInCreate = Boolean(on);
     },
     mountUserButton() {},
     setRateLimitOnCode(on) {
