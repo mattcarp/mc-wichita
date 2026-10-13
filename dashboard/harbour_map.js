@@ -1,4 +1,4 @@
-import { EntityMotion } from "./map_motion.js?v=20261013-sp9";
+import { EntityMotion } from "./map_motion.js?v=20261013-sp10";
 
 const TYPE_COLORS = {
   // Solidarity print inks only: blue, ink, blue-soft. Red is reserved for selection and alerts.

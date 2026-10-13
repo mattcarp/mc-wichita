@@ -1,0 +1,20 @@
+// node dashboard/test_plural.mjs — rule: only 1 is singular; 0 and many are plural.
+import assert from "node:assert/strict";
+import { plural, pluralWord } from "./plural.js";
+for (const [n, want] of [[0, "0 ships"], [1, "1 ship"], [2, "2 ships"], [13, "13 ships"]]) assert.equal(plural(n, "ship"), want);
+assert.equal(plural(0, "vessel"), "0 vessels");
+assert.equal(plural(1, "vessel"), "1 vessel");
+assert.equal(plural(1, "aircraft"), "1 aircraft");
+assert.equal(plural(0, "aircraft"), "0 aircraft");
+assert.equal(plural(5, "aircraft"), "5 aircraft");
+assert.equal(plural(1, "msg"), "1 msg");
+assert.equal(plural(0, "msg"), "0 msgs");
+assert.equal(plural(4574, "msg"), "4574 msgs");
+assert.equal(plural(1, "AIS message"), "1 AIS message");
+assert.equal(plural(3, "AIS message"), "3 AIS messages");
+assert.equal(plural(1, "pass", "passes"), "1 pass");
+assert.equal(plural(2, "pass", "passes"), "2 passes");
+assert.equal(pluralWord(1, "ship"), "ship");
+assert.equal(pluralWord("1", "ship"), "ship");
+assert.equal(pluralWord(1.5, "hour"), "hours");
+console.log("plural: ok");

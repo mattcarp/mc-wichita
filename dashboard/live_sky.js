@@ -1,4 +1,5 @@
-import { provenanceBadge, feedHealthChip } from "./entity_labels.js?v=20261013-sp9";
+import { plural, pluralWord } from "./plural.js?v=20261013-sp10";
+import { provenanceBadge, feedHealthChip } from "./entity_labels.js?v=20261013-sp10";
 
 function $(sel) {
   return document.querySelector(sel);
@@ -22,7 +23,7 @@ export function renderPlanesPanel(adsb) {
     el.innerHTML = `${health}<p class="muted">${adsb.coverage_label || "No aircraft with position from our receiver right now."}</p>`;
     return;
   }
-  el.innerHTML = `${health}<p class="mono counts">${planes.length} aircraft with position</p>
+  el.innerHTML = `${health}<p class="mono counts">${plural(planes.length, "aircraft")} with position</p>
     <p class="muted small observed-caveat">Observed ADS-B only — not ground truth.</p>
     <ul class="live-plane-list">
       ${planes

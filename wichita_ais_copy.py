@@ -315,7 +315,7 @@ def type_breakdown_phrase(type_counts: Dict[str, int], top_n: int = 3) -> str:
     named = sum(n for _, n in ranked[:top_n])
     rest = total - named
     if rest > 0:
-        parts.append(f"and {rest} others")
+        parts.append(f"and {rest} {'other' if rest == 1 else 'others'}")
     return ", ".join(parts)
 
 

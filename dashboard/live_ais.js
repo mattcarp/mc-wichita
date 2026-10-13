@@ -1,10 +1,11 @@
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261013-sp9";
-import { HarbourMap, typeColor } from "./harbour_map.js?v=20261013-sp9";
-import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261013-sp9";
-import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261013-sp9";
-import { initWatchZones } from "./watch_zones.js?v=20261013-sp9";
-import { initIncidentReplay } from "./incident_replay.js?v=20261013-sp9";
-import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261013-sp9";
+import { plural, pluralWord } from "./plural.js?v=20261013-sp10";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261013-sp10";
+import { HarbourMap, typeColor } from "./harbour_map.js?v=20261013-sp10";
+import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261013-sp10";
+import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261013-sp10";
+import { initWatchZones } from "./watch_zones.js?v=20261013-sp10";
+import { initIncidentReplay } from "./incident_replay.js?v=20261013-sp10";
+import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261013-sp10";
 
 const GROUPS = [
   { key: "now", title: "Now" },
@@ -65,7 +66,7 @@ function renderHeader(snapshot) {
   const fc = snapshot.freshness_counts || {};
   const dot = snapshot.online ? "live" : "offline";
   live.innerHTML = `<span class="pill pill-${dot}">${snapshot.online ? "Live" : "Feed paused"}</span>
-    <span class="header-ship-count">${fc.now ?? 0} ships now · ${fc.today ?? 0} today</span>`;
+    <span class="header-ship-count">${plural(fc.now ?? 0, "ship")} now · ${fc.today ?? 0} today</span>`;
 }
 
 function renderSummary(snapshot) {
@@ -113,7 +114,7 @@ function shipCardHtml(s, selected) {
       ${mmsiLookupHtml(s)}
       <a class="mmsi-link" href="https://www.vesselfinder.com/?mmsi=${s.mmsi}" rel="noopener noreferrer" target="_blank">Look up MMSI on VesselFinder (external) ↗</a>
       <p class="mono muted">MMSI ${s.mmsi_display}${s.callsign ? ` · ${s.callsign}` : ""}</p>
-      <p class="mono muted">${s.destination_raw || "—"} · ${s.speed_known === false ? "speed unknown" : `${s.speed_kn ?? "—"} kn`} · ${s.message_count ?? 0} msgs</p>
+      <p class="mono muted">${s.destination_raw || "—"} · ${s.speed_known === false ? "speed unknown" : `${s.speed_kn ?? "—"} kn`} · ${plural(s.message_count ?? 0, "msg")}</p>
     </details>
   </li>`;
 }
@@ -173,7 +174,7 @@ function renderShipList(snapshot) {
   const winMin = Math.round((snapshot?.roster_window_s || 3600) / 60);
   const note = paused
     ? `<li class="roster-note roster-note-paused" role="status" data-test-id="roster-paused">Feed paused${sinceUtc ? ` since ${formatMaltaTimeShort(sinceUtc)}` : ""}; showing the last ships heard.</li>`
-    : `<li class="roster-note" data-test-id="roster-note">${ships.length} vessel${ships.length === 1 ? "" : "s"} heard in the last ${winMin >= 60 ? `${Math.round(winMin / 60)} h` : `${winMin} min`}, newest first.</li>`;
+    : `<li class="roster-note" data-test-id="roster-note">${plural(ships.length, "vessel")} heard in the last ${winMin >= 60 ? `${Math.round(winMin / 60)} h` : `${winMin} min`}, newest first.</li>`;
   if (!ships.length) {
     ul.innerHTML = `${note}<li class='muted'>${paused ? "No ships were heard before the feed paused." : "No vessels heard in the last hour."}</li>`;
     return;
@@ -214,7 +215,7 @@ function renderShipList(snapshot) {
       ? `<p class="eyebrow">Shore stations</p><ul class="shore-list">${bases
           .map(
             (b) =>
-              `<li><span class="shore-diamond" aria-hidden="true"></span>${b.display_name} · ${b.message_count ?? 0} msgs</li>`,
+              `<li><span class="shore-diamond" aria-hidden="true"></span>${b.display_name} · ${plural(b.message_count ?? 0, "msg")}</li>`,
           )
           .join("")}</ul>`
       : "";
@@ -241,7 +242,7 @@ function renderSideList(snapshot) {
           <dt>Destination</dt><dd>${esc(sel.destination_display || sel.destination_raw || "—")}</dd>
           <dt>ETA</dt><dd>${sel.eta_malta ? `${sel.eta_malta}${sel.eta_malta_stale ? " (out of date)" : ""} Malta` : "—"}</dd>
           <dt>Last heard</dt><dd>${agoLabel(sel.last_signal_s) || "—"}${sel.last_heard_utc ? ` (${formatMaltaTimeShort(sel.last_heard_utc)})` : ""}</dd>
-          <dt>Signals</dt><dd>${sel.level_db != null ? sel.level_db.toFixed(1) + " dB" : "—"} · ${sel.message_count ?? 0} msgs</dd>
+          <dt>Signals</dt><dd>${sel.level_db != null ? sel.level_db.toFixed(1) + " dB" : "—"} · ${plural(sel.message_count ?? 0, "msg")}</dd>
         </dl>
         ${mmsiLookupHtml(sel)}
         <a class="mmsi-link" href="https://www.vesselfinder.com/?mmsi=${sel.mmsi}" rel="noopener noreferrer" target="_blank">Look up MMSI on VesselFinder (external) ↗</a>
@@ -249,7 +250,7 @@ function renderSideList(snapshot) {
     : "";
   const note = paused
     ? `<p class="side-note side-note-paused" role="status">Feed paused${sinceUtc ? ` since ${formatMaltaTimeShort(sinceUtc)}` : ""}; last ships heard.</p>`
-    : `<p class="side-note">${ships.length} heard in the last hour · newest first</p>`;
+    : `<p class="side-note">${plural(ships.length, "ship")} heard in the last hour · newest first</p>`;
   const items = ships.length
     ? ships.map((s) => `<li class="side-ship${s.mmsi === state.selectedMmsi ? " selected" : ""} side-${s.freshness || "earlier"}" data-mmsi="${s.mmsi}" role="button" tabindex="0" aria-expanded="${s.mmsi === state.selectedMmsi}" aria-controls="sideDetail" style="--ship-type-color:${typeColor(s.shiptype_category)}">
         <span class="ship-type-icon" aria-hidden="true"></span>
@@ -319,7 +320,7 @@ function renderDrawer(ship) {
     <dl class="ship-detail-dl">
       <dt>Destination</dt><dd>${ship.destination_display || ship.destination_raw || "—"}</dd>
       <dt>ETA</dt><dd>${ship.eta_malta ? `${ship.eta_malta}${ship.eta_malta_stale ? " (out of date)" : ""} Malta` : "—"}</dd>
-      <dt>Signals</dt><dd>${ship.level_db != null ? ship.level_db.toFixed(1) + " dB" : "—"} · ${ship.message_count ?? 0} msgs</dd>
+      <dt>Signals</dt><dd>${ship.level_db != null ? ship.level_db.toFixed(1) + " dB" : "—"} · ${plural(ship.message_count ?? 0, "msg")}</dd>
     </dl>
     ${mmsiLookupHtml(ship)}
     <a class="mmsi-link" href="https://www.vesselfinder.com/?mmsi=${ship.mmsi}" rel="noopener noreferrer" target="_blank">Look up MMSI on VesselFinder (external) ↗</a>
@@ -386,7 +387,7 @@ function renderFollowCard() {
       ["ETA", ship.eta_malta ? `${ship.eta_malta}${ship.eta_malta_stale ? " (out of date)" : ""} Malta` : null],
       ["Size", st.length_m ? `${st.length_m} m × ${st.beam_m ?? "—"} m` : null],
       ["Last heard", ship.last_heard_utc ? `${formatMaltaTimeShort(ship.last_heard_utc)}${agoLabel(ship.last_signal_s) ? ` · ${agoLabel(ship.last_signal_s)}` : ""}` : agoLabel(ship.last_signal_s) || null],
-      ["Signals", ship.message_count ? `${ship.message_count} msgs${ship.level_db != null ? ` · ${ship.level_db.toFixed(1)} dB` : ""}` : null],
+      ["Signals", ship.message_count ? `${plural(ship.message_count, "msg")}${ship.level_db != null ? ` · ${ship.level_db.toFixed(1)} dB` : ""}` : null],
     ].filter(([, v]) => v !== null && v !== undefined && v !== "" && v !== "—");
     el.innerHTML = `<div class="follow-head"><strong>Following ${esc(ship.display_name)}</strong>
         <button type="button" class="btn-stop-follow" id="stopFollowBtn">Stop following</button></div>
@@ -519,7 +520,7 @@ async function renderActivityStrip() {
         const types = Object.entries(b.by_type || {})
           .map(([k, v]) => `${k}:${v}`)
           .join(", ");
-        return `<span class="activity-bar" style="height:${h}%" title="${b.hour_utc}: ${n} vessels (${types || "—"})"></span>`;
+        return `<span class="activity-bar" style="height:${h}%" title="${b.hour_utc}: ${plural(n, "vessel")} (${types || "—"})"></span>`;
       })
       .join("");
   } catch {
@@ -668,7 +669,7 @@ async function pollLive() {
     renderSummary(data);
     const fcEl = $("#freshnessCounts");
     if (fcEl && data.freshness_counts) {
-      fcEl.textContent = `${data.freshness_counts.now} now · ${data.freshness_counts.today} today`;
+      fcEl.textContent = `${plural(data.freshness_counts.now, "ship")} now · ${data.freshness_counts.today} today`;
     }
     renderShipList(data);
     state.sky = await fetchSkySnapshots();

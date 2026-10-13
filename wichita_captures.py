@@ -689,7 +689,7 @@ def _append_ais_timeline_events(
                 {
                     "kind": "ais_summary",
                     "t_utc": t0,
-                    "title": f"{label} heard {len(timed)} times",
+                    "title": f"{label} heard {len(timed)} {'time' if len(timed) == 1 else 'times'}",
                     "detail": (
                         f"Routine AIS in this capture · {_malta_time_range(t0, t1)}"
                     ),
@@ -709,7 +709,7 @@ def _append_ais_timeline_events(
                 {
                     "kind": "ais_vessel_summary",
                     "t_utc": t0,
-                    "title": f"{label} — {len(timed)} messages",
+                    "title": f"{label} — {len(timed)} {'message' if len(timed) == 1 else 'messages'}",
                     "detail": "Vessel or mobile station in range (not the Valletta base).",
                     "caution": None,
                     "grouped": True,

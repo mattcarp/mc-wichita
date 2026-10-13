@@ -1,14 +1,15 @@
+import { plural, pluralWord } from "./plural.js?v=20261013-sp10";
 import {
   PLOT_PAD_X,
   freqToPlotX,
   plotInnerWidth,
   psdSpan,
   samplePsdAtMhz,
-} from "./spectrum_geometry.mjs?v=20261013-sp9";
-import { initLiveAis } from "./live_ais.js?v=20261013-sp9";
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261013-sp9";
-import { GEAR_ICON, TAB_ICONS } from "./tab_icons.js?v=20261013-sp9";
-import { initAlertReview } from "./alert_review.js?v=20261013-sp9";
+} from "./spectrum_geometry.mjs?v=20261013-sp10";
+import { initLiveAis } from "./live_ais.js?v=20261013-sp10";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261013-sp10";
+import { GEAR_ICON, TAB_ICONS } from "./tab_icons.js?v=20261013-sp10";
+import { initAlertReview } from "./alert_review.js?v=20261013-sp10";
 const VALLETTA = { lat: 35.8987, lon: 14.5145, span: 0.06 };
 
 const BOOKMARKS = [
@@ -523,7 +524,7 @@ function renderCaptureAisNote(summary, messages) {
   if (!el) return;
   const vessels = summary?.vessel_count ?? 0;
   const bases = summary?.base_station_count ?? 0;
-  el.textContent = `Recorded capture (library): ${bases} station(s) · ${vessels} vessel(s) · ${messages.length} AIS messages in folder — not live air.`;
+  el.textContent = `Recorded capture (library): ${plural(bases, "station")} · ${plural(vessels, "vessel")} · ${plural(messages.length, "AIS message")} in folder — not live air.`;
 }
 
 function renderAisFeed(messages) {
@@ -540,7 +541,7 @@ function renderAisFeed(messages) {
     byLabel.set(label, (byLabel.get(label) || 0) + 1);
   }
   ul.innerHTML = [...byLabel.entries()]
-    .map(([label, count]) => `<li>${label} · ${count} message${count === 1 ? "" : "s"} in capture</li>`)
+    .map(([label, count]) => `<li>${label} · ${plural(count, "message")} in capture</li>`)
     .join("");
   renderAisSpark(messages);
 }
@@ -655,7 +656,7 @@ function renderStation(station, comparison) {
       rows
         .map(
           (s) =>
-            `<li>${s.picker_label || s.capture_id} · ${s.ais_message_count ?? 0} AIS msgs</li>`,
+            `<li>${s.picker_label || s.capture_id} · ${plural(s.ais_message_count ?? 0, "AIS msg", "AIS msgs")}</li>`,
         )
         .join("") +
       "</ul>";

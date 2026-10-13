@@ -71,6 +71,10 @@ test("(f) no console errors, no horizontal overflow; (h) no forbidden strings", 
   const body = await page.innerText("body");
   expect(body).not.toMatch(FORBIDDEN);
   expect(body.split(H2).length - 1, "H2 text appears exactly once").toBe(1);
+  // Only 1 is singular: "1 ships" etc. must never appear (0 and many stay plural).
+  const badPlural = body.match(/\b1 (ships|vessels|aircrafts|satellites|recordings|alerts|messages|msgs|minutes|hours|days|others|times)\b/g);
+  expect(badPlural, `singular count with plural noun: ${badPlural}`).toBeNull();
+  expect(body, "0 and many take the plural").not.toMatch(/\b(0|[2-9]|\d{2,}) (ship|vessel|satellite|recording|alert|message)\b/);
   expect((body.match(/rarely say the right words/gi) || []).length, "phrase not repeated").toBe(1);
   expect(await page.locator('[data-tab-target="voicelab"], #panel-voicelab').count()).toBe(0);
   expect(errors, errors.join("\n")).toEqual([]);

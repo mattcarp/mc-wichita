@@ -59,7 +59,7 @@ def prepare_timeline_events(raw: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         if len(names) == 1:
             sentence = group[0].get("sentence") or f"{names[0]} has gone quiet."
         else:
-            sentence = f"{len(group)} ships went quiet ({', '.join(names[:4])}"
+            sentence = f"{len(group)} {'ship' if len(group) == 1 else 'ships'} went quiet ({', '.join(names[:4])}"
             if extra > 0:
                 sentence += f", +{extra} more"
             sentence += ")."
