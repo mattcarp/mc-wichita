@@ -1,10 +1,10 @@
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261013-fr5";
-import { HarbourMap, typeColor } from "./harbour_map.js?v=20261013-fr5";
-import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261013-fr5";
-import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261013-fr5";
-import { initWatchZones } from "./watch_zones.js?v=20261013-fr5";
-import { initIncidentReplay } from "./incident_replay.js?v=20261013-fr5";
-import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261013-fr5";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261013-fr6";
+import { HarbourMap, typeColor } from "./harbour_map.js?v=20261013-fr6";
+import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261013-fr6";
+import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261013-fr6";
+import { initWatchZones } from "./watch_zones.js?v=20261013-fr6";
+import { initIncidentReplay } from "./incident_replay.js?v=20261013-fr6";
+import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261013-fr6";
 
 const GROUPS = [
   { key: "now", title: "Now" },
@@ -104,7 +104,7 @@ function shipCardHtml(s, selected) {
     <div class="live-ship-card-head">
       <span class="ship-type-icon" aria-hidden="true"></span>
       <span class="live-ship-flag" title="${s.country || ""}">${flag}</span>
-      <strong>${s.display_name}</strong>${s.speed_known !== false && (s.speed_kn ?? 0) >= 1 ? `<span class="ship-moving mono">moving ${s.speed_kn} kn</span>` : ""}
+      <strong>${s.display_name}</strong>${s.speed_known !== false && (s.speed_kn ?? 0) >= 1 ? `<span class="ship-moving mono">moving ${Number(s.speed_kn).toFixed(1)} kn</span>` : ""}
       <span class="mono ship-fresh ship-fresh-${s.freshness || "earlier"}">${(() => { const ago = agoLabel(s.last_signal_s); return !ago || ago.toLowerCase() === tierLabel.toLowerCase() ? tierLabel : `${tierLabel} · ${ago}`; })()}</span>
     </div>
     <p class="ship-lead">${s.lead_sentence}</p>

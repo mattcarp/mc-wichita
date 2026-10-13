@@ -1,4 +1,4 @@
-const V = "?v=20261013-fr5";
+const V = "?v=20261013-fr6";
 
 function $(sel) {
   return document.querySelector(sel);
