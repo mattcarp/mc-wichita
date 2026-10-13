@@ -42,6 +42,7 @@ Nothing new gets called Kenneth.
 - [`WICHITA_PROGRESS_REVIEW_2026-09-14.md`](WICHITA_PROGRESS_REVIEW_2026-09-14.md) — latest review, findings and open blockers.
 - [`GODS_EYE_VIEW_REVIEW.md`](GODS_EYE_VIEW_REVIEW.md) — evidence-model review and ranked improvements.
 - [`docs/ROOFTOP_ARCHITECTURE.md`](docs/ROOFTOP_ARCHITECTURE.md) — antenna, PoE, cable and host design for the Valletta rooftop site.
+- [`docs/notes/opensky.md`](docs/notes/opensky.md) — OpenSky Network: air data, licence, the crowdsourced-network model, which ground voice channels are lawful, and to-dos.
 
 ## Stack
 
