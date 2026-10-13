@@ -1,39 +1,39 @@
 @font-face {
-  font-family: "Geist Sans";
-  src: url("/dashboard/fonts/Geist-Regular.woff2") format("woff2");
+  font-family: "Libre Franklin";
+  src: url("/dashboard/fonts/LibreFranklin-var.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Courier Prime";
+  src: url("/dashboard/fonts/CourierPrime-400.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: "Geist Sans";
-  src: url("/dashboard/fonts/Geist-Medium.woff2") format("woff2");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Geist Mono";
-  src: url("/dashboard/fonts/GeistMono-Regular.woff2") format("woff2");
-  font-weight: 400;
+  font-family: "Courier Prime";
+  src: url("/dashboard/fonts/CourierPrime-700.woff2") format("woff2");
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 
 :root {
-  --bg: #070b14;
-  --surface: #0e1420;
-  --surface-2: #141c2a;
-  --border: #252a36;
-  --text: #e8eaef;
-  --muted: #9aa3b2;
+  --bg: #f0efec;
+  --surface: #e7e7e4;
+  --surface-2: #e1e0dd;
+  --border: #d4d3d1;
+  --text: #333332;
+  --muted: #6e6d6c;
   --marine: #3ec6c9;
   --aviation: #6bcf7f;
-  --spur: #8b93a7;
+  --spur: #797877;
   --review: #e0a458;
   --fault: #e05c5c;
   --tab-h: 3.25rem;
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 *,
@@ -43,7 +43,7 @@
 }
 
 html {
-  font-family: "Geist Sans", system-ui, sans-serif;
+  font-family: "Libre Franklin", system-ui, sans-serif;
   background: var(--bg);
   color: var(--text);
   overflow-x: hidden;
@@ -58,7 +58,7 @@ body {
 }
 
 .mono {
-  font-family: "Geist Mono", ui-monospace, monospace;
+  font-family: "Courier Prime", ui-monospace, monospace;
   font-variant-numeric: tabular-nums;
 }
 
@@ -93,7 +93,7 @@ body {
   gap: 0.75rem;
   padding: 0.85rem 1rem;
   border-bottom: 1px solid var(--border);
-  background: linear-gradient(180deg, #10131a, var(--bg));
+  background: linear-gradient(180deg, #e9e8e5, var(--bg));
   max-width: 100vw;
 }
 
@@ -142,7 +142,7 @@ body {
   border-radius: 0.45rem;
   border: 1px solid var(--border);
   background: var(--surface);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   color: var(--text);
 }
 .live-ais-strip .live-strip-label {
@@ -150,7 +150,7 @@ body {
   color: var(--marine);
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  font-size: 0.65rem;
+  font-size: 0.75rem;
 }
 .live-ais-strip .muted {
   color: var(--muted);
@@ -244,7 +244,7 @@ body {
 }
 .eyebrow {
   margin: 0;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
@@ -326,8 +326,8 @@ select {
   top: 0;
   height: 200px;
   pointer-events: none;
-  font-size: 0.62rem;
-  color: #e8eaef;
+  font-size: 0.75rem;
+  color: #333332;
   line-height: 1.1;
 }
 
@@ -336,7 +336,7 @@ select {
   transform: translateX(-50%);
   padding: 0 3px;
   border-radius: 2px;
-  background: rgba(8, 9, 12, 0.9);
+  background: rgba(251, 250, 247, 0.9);
   text-shadow: none;
 }
 
@@ -348,7 +348,7 @@ select {
 
 .chart-caption {
   margin: 0.35rem 0 0;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   line-height: 1.35;
 }
 
@@ -358,7 +358,7 @@ select {
   gap: 0.5rem;
   margin: 0.2rem 0 0;
   padding: 0 10px;
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   color: var(--muted);
 }
 .waterfall-axis span:last-child {
@@ -371,13 +371,13 @@ canvas {
   height: auto;
   display: block;
   border-radius: 0.45rem;
-  background: #08090c;
+  background: #f2f2ef;
   border: 1px solid var(--border);
 }
 
 .map-attrib {
   margin: 0.35rem 0 0;
-  font-size: 0.68rem;
+  font-size: 0.75rem;
 }
 
 .bookmark-legend {
@@ -387,7 +387,7 @@ canvas {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem 1rem;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   color: var(--muted);
 }
 .bookmark-legend li::before {
@@ -436,7 +436,7 @@ canvas {
   min-height: 220px;
   border-radius: 0.45rem;
   border: 1px solid var(--border);
-  background: #0a0c10;
+  background: #f0efec;
 }
 
 .harbour-svg {
@@ -544,7 +544,7 @@ canvas {
 }
 
 .harbour-svg .ship-dot-selected circle {
-  stroke: #fff;
+  stroke: #222222;
   stroke-width: 1.5;
 }
 
@@ -619,7 +619,7 @@ canvas {
 }
 .timeline-source {
   display: inline-block;
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   margin-bottom: 0.25rem;
@@ -656,7 +656,7 @@ canvas {
   margin: 0;
 }
 .station-strip dt {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   color: var(--muted);
   margin: 0;
 }
@@ -682,7 +682,7 @@ canvas {
 
 .station-source {
   margin: 0 0 0.65rem;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   color: var(--muted);
 }
 
@@ -707,14 +707,14 @@ canvas {
   padding-bottom: env(safe-area-inset-bottom, 0px);
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  background: #0e1118ee;
+  background: #ebeae7ee;
   backdrop-filter: blur(8px);
   border-top: 1px solid var(--border);
   z-index: 50;
 }
 .tab-btn {
   font: inherit;
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   background: transparent;
   border: 0;
   color: var(--muted);
@@ -747,7 +747,7 @@ canvas {
   .bookmark-legend {
     margin-bottom: 3.25rem;
     padding-bottom: 0.75rem;
-    font-size: 0.68rem;
+    font-size: 0.75rem;
     line-height: 1.45;
   }
   .bookmark-legend .legend-unmeasurable {
@@ -757,7 +757,7 @@ canvas {
     transform: translateX(-14%);
   }
   #maltaClock {
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     max-width: 11rem;
     text-align: right;
     line-height: 1.2;
@@ -807,7 +807,7 @@ canvas {
   align-items: center;
 }
 .badge {
-  font-size: 0.62rem;
+  font-size: 0.75rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   padding: 0.15rem 0.45rem;
@@ -838,18 +838,18 @@ canvas {
 .map-coastline {
   min-height: 0;
   position: relative;
-  background: radial-gradient(ellipse at 50% 80%, #0a1830 0%, #060a12 70%);
+  background: radial-gradient(ellipse at 50% 80%, #e2e1df 0%, #f1f0ed 70%);
 }
 .map-sea {
-  fill: #061018;
+  fill: #eeedea;
 }
 .map-land {
-  fill: #1a2438;
-  stroke: #2a3548;
+  fill: #d8d7d5;
+  stroke: #cacac7;
   stroke-width: 0.6;
 }
 .map-water {
-  fill: #061018;
+  fill: #eeedea;
   stroke: none;
 }
 .harbour-map-host {
@@ -893,14 +893,14 @@ body.sheet-open .live-ship-list {
 }
 .map-receiver {
   fill: var(--review);
-  stroke: #fff;
+  stroke: #222222;
   stroke-width: 0.5;
 }
 .map-label,
 .map-place {
-  fill: #9aa3b2;
-  font-size: 9px;
-  font-family: "Geist Sans", sans-serif;
+  fill: #6e6d6c;
+  font-size: 0.75rem;
+  font-family: "Libre Franklin", sans-serif;
 }
 .map-track {
   fill: none;
@@ -908,12 +908,12 @@ body.sheet-open .live-ship-list {
   stroke-width: 1;
 }
 .map-track-selected {
-  stroke: #fff;
+  stroke: #222222;
   stroke-width: 1.4;
 }
 .map-ship-stale {
   opacity: 0.35;
-  stroke: #fff;
+  stroke: #222222;
   stroke-width: 0.5;
   fill-opacity: 0.5;
 }
@@ -930,11 +930,11 @@ body.sheet-open .live-ship-list {
 }
 .map-zoom-bar button {
   font: inherit;
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   padding: 0.2rem 0.45rem;
   border-radius: 0.25rem;
   border: 1px solid var(--border);
-  background: rgba(8, 12, 20, 0.85);
+  background: rgba(251, 250, 247, 0.85);
   color: var(--text);
   cursor: pointer;
 }
@@ -959,7 +959,7 @@ body.sheet-open .live-ship-list {
 }
 .ship-group-label {
   list-style: none;
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--muted);
@@ -978,7 +978,7 @@ body.sheet-open .live-ship-list {
 .summary-num {
   display: block;
   font-size: 1.35rem;
-  font-family: "Geist Mono", monospace;
+  font-family: "Courier Prime", monospace;
   color: var(--marine);
 }
 .live-ship-drawer {
@@ -991,7 +991,7 @@ body.sheet-open .live-ship-list {
 .sheet-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.08);
   z-index: 80;
 }
 .ship-sheet {
@@ -1065,7 +1065,7 @@ body.sheet-open .live-ship-list {
 }
 .icon-btn {
   font: inherit;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   padding: 0.25rem 0.45rem;
   border-radius: 0.25rem;
   border: 1px solid var(--border);
@@ -1118,7 +1118,7 @@ body.sheet-open .live-ship-list {
 }
 .prov-badge {
   display: inline-block;
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   padding: 0.12rem 0.35rem;
   border-radius: 0.25rem;
   margin-bottom: 0.25rem;
@@ -1152,11 +1152,11 @@ body.sheet-open .live-ship-list {
   stroke-dasharray: 2 4;
 }
 .map-plane-selected {
-  stroke: #fff;
+  stroke: #222222;
   stroke-width: 1;
 }
 .squawk-alert.calm {
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   color: var(--review);
   margin: 0.25rem 0 0;
 }
@@ -1166,7 +1166,7 @@ body.sheet-open .live-ship-list {
   border: 1px solid var(--border);
   border-radius: 0.35rem;
   font-size: 0.78rem;
-  background: rgba(10, 16, 28, 0.85);
+  background: rgba(251, 250, 247, 0.85);
 }
 .live-plane-list {
   list-style: none;
@@ -1199,7 +1199,7 @@ body.sheet-open .live-ship-list {
   margin-bottom: 0.35rem;
 }
 .panel-hero {
-  background: linear-gradient(180deg, rgba(14, 24, 40, 0.6), var(--surface));
+  background: linear-gradient(180deg, rgba(251, 250, 247, 0.6), var(--surface));
 }
 
 .timeline-shell {
@@ -1249,7 +1249,7 @@ body.sheet-open .live-ship-list {
   margin-bottom: 0.5rem;
 }
 .summary-chips .chip {
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   padding: 0.2rem 0.45rem;
   border-radius: 999px;
   border: 1px solid var(--border);
@@ -1292,7 +1292,7 @@ body.sheet-open .live-ship-list {
   margin: 0.35rem 0 0;
 }
 .legend-chip {
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   padding: 0.15rem 0.4rem;
   border-radius: 0.25rem;
   border: 1px solid var(--border);
@@ -1335,7 +1335,7 @@ body.sheet-open .live-ship-list {
     overflow: auto;
     z-index: 70;
     margin-top: 0;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
   }
   .live-ship-drawer[hidden] {
     display: none !important;
@@ -1383,9 +1383,9 @@ body.sheet-open .live-ship-list {
     overflow: auto;
     border-radius: 0.75rem 0.75rem 0 0;
     border: 1px solid var(--border);
-    background: rgba(10, 14, 22, 0.94);
+    background: rgba(251, 250, 247, 0.94);
     backdrop-filter: blur(10px);
-    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.08);
   }
   .sheet-grab {
     height: 1.25rem;
@@ -1425,7 +1425,7 @@ body.sheet-open .live-ship-list {
   margin-bottom: 0.35rem;
 }
 .feed-health {
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   padding: 0.15rem 0.45rem;
   border-radius: 0.35rem;
   border: 1px solid var(--border);
@@ -1527,13 +1527,13 @@ body.sheet-open .live-ship-list {
   color: inherit;
   padding: 0.2rem 0.45rem;
   border-radius: 0.35rem;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
 }
 .activity-toggle button.active {
   border-color: rgba(62, 198, 201, 0.65);
 }
 .timeline-pattern .event-body {
-  color: var(--mac-text-muted, #a8b0c0);
+  color: var(--mac-text-muted, #626261);
   font-style: italic;
 }
 .map-ghost-trail {
@@ -1737,7 +1737,7 @@ body.auth-pending #authGate:not([hidden]) {
   border: none;
   border-radius: 0.5rem;
   background: var(--marine);
-  color: #041014;
+  color: #f1f0ed;
   font: inherit;
   font-weight: 500;
   cursor: pointer;
@@ -1835,7 +1835,7 @@ body.auth-pending .tab-bar {
 }
 
 .wichita-user-chevron {
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   color: var(--muted);
   margin-left: -0.1rem;
 }
@@ -1850,7 +1850,7 @@ body.auth-pending .tab-bar {
   border-radius: 0.5rem;
   border: 1px solid var(--border);
   background: var(--surface);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
 }
 
 .wichita-user-dropdown[hidden] {

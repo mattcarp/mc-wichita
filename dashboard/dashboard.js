@@ -4,19 +4,19 @@ import {
   plotInnerWidth,
   psdSpan,
   samplePsdAtMhz,
-} from "./spectrum_geometry.mjs?v=20261010-gev1";
-import { initLiveAis } from "./live_ais.js?v=20261010-gev1";
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261010-gev1";
-import { GEAR_ICON, TAB_ICONS } from "./tab_icons.js?v=20261010-gev1";
-import { initAlertReview, initVoiceLab } from "./voice_lab.js?v=20261011-vl1";
+} from "./spectrum_geometry.mjs?v=20261013-fr1";
+import { initLiveAis } from "./live_ais.js?v=20261013-fr1";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261013-fr1";
+import { GEAR_ICON, TAB_ICONS } from "./tab_icons.js?v=20261013-fr1";
+import { initAlertReview, initVoiceLab } from "./voice_lab.js?v=20261013-fr1";
 const VALLETTA = { lat: 35.8987, lon: 14.5145, span: 0.06 };
 
 const BOOKMARKS = [
-  { key: "CH09", mhz: 156.45, color: "#3ec6c9" },
-  { key: "CH16", mhz: 156.8, color: "#3ec6c9" },
-  { key: "CH70", mhz: 156.525, color: "#3ec6c9" },
-  { key: "AIS1", mhz: 161.975, color: "#3ec6c9" },
-  { key: "AIS2", mhz: 162.025, color: "#3ec6c9" },
+  { key: "CH09", mhz: 156.45, color: "#b42318" },
+  { key: "CH16", mhz: 156.8, color: "#b42318" },
+  { key: "CH70", mhz: 156.525, color: "#b42318" },
+  { key: "AIS1", mhz: 161.975, color: "#b42318" },
+  { key: "AIS2", mhz: 162.025, color: "#b42318" },
 ];
 
 const state = {
@@ -65,7 +65,10 @@ function cividis(t) {
 }
 
 function paletteColor(t, colorBlind) {
-  return colorBlind ? cividis(t) : inferno(t);
+  if (colorBlind) return cividis(t);
+  const u = Math.max(0, Math.min(1, t));
+  const v = Math.round(251 - u * 234);
+  return [v, Math.round(v - u * 4), Math.round(v - u * 9)];
 }
 
 function chartCssHeight(defaultPx) {
@@ -132,7 +135,7 @@ function updateLiveBandHeading(psd) {
     : `Recorded band · ${minF.toFixed(3)}–${maxF.toFixed(3)} MHz`;
 }
 
-const MARKER_FONT = "10px Geist Mono, monospace";
+const MARKER_FONT = "11px Courier Prime, monospace";
 const MARKER_ROW_STEP = 12;
 
 function markerLabelWidth(ctx, key) {
@@ -200,22 +203,22 @@ function renderSpectrumMarkersHtml(w, h, ctx, span) {
 function drawFilterRollOffBands(ctx, w, h, span) {
   const { minF, maxF, drawMin, drawMax } = span;
   ctx.save();
-  ctx.font = "9px Geist Mono, monospace";
-  ctx.fillStyle = "rgba(100, 110, 130, 0.14)";
+  ctx.font = "11px Courier Prime, monospace";
+  ctx.fillStyle = "rgba(34, 34, 34, 0.06)";
   const xPlotMin = freqToPlotX(minF, w, span);
   const xDrawMin = freqToPlotX(drawMin, w, span);
   if (xDrawMin > xPlotMin + 4) {
     ctx.fillRect(xPlotMin, 0, xDrawMin - xPlotMin, h);
-    ctx.fillStyle = "#8b93a7";
+    ctx.fillStyle = "#9a948a";
     ctx.textAlign = "center";
     ctx.fillText("filter roll-off", (xPlotMin + xDrawMin) / 2, 12);
   }
   const xDrawMax = freqToPlotX(drawMax, w, span);
   const xPlotMax = freqToPlotX(maxF, w, span);
   if (xPlotMax > xDrawMax + 4) {
-    ctx.fillStyle = "rgba(100, 110, 130, 0.14)";
+    ctx.fillStyle = "rgba(34, 34, 34, 0.06)";
     ctx.fillRect(xDrawMax, 0, xPlotMax - xDrawMax, h);
-    ctx.fillStyle = "#8b93a7";
+    ctx.fillStyle = "#9a948a";
     ctx.textAlign = "center";
     ctx.fillText("filter roll-off", (xDrawMax + xPlotMax) / 2, 12);
   }
@@ -247,10 +250,10 @@ function drawSpectrum(psd) {
   const yLoDb = pct(0.01) - 2.5;
   const yHiDb = pct(0.99) + 1.5;
   const ySpan = Math.max(3, yHiDb - yLoDb);
-  ctx.fillStyle = "#08090c";
+  ctx.fillStyle = "#fbfaf7";
   ctx.fillRect(0, 0, w, h);
   drawFilterRollOffBands(ctx, w, h, span);
-  ctx.strokeStyle = "#252a36";
+  ctx.strokeStyle = "#ddd8cc";
   for (let i = 0; i <= 4; i++) {
     const y = (h * i) / 4;
     ctx.beginPath();
@@ -295,21 +298,21 @@ function drawSpectrum(psd) {
   canvas.dataset.traceEndMhz = String(lastFm ?? "");
   canvas.dataset.traceEndX = String(lastX ?? "");
   canvas.dataset.expectedTraceEndX = String(expectedEndX);
-  ctx.strokeStyle = "#3ec6c9";
+  ctx.strokeStyle = "#b42318";
   ctx.lineWidth = 1.5;
   ctx.stroke();
   ctx.restore();
   if (tunerMhz && tunerMhz >= axisMinF && tunerMhz <= axisMaxF) {
     const tx = freqToPlotX(tunerMhz, w, span);
-    ctx.strokeStyle = "#8b93a7";
+    ctx.strokeStyle = "#9a948a";
     ctx.setLineDash([2, 3]);
     ctx.beginPath();
     ctx.moveTo(tx, 0);
     ctx.lineTo(tx, h);
     ctx.stroke();
     ctx.setLineDash([]);
-    ctx.fillStyle = "#9aa3b2";
-    ctx.font = "9px Geist Mono, monospace";
+    ctx.fillStyle = "#555";
+    ctx.font = "11px Courier Prime, monospace";
     ctx.fillText("tuner centre", Math.min(tx + 2, w - 52), h - 4);
   }
   const labelKeys = BOOKMARKS.map((b) => b.key);
@@ -458,11 +461,11 @@ function drawAirband(airband) {
   const heading = $("#recordings-heading");
   if (!canvas) return;
   const { ctx, w, h } = fitCanvas(canvas, 200);
-  ctx.fillStyle = "#08090c";
+  ctx.fillStyle = "#fbfaf7";
   ctx.fillRect(0, 0, w, h);
   if (!airband?.available || !airband.channels?.length) {
-    ctx.fillStyle = "#9aa3b2";
-    ctx.font = "13px Geist Sans, sans-serif";
+    ctx.fillStyle = "#555";
+    ctx.font = "13px Libre Franklin, sans-serif";
     ctx.fillText(airband?.reason || "No airband scan in this capture.", 12, h / 2);
     if (note) note.textContent = "";
     return;
@@ -480,16 +483,16 @@ function drawAirband(airband) {
     const x = ((c.freq_mhz - minF) / (maxF - minF)) * (w - 24) + 12;
     const barH = ((c.maxhold_over_floor_db ?? 0) / maxV) * (h - padBottom - 8);
     const isSpur = c.tag?.includes("spur");
-    ctx.fillStyle = isSpur ? "#8b93a7" : "#6bcf7f";
+    ctx.fillStyle = isSpur ? "#9a948a" : "#222";
     ctx.fillRect(x, h - barH - padBottom, barW, barH);
     if (Math.abs(c.freq_mhz - 121.5) < 0.05 || Math.abs(c.freq_mhz - 123.1) < 0.05) {
-      ctx.fillStyle = "#e8eaef";
-      ctx.font = "9px Geist Mono, monospace";
+      ctx.fillStyle = "#111";
+      ctx.font = "11px Courier Prime, monospace";
       ctx.fillText(c.freq_mhz.toFixed(1), x, h - 6);
     }
   }
-  ctx.fillStyle = "#9aa3b2";
-  ctx.font = "10px Geist Mono, monospace";
+  ctx.fillStyle = "#555";
+  ctx.font = "11px Courier Prime, monospace";
   ctx.fillText(`${minF.toFixed(1)}`, 8, h - 8);
   ctx.fillText(`${maxF.toFixed(1)}`, w - 44, h - 8);
   if (note) {
@@ -555,7 +558,7 @@ function renderAisSpark(messages) {
   el.innerHTML = buckets
     .map((b) => {
       const h = (b / maxB) * 100;
-      return `<span style="display:inline-block;width:7%;height:${h}%;background:#3ec6c9;vertical-align:bottom;margin:0 0.5%"></span>`;
+      return `<span style="display:inline-block;width:7%;height:${h}%;background:#b42318;vertical-align:bottom;margin:0 0.5%"></span>`;
     })
     .join("");
   el.style.display = "flex";
@@ -571,16 +574,16 @@ function initHarbourSchematicMap(lat, lon) {
   const grid = [];
   for (let i = 0; i <= 8; i++) {
     const p = i * 25;
-    grid.push(`<line x1="${p}" y1="0" x2="${p}" y2="200" stroke="#1a2030" stroke-width="0.5"/>`);
-    grid.push(`<line x1="0" y1="${p}" x2="200" y2="${p}" stroke="#1a2030" stroke-width="0.5"/>`);
+    grid.push(`<line x1="${p}" y1="0" x2="${p}" y2="200" stroke="#e7e3da" stroke-width="0.5"/>`);
+    grid.push(`<line x1="0" y1="${p}" x2="200" y2="${p}" stroke="#e7e3da" stroke-width="0.5"/>`);
   }
   container.innerHTML = `<svg viewBox="0 0 200 200" width="100%" height="100%" class="harbour-svg" role="img" aria-label="Valletta harbour schematic">
-    <rect width="200" height="200" fill="#0a0c10"/>
+    <rect width="200" height="200" fill="#f1efe9"/>
     ${grid.join("")}
-    <path d="M 35 130 C 55 70, 95 55, 130 85 L 150 130 C 120 155, 70 160, 35 130 Z" fill="#121820" stroke="#2a3344" stroke-width="1"/>
-    <text x="10" y="18" fill="#9aa3b2" font-size="9" font-family="Geist Sans, sans-serif">Grand Harbour · Valletta</text>
-    <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="6" fill="#3ec6c9" fill-opacity="0.9"/>
-    <text x="${(cx + 8).toFixed(1)}" y="${(cy + 3).toFixed(1)}" fill="#3ec6c9" font-size="8" font-family="Geist Mono, monospace">AIS</text>
+    <path d="M 35 130 C 55 70, 95 55, 130 85 L 150 130 C 120 155, 70 160, 35 130 Z" fill="#d9d5cb" stroke="#9a948a" stroke-width="1"/>
+    <text x="10" y="18" fill="#555" font-size="9" font-family="Libre Franklin, sans-serif">Grand Harbour · Valletta</text>
+    <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="6" fill="#b42318" fill-opacity="0.9"/>
+    <text x="${(cx + 8).toFixed(1)}" y="${(cy + 3).toFixed(1)}" fill="#b42318" font-size="8" font-family="Courier Prime, monospace">AIS</text>
   </svg>`;
 }
 
@@ -736,15 +739,17 @@ async function refreshDashboard() {
 function setupTabs() {
   const buttons = document.querySelectorAll(".tab-btn");
   const panels = document.querySelectorAll(".tab-panel");
-  const show = (name) => {
+  const show = (name, scroll = true) => {
     buttons.forEach((b) => b.classList.toggle("active", b.dataset.tabTarget === name));
     panels.forEach((p) => {
       const match = p.dataset.tab === name;
       p.classList.toggle("active", match);
     });
-    const main = $("#main");
-    if (main) main.scrollIntoView({ block: "start", behavior: "instant" in window ? "instant" : "auto" });
-    window.scrollTo(0, 0);
+    if (scroll) {
+      requestAnimationFrame(() =>
+        document.querySelector(`.tab-panel[data-tab="${name}"]`)?.scrollIntoView({ block: "start" }),
+      );
+    }
     requestAnimationFrame(() => redrawCharts());
   };
   buttons.forEach((b) => {
@@ -757,7 +762,7 @@ function setupTabs() {
     const key = icon.getAttribute("data-icon");
     if (TAB_ICONS[key]) icon.innerHTML = TAB_ICONS[key];
   });
-  show("harbour");
+  show("harbour", false);
 }
 
 function setupSubtabs() {

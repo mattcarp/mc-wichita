@@ -329,13 +329,91 @@ def live_status_payload(stat: Optional[Dict[str, Any]], ships: List[Dict[str, An
     }
 
 
+ROSTER_WINDOW_S = float(os.environ.get("WICHITA_ROSTER_WINDOW_S", "3600"))
+
+
+def roster_file() -> Optional[Path]:
+    raw = os.environ.get("WICHITA_AIS_ROSTER_FILE", "").strip()
+    if not raw:
+        snaps = os.environ.get("WICHITA_AIS_SNAPSHOTS_DIR", "").strip()
+        if not snaps:
+            return None
+        raw = str(Path(snaps).expanduser().parent / "ais_roster.json")
+    return Path(raw).expanduser()
+
+
+def _load_roster(path: Optional[Path]) -> Dict[str, Any]:
+    if path is None or not path.is_file():
+        return {"ships": {}, "last_ok_epoch": None}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        if isinstance(data, dict) and isinstance(data.get("ships"), dict):
+            return data
+    except (OSError, ValueError):
+        logger.warning("AIS roster file unreadable: %s", path)
+    return {"ships": {}, "last_ok_epoch": None}
+
+
+def _save_roster(path: Optional[Path], roster: Dict[str, Any]) -> None:
+    if path is None:
+        return
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tmp = path.with_suffix(".tmp")
+        tmp.write_text(json.dumps(roster), encoding="utf-8")
+        tmp.replace(path)
+    except OSError as exc:
+        logger.warning("AIS roster not saved: %s", exc)
+
+
+def merge_roster(
+    ships_raw: Optional[List[Dict[str, Any]]],
+    online: bool,
+    now_epoch: float,
+    path: Optional[Path] = None,
+) -> Tuple[List[Dict[str, Any]], Optional[float]]:
+    """Persist every real ship heard and return the roster (raw dicts, last_signal recomputed).
+
+    Online: keep ships heard within ROSTER_WINDOW_S (AIS-catcher forgets ships sooner).
+    Offline: keep the last known list unchanged so the page never goes blank.
+    """
+    path = path if path is not None else roster_file()
+    roster = _load_roster(path)
+    entries: Dict[str, Any] = roster.get("ships") or {}
+    if online:
+        for raw in ships_raw or []:
+            try:
+                mmsi = int(raw.get("mmsi") or 0)
+                heard = now_epoch - float(raw.get("last_signal") or 0)
+            except (TypeError, ValueError):
+                continue
+            if not mmsi:
+                continue
+            prev = entries.get(str(mmsi))
+            if prev and float(prev.get("heard_epoch") or 0) > heard and not raw.get("lat"):
+                continue
+            entries[str(mmsi)] = {"raw": raw, "heard_epoch": heard}
+        cutoff = now_epoch - ROSTER_WINDOW_S
+        entries = {k: v for k, v in entries.items() if float(v.get("heard_epoch") or 0) >= cutoff}
+        roster = {"ships": entries, "last_ok_epoch": now_epoch}
+        _save_roster(path, roster)
+    out = []
+    for v in entries.values():
+        raw = dict(v.get("raw") or {})
+        raw["last_signal"] = max(0.0, now_epoch - float(v.get("heard_epoch") or now_epoch))
+        out.append(raw)
+    return out, roster.get("last_ok_epoch")
+
+
 def live_dashboard_bundle() -> Dict[str, Any]:
     ships_raw, err_ships = fetch_ais_json("/api/ships.json")
     stat_raw, err_stat = fetch_ais_json("/api/stat.json")
     paths_raw, err_paths = fetch_ais_json("/api/allpath.geojson")
     online = ships_raw is not None
     err = err_ships or (None if stat_raw else err_stat)
-    ships = (ships_raw or {}).get("ships") or []
+    ships, last_ok_epoch = merge_roster(
+        (ships_raw or {}).get("ships") or [], online, datetime.now(timezone.utc).timestamp()
+    )
     status = live_status_payload(stat_raw, ships, online, err)
     paths = paths_raw if isinstance(paths_raw, dict) else {"type": "FeatureCollection", "features": []}
     now = datetime.now(timezone.utc)
@@ -366,6 +444,11 @@ def live_dashboard_bundle() -> Dict[str, Any]:
         "coverage_label": rx_health.get("coverage_label"),
         "paths": paths,
         "paths_error": err_paths,
+        "roster_window_s": ROSTER_WINDOW_S,
+        "feed_paused": not online,
+        "feed_last_ok_utc": datetime.fromtimestamp(last_ok_epoch, tz=timezone.utc).isoformat()
+        if last_ok_epoch
+        else None,
     }
 
 

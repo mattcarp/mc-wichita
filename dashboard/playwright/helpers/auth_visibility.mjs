@@ -1,7 +1,7 @@
 import path from "node:path";
 import { expect } from "@playwright/test";
 
-export const ARTIFACTS = "/opt/cursor/artifacts";
+export const ARTIFACTS = process.env.WICHITA_ARTIFACTS || "/opt/cursor/artifacts";
 export const AUTH_STEPS = ["email", "link", "code", "verify"];
 
 export async function stepDisplay(page, step) {

@@ -1,10 +1,10 @@
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261010-gev1";
-import { HarbourMap, typeColor } from "./harbour_map.js?v=20261010-gev1";
-import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261010-gev1";
-import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261010-gev1";
-import { initWatchZones } from "./watch_zones.js?v=20261010-gev1";
-import { initIncidentReplay } from "./incident_replay.js?v=20261010-gev1";
-import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261010-gev1";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261013-fr1";
+import { HarbourMap, typeColor } from "./harbour_map.js?v=20261013-fr1";
+import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261013-fr1";
+import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261013-fr1";
+import { initWatchZones } from "./watch_zones.js?v=20261013-fr1";
+import { initIncidentReplay } from "./incident_replay.js?v=20261013-fr1";
+import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261013-fr1";
 
 const GROUPS = [
   { key: "now", title: "Now" },
@@ -55,7 +55,7 @@ function renderHeader(snapshot) {
   }
   const fc = snapshot.freshness_counts || {};
   const dot = snapshot.online ? "live" : "offline";
-  live.innerHTML = `<span class="pill pill-${dot}">${snapshot.online ? "Live" : "Offline"}</span>
+  live.innerHTML = `<span class="pill pill-${dot}">${snapshot.online ? "Live" : "Feed paused"}</span>
     <span class="header-ship-count">${fc.now ?? 0} ships now · ${fc.today ?? 0} today</span>`;
 }
 
@@ -95,7 +95,7 @@ function shipCardHtml(s, selected) {
     <div class="live-ship-card-head">
       <span class="ship-type-icon" aria-hidden="true"></span>
       <span class="live-ship-flag" title="${s.country || ""}">${flag}</span>
-      <strong>${s.display_name}</strong>
+      <strong>${s.display_name}</strong>${s.speed_known !== false && (s.speed_kn ?? 0) >= 1 ? `<span class="ship-moving mono">moving ${s.speed_kn} kn</span>` : ""}
       <span class="mono ship-fresh ship-fresh-${s.freshness || "earlier"}">${tierLabel} · ${agoLabel(s.last_signal_s)}</span>
     </div>
     <p class="ship-lead">${s.lead_sentence}</p>
@@ -127,9 +127,18 @@ function matchesEntityQuery(item, q) {
 function renderShipList(snapshot) {
   const ul = $("#liveShipList");
   if (!ul) return;
-  const ships = (snapshot?.ships || []).filter((s) => matchesEntityQuery(s, state.entityQuery));
+  const ships = (snapshot?.ships || [])
+    .filter((s) => matchesEntityQuery(s, state.entityQuery))
+    .slice()
+    .sort((a, b) => (a.last_signal_s ?? 1e9) - (b.last_signal_s ?? 1e9));
+  const paused = Boolean(snapshot?.feed_paused || snapshot?.receiver_offline);
+  const sinceUtc = snapshot?.feed_last_ok_utc;
+  const winMin = Math.round((snapshot?.roster_window_s || 3600) / 60);
+  const note = paused
+    ? `<li class="roster-note roster-note-paused" role="status" data-test-id="roster-paused">Feed paused${sinceUtc ? ` since ${formatMaltaTimeShort(sinceUtc)}` : ""}; showing the last ships heard.</li>`
+    : `<li class="roster-note" data-test-id="roster-note">${ships.length} vessel${ships.length === 1 ? "" : "s"} heard in the last ${winMin >= 60 ? `${Math.round(winMin / 60)} h` : `${winMin} min`}, newest first.</li>`;
   if (!ships.length) {
-    ul.innerHTML = "<li class='muted'>No vessels in the AIS window.</li>";
+    ul.innerHTML = `${note}<li class='muted'>${paused ? "No ships were heard before the feed paused." : "No vessels heard in the last hour."}</li>`;
     return;
   }
   const byGroup = new Map(GROUPS.map((g) => [g.key, []]));
@@ -137,11 +146,11 @@ function renderShipList(snapshot) {
     const k = s.freshness || "earlier";
     (byGroup.get(k) || byGroup.get("earlier")).push(s);
   }
-  ul.innerHTML = GROUPS
+  ul.innerHTML = note + GROUPS
     .map((g) => {
       const list = byGroup.get(g.key) || [];
       if (!list.length) return "";
-      return `<li class="ship-group-label">${g.title}</li>${list.map((s) => shipCardHtml(s, state.selectedMmsi)).join("")}`;
+      return `<li class="ship-group-label">${g.title} · ${list.length}</li>${list.map((s) => shipCardHtml(s, state.selectedMmsi)).join("")}`;
     })
     .join("");
   ul.querySelectorAll(".live-ship-card").forEach((li) => {

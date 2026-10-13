@@ -60,3 +60,24 @@ def test_live_ship_detail_fixture():
     res = client.get("/api/live-ais/ships/2155001")
     assert res.status_code == 200
     assert res.json()["mmsi"] == 2155001
+
+
+def test_roster_keeps_last_list_when_feed_drops(tmp_path):
+    import wichita_ais_live as wal
+
+    path = tmp_path / "roster.json"
+    ships = [{"mmsi": 248000662, "shipname": "KATALEYA", "last_signal": 30},
+             {"mmsi": 215020000, "last_signal": 1200}]
+    out, ok = wal.merge_roster(ships, True, 10_000.0, path)
+    assert len(out) == 2 and ok == 10_000.0
+    # AIS-catcher forgot one ship; roster keeps it inside the window
+    out, _ = wal.merge_roster(ships[:1], True, 10_060.0, path)
+    assert len(out) == 2
+    # Feed down: last list kept, last-heard keeps ageing honestly
+    out, ok = wal.merge_roster(None, False, 20_000.0, path)
+    assert len(out) == 2 and ok == 10_060.0
+    k = [s for s in out if s["mmsi"] == 248000662][0]
+    assert abs(k["last_signal"] - (20_000.0 - 10_030.0)) < 1
+    # Feed back: entries older than the window are pruned
+    out, _ = wal.merge_roster([], True, 20_000.0, path)
+    assert out == []

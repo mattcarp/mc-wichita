@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import path from "node:path";
 
-const ARTIFACTS = "/opt/cursor/artifacts";
+const ARTIFACTS = process.env.WICHITA_ARTIFACTS || "/opt/cursor/artifacts";
 const STEPS = ["email", "link", "code", "verify"];
 
 async function computedDisplay(locator) {
