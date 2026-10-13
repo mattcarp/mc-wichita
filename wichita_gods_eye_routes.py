@@ -11,10 +11,10 @@ router = APIRouter(prefix="/api/sky", tags=["sky"])
 
 
 @router.get("/adsb/snapshot")
-async def adsb_snapshot():
+def adsb_snapshot():
     return wad.live_adsb_snapshot()
 
 
 @router.get("/satellites")
-async def satellites_overview():
+def satellites_overview():
     return wsat.satellite_overview()

@@ -23,7 +23,7 @@ async def live_ais_snapshot():
 
 
 @router.get("/status")
-async def live_ais_status():
+def live_ais_status():
     ships_raw, err = wal.fetch_ais_json("/api/ships.json")
     stat_raw, _ = wal.fetch_ais_json("/api/stat.json")
     ships = (ships_raw or {}).get("ships") or []
@@ -38,7 +38,7 @@ async def live_ais_mmsi_lookup(mmsi: int):
 
 
 @router.get("/ships/{mmsi}")
-async def live_ais_ship(mmsi: int):
+def live_ais_ship(mmsi: int):
     detail, err = wal.live_ship_detail(mmsi)
     if detail is None:
         raise HTTPException(status_code=503 if err == "receiver offline" else 404, detail=err or "not found")
@@ -46,7 +46,7 @@ async def live_ais_ship(mmsi: int):
 
 
 @router.get("/events")
-async def live_ais_events(hours: int = 2, limit: int = 20, before: str | None = None):
+def live_ais_events(hours: int = 2, limit: int = 20, before: str | None = None):
     engine = get_engine()
     return engine.events_page(hours=hours, limit=limit, before=before)
 
@@ -66,7 +66,7 @@ async def live_ais_history_at(ts_utc: str, max_delta_s: float = 120.0):
 
 
 @router.get("/activity")
-async def live_ais_activity(hours: int = 24):
+def live_ais_activity(hours: int = 24):
     if hours not in (24, 168):
         raise HTTPException(status_code=400, detail="hours must be 24 or 168")
     return {
@@ -77,7 +77,7 @@ async def live_ais_activity(hours: int = 24):
 
 
 @router.get("/voice-watch")
-async def live_voice_watch():
+def live_voice_watch():
     voice_live = os.environ.get("WICHITA_VOICE_LIVE", "0").strip().lower() in ("1", "true", "yes")
     roots = wc.captures_roots_from_env()
     refs = wc.scan_captures(roots)

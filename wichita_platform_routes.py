@@ -25,8 +25,8 @@ class WatchZoneBody(BaseModel):
 
 
 @router.get("/api/feed-health")
-async def feed_health():
-    ais = wal.live_dashboard_bundle()
+def feed_health():
+    ais = wal.cached_dashboard_bundle()
     adsb = wad.live_adsb_snapshot()
     ships = ais.get("ships") or []
     planes = adsb.get("aircraft") or []
@@ -56,7 +56,7 @@ async def feed_health():
 
 
 @router.get("/api/malta/weather")
-async def malta_weather():
+def malta_weather():
     return wmw.malta_weather_bundle()
 
 
