@@ -4,11 +4,11 @@ import {
   plotInnerWidth,
   psdSpan,
   samplePsdAtMhz,
-} from "./spectrum_geometry.mjs?v=20261013-fr1";
-import { initLiveAis } from "./live_ais.js?v=20261013-fr1";
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261013-fr1";
-import { GEAR_ICON, TAB_ICONS } from "./tab_icons.js?v=20261013-fr1";
-import { initAlertReview, initVoiceLab } from "./voice_lab.js?v=20261013-fr1";
+} from "./spectrum_geometry.mjs?v=20261013-fr2";
+import { initLiveAis } from "./live_ais.js?v=20261013-fr2";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261013-fr2";
+import { GEAR_ICON, TAB_ICONS } from "./tab_icons.js?v=20261013-fr2";
+import { initAlertReview, initVoiceLab } from "./voice_lab.js?v=20261013-fr2";
 const VALLETTA = { lat: 35.8987, lon: 14.5145, span: 0.06 };
 
 const BOOKMARKS = [
@@ -716,12 +716,16 @@ async function refreshDashboard() {
     const data = await fetchJson("/api/capture-feed/dashboard");
     state.dashboard = data;
     if (!data.available) {
-      if (banner) {
-        banner.hidden = false;
-        banner.textContent = data.message;
+      if (banner) banner.hidden = true;
+      document.body.classList.add("no-captures");
+      const note = $("#captureAisNote");
+      if (note) {
+        note.textContent = "No recorded captures on this server yet. Spectrum and waterfall appear here once a capture from the Valletta receiver is synced.";
+        note.title = data.message || "";
       }
       return;
     }
+    document.body.classList.remove("no-captures");
     if (banner) banner.hidden = true;
     populateCaptureSelect(data.recent_captures || [], state.captureId || data.primary_capture_id);
     const id = state.captureId || data.primary_capture_id;

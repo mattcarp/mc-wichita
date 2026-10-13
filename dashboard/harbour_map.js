@@ -1,4 +1,4 @@
-import { EntityMotion } from "./map_motion.js?v=20261013-fr1";
+import { EntityMotion } from "./map_motion.js?v=20261013-fr2";
 
 const TYPE_COLORS = {
   passenger: "#5eb8ff",
