@@ -273,7 +273,7 @@ async function bootDashboard(Clerk, env) {
   updateUserMenu(Clerk, env);
   if (dashboardBooted) return;
   dashboardBooted = true;
-  await import("./dashboard.js?v=20261013-sp7");
+  await import("./dashboard.js?v=20261013-sp8");
 }
 
 function revealSignedInDashboard(Clerk, env) {

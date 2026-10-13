@@ -230,3 +230,7 @@ details[open] > summary.expand-cue .cue-less, .side-ship[aria-expanded="true"] .
 /* The Following card sits under the map and pushes the sidebar down; never overlays it */
 .map-with-side .harbour-map-col { height: auto !important; max-height: none !important; min-height: 0 !important; overflow: visible !important; display: block !important; }
 .map-with-side .map-follow-card { position: relative !important; inset: auto !important; z-index: 1; }
+@media (max-width: 899px) {
+  .map-side-list { max-height: none !important; height: auto !important; overflow: visible !important; }
+  .side-scroll { max-height: 320px; flex: none; }
+}
