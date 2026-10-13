@@ -212,3 +212,4 @@ body.no-captures #panel-recordings .waterfall-details,
 body.no-captures #panel-recordings .subtabs,
 body.no-captures #panel-recordings .select-wrap,
 body.no-captures #panel-recordings .bookmark-legend { display: none !important; }
+.badge-paused { color: var(--muted) !important; }

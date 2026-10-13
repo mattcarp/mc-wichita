@@ -1,10 +1,10 @@
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261013-fr2";
-import { HarbourMap, typeColor } from "./harbour_map.js?v=20261013-fr2";
-import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261013-fr2";
-import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261013-fr2";
-import { initWatchZones } from "./watch_zones.js?v=20261013-fr2";
-import { initIncidentReplay } from "./incident_replay.js?v=20261013-fr2";
-import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261013-fr2";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261013-fr3";
+import { HarbourMap, typeColor } from "./harbour_map.js?v=20261013-fr3";
+import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261013-fr3";
+import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261013-fr3";
+import { initWatchZones } from "./watch_zones.js?v=20261013-fr3";
+import { initIncidentReplay } from "./incident_replay.js?v=20261013-fr3";
+import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261013-fr3";
 
 const GROUPS = [
   { key: "now", title: "Now" },
@@ -46,7 +46,16 @@ function agoLabel(lastSignalS) {
   return `${Math.round(lastSignalS / 3600)} h ago`;
 }
 
+function renderHarbourBadge(snapshot) {
+  const b = $("#harbourLiveBadge");
+  if (!b || !snapshot) return;
+  const paused = Boolean(snapshot.feed_paused || snapshot.receiver_offline || snapshot.online === false);
+  b.textContent = paused ? "Feed paused" : "LIVE";
+  b.classList.toggle("badge-paused", paused);
+}
+
 function renderHeader(snapshot) {
+  renderHarbourBadge(snapshot);
   const live = $("#headerLive");
   if (!live) return;
   if (!snapshot) {
@@ -96,7 +105,7 @@ function shipCardHtml(s, selected) {
       <span class="ship-type-icon" aria-hidden="true"></span>
       <span class="live-ship-flag" title="${s.country || ""}">${flag}</span>
       <strong>${s.display_name}</strong>${s.speed_known !== false && (s.speed_kn ?? 0) >= 1 ? `<span class="ship-moving mono">moving ${s.speed_kn} kn</span>` : ""}
-      <span class="mono ship-fresh ship-fresh-${s.freshness || "earlier"}">${tierLabel} · ${agoLabel(s.last_signal_s)}</span>
+      <span class="mono ship-fresh ship-fresh-${s.freshness || "earlier"}">${(() => { const ago = agoLabel(s.last_signal_s); return !ago || ago.toLowerCase() === tierLabel.toLowerCase() ? tierLabel : `${tierLabel} · ${ago}`; })()}</span>
     </div>
     <p class="ship-lead">${s.lead_sentence}</p>
     <p class="muted ship-meta">${s.shiptype_label}${eta ? ` · ${eta}` : ""}</p>
