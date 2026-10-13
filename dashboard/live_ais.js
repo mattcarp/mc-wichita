@@ -292,6 +292,7 @@ function renderSheet(ship) {
       <dt>Speed / course</dt><dd>${ship.speed_kn ?? "—"} kn · ${ship.cog_deg != null ? Math.round(ship.cog_deg) + "°" : "—"}</dd>
       <dt>Last heard</dt><dd>${agoLabel(ship.last_signal_s)} (${ship.last_heard_utc ? formatMaltaTimeShort(ship.last_heard_utc) : "—"})</dd>
     </dl>
+    ${mmsiLookupHtml(ship)}
     <a class="mmsi-link" href="https://www.vesselfinder.com/?mmsi=${ship.mmsi}" rel="noopener noreferrer" target="_blank">Look up MMSI on VesselFinder (external) ↗</a>
   `;
   $("#sheetClose")?.addEventListener("click", () => selectShip(null));
@@ -316,6 +317,7 @@ function renderDrawer(ship) {
       <dt>ETA</dt><dd>${ship.eta_malta ? `${ship.eta_malta}${ship.eta_malta_stale ? " (out of date)" : ""} Malta` : "—"}</dd>
       <dt>Signals</dt><dd>${ship.level_db != null ? ship.level_db.toFixed(1) + " dB" : "—"} · ${ship.message_count ?? 0} msgs</dd>
     </dl>
+    ${mmsiLookupHtml(ship)}
     <a class="mmsi-link" href="https://www.vesselfinder.com/?mmsi=${ship.mmsi}" rel="noopener noreferrer" target="_blank">Look up MMSI on VesselFinder (external) ↗</a>
   `;
   $("#drawerClose")?.addEventListener("click", () => selectShip(null));
@@ -342,7 +344,8 @@ function refreshSelectedShipPanels() {
   }
   if (isNarrowViewport()) {
     renderDrawer(null);
-    renderSheet(ship);
+    // Phone: details open inline in the sidebar stacked under the map.
+    renderSheet($("#mapSideList") ? null : ship);
   } else {
     renderSheet(null);
     // Desktop: details open in the live sidebar beside the map.
@@ -424,7 +427,7 @@ async function selectShip(mmsi) {
       const detail = await res.json();
       if (isNarrowViewport()) {
         renderDrawer(null);
-        renderSheet(detail);
+        renderSheet($("#mapSideList") ? null : detail);
       } else {
         renderSheet(null);
         renderDrawer($("#mapSideList") ? null : detail);
