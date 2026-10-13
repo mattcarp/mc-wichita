@@ -227,3 +227,6 @@ details[open] > summary.expand-cue .cue-less, .side-ship[aria-expanded="true"] .
 .tab-panel .panel-head .eyebrow { font: 800 13px/1.3 var(--display) !important; letter-spacing: .06em !important; text-transform: uppercase !important; color: var(--red) !important; margin: 0 0 4px !important; padding: 0 !important; border: 0 !important; background: none !important; }
 .tab-panel .panel-head h2 { font: 800 26px/1.1 var(--display) !important; letter-spacing: -.01em !important; text-transform: none !important; color: var(--blue) !important; margin: 0 !important; padding: 0 !important; border: 0 !important; background: none !important; }
 .tab-btn, .tab-btn.active { font: 700 14px/1 var(--display) !important; letter-spacing: .04em !important; text-transform: uppercase !important; padding: 0 16px !important; min-height: 44px; border: 0 !important; }
+/* The Following card sits under the map and pushes the sidebar down; never overlays it */
+.map-with-side .harbour-map-col { height: auto !important; max-height: none !important; min-height: 0 !important; overflow: visible !important; display: block !important; }
+.map-with-side .map-follow-card { position: relative !important; inset: auto !important; z-index: 1; }

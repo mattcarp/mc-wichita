@@ -17,7 +17,7 @@ async function openApp(page) {
   page.on("pageerror", (e) => errors.push(String(e)));
   await page.goto("/", { waitUntil: "load" });
   await page.waitForSelector("#appShell:not([hidden])", { timeout: 20000 });
-  await page.waitForSelector("#harbourMap svg path", { timeout: 15000 });
+  await page.waitForSelector("#harbourMap svg path", { state: "attached", timeout: 15000 });
   await page.waitForFunction(() => !/Checking/.test(document.querySelector("#headerLive")?.innerText || ""), null, { timeout: 15000 });
   await page.waitForTimeout(1500);
   return errors;
