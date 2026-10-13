@@ -1,10 +1,10 @@
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261013-fr4";
-import { HarbourMap, typeColor } from "./harbour_map.js?v=20261013-fr4";
-import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261013-fr4";
-import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261013-fr4";
-import { initWatchZones } from "./watch_zones.js?v=20261013-fr4";
-import { initIncidentReplay } from "./incident_replay.js?v=20261013-fr4";
-import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261013-fr4";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261013-fr5";
+import { HarbourMap, typeColor } from "./harbour_map.js?v=20261013-fr5";
+import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261013-fr5";
+import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261013-fr5";
+import { initWatchZones } from "./watch_zones.js?v=20261013-fr5";
+import { initIncidentReplay } from "./incident_replay.js?v=20261013-fr5";
+import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261013-fr5";
 
 const GROUPS = [
   { key: "now", title: "Now" },
@@ -560,23 +560,11 @@ function renderStationLive(snapshot) {
 
 async function pollLive() {
   try {
-    const [res, healthRes] = await Promise.all([
-      fetch("/api/live-ais/snapshot"),
-      fetch("/api/feed-health"),
-    ]);
+    const healthP = fetch("/api/feed-health").catch(() => null);
+    const res = await fetch("/api/live-ais/snapshot");
     if (!res.ok) throw new Error(String(res.status));
     const data = await res.json();
-    const feedHealth = healthRes.ok ? await healthRes.json() : null;
     state.snapshot = data;
-    renderHeardAndHealth(data, feedHealth);
-    await renderMaltaWeather();
-    renderHeader(data);
-    renderSummary(data);
-    const fcEl = $("#freshnessCounts");
-    if (fcEl && data.freshness_counts) {
-      fcEl.textContent = `${data.freshness_counts.now} now · ${data.freshness_counts.today} today`;
-    }
-    renderShipList(data);
     if (!state.map) {
       const host = $("#harbourMap");
       if (host) {
@@ -594,6 +582,30 @@ async function pollLive() {
         });
       }
     }
+    state.map?.setReceiver({ ...data.receiver, label: data.receiver?.label });
+    state.map?.update({
+      ships: (isReplayActive() ? replayShipsNow() : null) || data.ships,
+      baseStations: data.base_stations,
+      paths: data.paths,
+      planes: state.sky?.adsb?.aircraft,
+      satelliteTracks: satelliteTracksForMap(state.sky?.satellites),
+      selectedMmsi: state.selectedMmsi,
+      selectedPlaneId: state.selectedPlaneId,
+      follow: state.follow,
+      replayMode: isReplayActive(),
+    });
+    renderShipList(data);
+    const healthRes = await healthP;
+    const feedHealth = healthRes && healthRes.ok ? await healthRes.json() : null;
+    renderHeardAndHealth(data, feedHealth);
+    await renderMaltaWeather();
+    renderHeader(data);
+    renderSummary(data);
+    const fcEl = $("#freshnessCounts");
+    if (fcEl && data.freshness_counts) {
+      fcEl.textContent = `${data.freshness_counts.now} now · ${data.freshness_counts.today} today`;
+    }
+    renderShipList(data);
     state.sky = await fetchSkySnapshots();
     const planes = state.sky?.adsb?.aircraft || [];
     const planesView = state.entityQuery
