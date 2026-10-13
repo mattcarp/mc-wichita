@@ -1,4 +1,4 @@
-const V = "?v=20261013-sp5";
+const V = "?v=20261013-sp6";
 
 let drawPoints = [];
 let drawing = false;

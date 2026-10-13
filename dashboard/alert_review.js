@@ -1,78 +1,7 @@
-/** Voice Lab panel: test microphone analysis only; never feeds /alerts. */
-
-const BANNER_TEXT = "TEST MICROPHONE - not radio, not evidence";
+/** Human-review alert queue: every alert waits for a person; nothing acts on its own. */
 
 function $(sel) {
   return document.querySelector(sel);
-}
-
-function formatJson(value) {
-  return JSON.stringify(value, null, 2);
-}
-
-async function refreshVoiceLabStatus() {
-  const micNote = $("#voiceLabMicNote");
-  if (!micNote) return;
-  try {
-    const status = await fetch("/voice-lab/status").then((r) => r.json());
-    micNote.textContent = status.mic_enabled
-      ? "Local mic capture enabled (WICHITA_VOICE_LAB_MIC)."
-      : "Upload a WAV clip, or set WICHITA_VOICE_LAB_MIC=1 for a short mic capture.";
-  } catch {
-    micNote.textContent = "Voice Lab API unavailable.";
-  }
-}
-
-async function runVoiceLabAnalyze({ file, useMic }) {
-  const out = $("#voiceLabOutput");
-  const stressEl = $("#voiceLabStress");
-  if (out) out.textContent = "Analyzing…";
-  if (stressEl) stressEl.textContent = "—";
-
-  const form = new FormData();
-  if (useMic) {
-    form.append("use_mic", "true");
-  } else if (file) {
-    form.append("file", file, file.name);
-  } else {
-    if (out) out.textContent = "Choose a WAV file or enable mic capture.";
-    return;
-  }
-
-  const response = await fetch("/voice-lab/analyze", { method: "POST", body: form });
-  const body = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    if (out) out.textContent = body.detail || `Analysis failed (${response.status})`;
-    return;
-  }
-
-  if (stressEl && body.stress) {
-    stressEl.textContent = `${body.stress.stress_score}% (${body.stress.alert_level})`;
-  }
-  if (out) out.textContent = formatJson(body);
-}
-
-export function initVoiceLab() {
-  const banner = $("#voiceLabBanner");
-  if (banner) banner.textContent = BANNER_TEXT;
-
-  refreshVoiceLabStatus();
-
-  $("#voiceLabUploadBtn")?.addEventListener("click", () => {
-    const input = $("#voiceLabFile");
-    const file = input?.files?.[0];
-    runVoiceLabAnalyze({ file, useMic: false }).catch((err) => {
-      const out = $("#voiceLabOutput");
-      if (out) out.textContent = String(err);
-    });
-  });
-
-  $("#voiceLabMicBtn")?.addEventListener("click", () => {
-    runVoiceLabAnalyze({ useMic: true }).catch((err) => {
-      const out = $("#voiceLabOutput");
-      if (out) out.textContent = String(err);
-    });
-  });
 }
 
 export function initAlertReview() {

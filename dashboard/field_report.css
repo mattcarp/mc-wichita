@@ -85,8 +85,8 @@ body { padding-bottom: 0 !important; }
   #panel-heard { grid-column: span 7; }
   #panel-sky { grid-column: span 5; }
   #panel-recordings { grid-column: span 12; }
-  #panel-voicelab { grid-column: span 7; }
-  #panel-station { grid-column: span 5; }
+  #panel-voicelab { display: none; }
+  #panel-station { grid-column: span 12; }
   .tab-panel { scroll-margin-top: 56px; }
 }
 .panel {
