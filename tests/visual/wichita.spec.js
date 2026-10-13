@@ -153,7 +153,9 @@ test("(a) screenshot baselines per tab", async ({ page }) => {
     await page.waitForTimeout(700);
     // Panel headers are static, so they get strict baselines. Whole-viewport shots of live
     // sections shift with real data, so they are saved as artifacts, not compared.
-    await expect(page.locator(`#panel-${name} .panel-head`)).toHaveScreenshot(`tab-${name}-head.png`, { mask });
+    const bb = await page.locator(`#panel-${name} .panel-head`).boundingBox();
+    const clip = { x: Math.floor(bb.x), y: Math.floor(bb.y), width: Math.ceil(bb.width), height: 44 };
+    await expect(page).toHaveScreenshot(`tab-${name}-head.png`, { mask, clip });
     await page.screenshot({ path: test.info().outputPath(`tab-${name}.png`), mask });
   }
 });
