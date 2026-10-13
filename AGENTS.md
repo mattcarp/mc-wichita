@@ -33,6 +33,31 @@ Read [`WICHITA_PRD.md`](WICHITA_PRD.md) and [`MISSION.md`](MISSION.md) for the c
 7. **Multilingual content stays multilingual.** Don't drop language support in passing edits. Maltese is small-language; if a tool only handles English, mark that limitation explicitly rather than silently filtering.
 8. **Privacy and ethics posture.** This platform listens to live radio. Captures of live transmissions sit in `rf_captures/`. Respect data minimisation; don't expand capture scope or retention without an issue that explicitly authorises it. Don't push real captures to public surfaces.
 
+## Dashboard feature freeze (from 2026-10-13)
+
+The dashboard is ahead of the product. The hero says Wichita listens for how people sound, but the voice and ASR panels are still placeholders. Until that changes, the dashboard (`dashboard/`, `wichita-websdr/`, `tests/visual/`) is frozen.
+
+**Allowed during the freeze:**
+- Bug fixes: something broken, wrong or crashing.
+- Data correctness: a feed showing stale, false or misleading values.
+- Security, privacy and accessibility fixes.
+- UI that a listening feature needs in order to ship. Build it in the same change as the feature.
+
+**Not allowed:** restyles, copy rewrites, new panels, layout tweaks, new visual baselines for cosmetic changes, and map or ship-card polish. Put those ideas in `docs/notes/dashboard-backlog.md` instead.
+
+**The freeze lifts** when the live dashboard shows one real received transmission end to end:
+1. captured from the receiver chain,
+2. transcribed, with the language marked,
+3. scored for voice stress,
+4. shown in the UI with its provenance.
+
+Synthetic audio, `fake_audio_backup/` and mocked scores do not count. Record the lift in this section with the date and the commit.
+
+**Next listening work, in order:**
+1. ADS-B from our own receiver: 1090 MHz antenna, readsb and the OpenSky feeder on the Mini. This gives the map real data, but the freeze stays on.
+2. Get the legal opinions for ground voice. See `docs/notes/opensky.md`, to-do list. No ground-voice capture before they arrive (hard rule 8).
+3. Pick a Maltese-capable ASR for the transcript slot. The leading candidate is mc-vuci's Maltese Whisper: 19.37% WER on FLEURS mt, against 21.90% for Parakeet. Surface the choice in an issue before wiring it in. English, Italian and Arabic must keep working.
+
 ## Commands
 
 ```bash
