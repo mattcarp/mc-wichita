@@ -159,7 +159,7 @@ test("(a) screenshot baselines per tab", async ({ page }) => {
     // sections shift with real data, so they are saved as artifacts, not compared.
     const bb = await page.locator(`#panel-${name} .panel-head`).boundingBox();
     const clip = { x: Math.floor(bb.x), y: Math.floor(bb.y), width: Math.ceil(bb.width), height: 44 };
-    await expect(page).toHaveScreenshot(`tab-${name}-head.png`, { mask, clip });
+    await expect(page).toHaveScreenshot(`tab-${name}-head.png`, { clip });
     await page.screenshot({ path: test.info().outputPath(`tab-${name}.png`), mask });
   }
 });
