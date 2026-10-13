@@ -8,10 +8,10 @@
   <link rel="icon" href="data:," />
   <link rel="preload" href="/dashboard/fonts/LibreFranklin-var.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="/dashboard/fonts/Alexandria-var.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261013-sp1" />
-  <link rel="stylesheet" href="/dashboard/field_report.css?v=20261013-sp1" />
-  <link rel="stylesheet" href="/dashboard/solidarity.css?v=20261013-sp1" />
-  <script type="module" src="/dashboard/clerk_gate.js?v=20261013-sp1"></script>
+  <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261013-sp2" />
+  <link rel="stylesheet" href="/dashboard/field_report.css?v=20261013-sp2" />
+  <link rel="stylesheet" href="/dashboard/solidarity.css?v=20261013-sp2" />
+  <script type="module" src="/dashboard/clerk_gate.js?v=20261013-sp2"></script>
 </head>
 <body class="auth-pending">
   <div id="authGate" class="auth-gate" role="main" aria-label="Sign in">
@@ -66,12 +66,15 @@
   </section>
     <div class="fr-hero-map" aria-label="Live harbour map">
       <p class="fr-kick">Harbour · live AIS · Valletta, Malta</p>
+      <div class="map-with-side">
         <div class="harbour-map-col">
           <div class="map-listening-note" aria-hidden="true"><span class="ml-line">Listening…</span><span class="ml-rule"></span><span class="ml-sub">Valletta, Malta · waiting for the receiver</span></div>
           <div id="harbourMap" class="map map-coastline" aria-label="Malta coastline with live ship positions"></div>
           <div id="mapFollowCard" class="map-follow-card" hidden></div>
           <p class="map-attrib muted">OpenStreetMap land and water (ODbL) · offline · not for navigation</p>
         </div>
+        <aside id="mapSideList" class="map-side-list" aria-label="Ships heard live, select for details"></aside>
+      </div>
     </div>
   </div>
 

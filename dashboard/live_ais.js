@@ -1,10 +1,10 @@
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261013-sp1";
-import { HarbourMap, typeColor } from "./harbour_map.js?v=20261013-sp1";
-import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261013-sp1";
-import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261013-sp1";
-import { initWatchZones } from "./watch_zones.js?v=20261013-sp1";
-import { initIncidentReplay } from "./incident_replay.js?v=20261013-sp1";
-import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261013-sp1";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261013-sp2";
+import { HarbourMap, typeColor } from "./harbour_map.js?v=20261013-sp2";
+import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261013-sp2";
+import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261013-sp2";
+import { initWatchZones } from "./watch_zones.js?v=20261013-sp2";
+import { initIncidentReplay } from "./incident_replay.js?v=20261013-sp2";
+import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261013-sp2";
 
 const GROUPS = [
   { key: "now", title: "Now" },
@@ -111,6 +111,7 @@ function shipCardHtml(s, selected) {
     <p class="muted ship-meta">${s.shiptype_label}${eta ? ` · ${eta}` : ""}</p>
     <details class="ship-raw-details"><summary>Details · MMSI lookup</summary>
       ${mmsiLookupHtml(s)}
+      <a class="mmsi-link" href="https://www.vesselfinder.com/?mmsi=${s.mmsi}" rel="noopener noreferrer" target="_blank">Look up MMSI on VesselFinder (external) ↗</a>
       <p class="mono muted">MMSI ${s.mmsi_display}${s.callsign ? ` · ${s.callsign}` : ""}</p>
       <p class="mono muted">${s.destination_raw || "—"} · ${s.speed_known === false ? "speed unknown" : `${s.speed_kn ?? "—"} kn`} · ${s.message_count ?? 0} msgs</p>
     </details>
@@ -217,6 +218,53 @@ function renderShipList(snapshot) {
   }
 }
 
+// Live sidebar beside the map (restored from 9403979 / 173a98d harbour layout): a scrolling
+// list of ships as they update; clicking one opens its details here, with our in-house MMSI
+// lookup and the external VesselFinder link. Uses the same persisted roster, so it keeps the
+// last ships heard when the feed pauses.
+function renderSideList(snapshot) {
+  const host = $("#mapSideList");
+  if (!host || !snapshot) return;
+  const ships = (snapshot.ships || []).slice().sort((a, b) => (a.last_signal_s ?? 1e9) - (b.last_signal_s ?? 1e9));
+  const paused = Boolean(snapshot.feed_paused || snapshot.receiver_offline);
+  const sinceUtc = snapshot.feed_last_ok_utc;
+  const sel = ships.find((s) => s.mmsi === state.selectedMmsi);
+  const detail = sel
+    ? `<div class="side-detail" data-test-id="side-detail">
+        <div class="side-detail-head"><strong>${esc(sel.display_name)}</strong><button type="button" class="side-close" aria-label="Close details">×</button></div>
+        <p class="ship-lead">${sel.lead_sentence || ""}</p>
+        <dl class="ship-detail-dl">
+          <dt>Speed / course</dt><dd>${sel.speed_known === false ? "unknown" : `${sel.speed_kn ?? "—"} kn`} · ${sel.cog_deg != null ? Math.round(sel.cog_deg) + "°" : "—"}</dd>
+          <dt>Destination</dt><dd>${esc(sel.destination_display || sel.destination_raw || "—")}</dd>
+          <dt>ETA</dt><dd>${sel.eta_malta ? `${sel.eta_malta}${sel.eta_malta_stale ? " (out of date)" : ""} Malta` : "—"}</dd>
+          <dt>Last heard</dt><dd>${agoLabel(sel.last_signal_s) || "—"}${sel.last_heard_utc ? ` (${formatMaltaTimeShort(sel.last_heard_utc)})` : ""}</dd>
+          <dt>Signals</dt><dd>${sel.level_db != null ? sel.level_db.toFixed(1) + " dB" : "—"} · ${sel.message_count ?? 0} msgs</dd>
+        </dl>
+        ${mmsiLookupHtml(sel)}
+        <a class="mmsi-link" href="https://www.vesselfinder.com/?mmsi=${sel.mmsi}" rel="noopener noreferrer" target="_blank">Look up MMSI on VesselFinder (external) ↗</a>
+      </div>`
+    : "";
+  const note = paused
+    ? `<p class="side-note side-note-paused" role="status">Feed paused${sinceUtc ? ` since ${formatMaltaTimeShort(sinceUtc)}` : ""}; last ships heard.</p>`
+    : `<p class="side-note">${ships.length} heard in the last hour · newest first</p>`;
+  const items = ships.length
+    ? ships.map((s) => `<li class="side-ship${s.mmsi === state.selectedMmsi ? " selected" : ""} side-${s.freshness || "earlier"}" data-mmsi="${s.mmsi}" role="button" tabindex="0" style="--ship-type-color:${typeColor(s.shiptype_category)}">
+        <span class="ship-type-icon" aria-hidden="true"></span>
+        <span class="side-name">${esc(s.display_name)}</span>
+        <span class="side-meta">${s.speed_known !== false && (s.speed_kn ?? 0) >= 1 ? `${Number(s.speed_kn).toFixed(1)} kn · ` : ""}${agoLabel(s.last_signal_s) || s.freshness_label || ""}</span>
+      </li>`).join("")
+    : `<li class="side-empty">${paused ? "No ships were heard before the feed paused." : "No vessels heard in the last hour."}</li>`;
+  const scroll = host.querySelector(".side-scroll")?.scrollTop || 0;
+  host.innerHTML = `${detail}${note}<ul class="side-scroll" aria-label="Ships heard, live">${items}</ul>`;
+  host.querySelector(".side-scroll").scrollTop = scroll;
+  host.querySelector(".side-close")?.addEventListener("click", () => selectShip(null));
+  host.querySelectorAll(".side-ship").forEach((li) => {
+    const m = Number(li.getAttribute("data-mmsi"));
+    li.addEventListener("click", () => selectShip(m));
+    li.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); selectShip(m); } });
+  });
+}
+
 function renderSheet(ship) {
   const sheet = $("#shipSheet");
   const backdrop = $("#sheetBackdrop");
@@ -244,7 +292,7 @@ function renderSheet(ship) {
       <dt>Speed / course</dt><dd>${ship.speed_kn ?? "—"} kn · ${ship.cog_deg != null ? Math.round(ship.cog_deg) + "°" : "—"}</dd>
       <dt>Last heard</dt><dd>${agoLabel(ship.last_signal_s)} (${ship.last_heard_utc ? formatMaltaTimeShort(ship.last_heard_utc) : "—"})</dd>
     </dl>
-    <a class="mmsi-link" href="https://www.vesselfinder.com/?mmsi=${ship.mmsi}" rel="noopener noreferrer" target="_blank">Look up MMSI (external)</a>
+    <a class="mmsi-link" href="https://www.vesselfinder.com/?mmsi=${ship.mmsi}" rel="noopener noreferrer" target="_blank">Look up MMSI on VesselFinder (external) ↗</a>
   `;
   $("#sheetClose")?.addEventListener("click", () => selectShip(null));
   backdrop.onclick = () => selectShip(null);
@@ -268,7 +316,7 @@ function renderDrawer(ship) {
       <dt>ETA</dt><dd>${ship.eta_malta ? `${ship.eta_malta}${ship.eta_malta_stale ? " (out of date)" : ""} Malta` : "—"}</dd>
       <dt>Signals</dt><dd>${ship.level_db != null ? ship.level_db.toFixed(1) + " dB" : "—"} · ${ship.message_count ?? 0} msgs</dd>
     </dl>
-    <a class="mmsi-link" href="https://www.vesselfinder.com/?mmsi=${ship.mmsi}" rel="noopener noreferrer" target="_blank">Look up MMSI (external)</a>
+    <a class="mmsi-link" href="https://www.vesselfinder.com/?mmsi=${ship.mmsi}" rel="noopener noreferrer" target="_blank">Look up MMSI on VesselFinder (external) ↗</a>
   `;
   $("#drawerClose")?.addEventListener("click", () => selectShip(null));
 }
@@ -297,7 +345,8 @@ function refreshSelectedShipPanels() {
     renderSheet(ship);
   } else {
     renderSheet(null);
-    renderDrawer(ship);
+    // Desktop: details open in the live sidebar beside the map.
+    renderDrawer($("#mapSideList") ? null : ship);
   }
   renderFollowCard();
 }
@@ -347,6 +396,7 @@ async function selectShip(mmsi) {
   }
   state.selectedMmsi = mmsi;
   renderShipList(state.snapshot);
+  renderSideList(state.snapshot);
   if (state.map) {
     state.map.update({
       ships: state.snapshot?.ships,
@@ -377,7 +427,7 @@ async function selectShip(mmsi) {
         renderSheet(detail);
       } else {
         renderSheet(null);
-        renderDrawer(detail);
+        renderDrawer($("#mapSideList") ? null : detail);
       }
       renderFollowCard();
     }
@@ -579,7 +629,9 @@ async function pollLive() {
       follow: state.follow,
       replayMode: isReplayActive(),
     });
+    renderHeader(data);
     renderShipList(data);
+    renderSideList(data);
     const healthRes = await healthP;
     const feedHealth = healthRes && healthRes.ok ? await healthRes.json() : null;
     renderHeardAndHealth(data, feedHealth);
@@ -616,6 +668,7 @@ async function pollLive() {
       replayMode: Boolean(replayShips),
     });
     refreshSelectedShipPanels();
+    renderSideList(data);
     renderStationLive(data);
     await renderLiveEvents();
   } catch {

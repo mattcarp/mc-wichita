@@ -1,18 +1,19 @@
-import { EntityMotion } from "./map_motion.js?v=20261013-sp1";
+import { EntityMotion } from "./map_motion.js?v=20261013-sp2";
 
 const TYPE_COLORS = {
-  passenger: "#5eb8ff",
-  cargo: "#d4a84b",
-  tanker: "#b07ad9",
-  sailing: "#7ec8a8",
-  pleasure: "#9ad4ff",
-  pilot: "#f0c674",
-  tug: "#8b93a7",
-  tender: "#8b93a7",
-  sar: "#6bcf7f",
-  fishing: "#6bcf7f",
-  hsc: "#ff9f6b",
-  other: "#3ec6c9",
+  // Solidarity print inks only: blue, ink, blue-soft. Red is reserved for selection and alerts.
+  passenger: "#10306a",
+  cargo: "#141414",
+  tanker: "#141414",
+  sailing: "#3a4a72",
+  pleasure: "#3a4a72",
+  pilot: "#3a4a72",
+  tug: "#141414",
+  tender: "#141414",
+  sar: "#141414",
+  fishing: "#3a4a72",
+  hsc: "#141414",
+  other: "#10306a",
 };
 
 const PLACES = [
@@ -500,8 +501,16 @@ export class HarbourMap {
     );
     const placeZoom = this.zoomMode === "harbour" || latSpan < 0.08;
     if (placeZoom) {
+      // Never let a place name collide with the receiver label (e.g. "Valletta" over
+      // "Valletta balcony (approx.)"): skip any place whose box overlaps it.
+      const rLabel = this.receiver.label || "Receiver (approx.)";
+      const rBox = { x0: rx.x - 10, x1: Math.min(w - 8, rx.x + 8) + rLabel.length * 7 + 4, y0: rx.y - 14, y1: rx.y + 8 };
+      const placed = [rBox];
       for (const p of PLACES) {
         const { x, y } = this._project(p.lat, p.lon, w, h);
+        const box = { x0: x - 2, x1: x + p.name.length * 7 + 2, y0: y - 12, y1: y + 4 };
+        if (placed.some((b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0)) continue;
+        placed.push(box);
         parts.push(`<text x="${x}" y="${y}" class="map-place">${p.name}</text>`);
       }
     }
