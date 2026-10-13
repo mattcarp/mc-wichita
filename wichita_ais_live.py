@@ -25,6 +25,7 @@ from wichita_feed_urls import validated_feed_url
 from wichita_provenance import SOURCE_OUR_ANTENNA, provenance_fields
 from wichita_receiver_health import feed_health_payload, heard_last_60s_badge, count_heard_within
 from wichita_captures import VALLETTA_AIS_BASE_MMSIS, mmsi_label
+import wichita_mmsi
 
 MALTA_TZ = ZoneInfo("Europe/Malta")
 RECEIVER_LAT = 35.898666
@@ -411,6 +412,7 @@ def live_dashboard_bundle() -> Dict[str, Any]:
     paths_raw, err_paths = fetch_ais_json("/api/allpath.geojson")
     online = ships_raw is not None
     err = err_ships or (None if stat_raw else err_stat)
+    registry = wichita_mmsi.update_registry((ships_raw or {}).get("ships") or []) if online else wichita_mmsi.load_registry()
     ships, last_ok_epoch = merge_roster(
         (ships_raw or {}).get("ships") or [], online, datetime.now(timezone.utc).timestamp()
     )
@@ -421,6 +423,8 @@ def live_dashboard_bundle() -> Dict[str, Any]:
     vessels = [s for s in normalized if not s.get("is_base_station")]
     bases = [s for s in normalized if s.get("is_base_station")]
     vessels.sort(key=stable_sort_key)
+    for v in vessels:
+        v["mmsi_info"] = wichita_mmsi.lookup(v["mmsi"], registry, shiptype_label)
     voice_busy = os.environ.get("WICHITA_VOICE_LIVE", "0").strip() not in ("1", "true", "yes")
     summary_block = harbour_summary_bundle(vessels, online, voice_busy)
     rx_health = receiver_health(stat_raw, online, error=err, ships=vessels)

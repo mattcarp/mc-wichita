@@ -1,10 +1,10 @@
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261013-fr3";
-import { HarbourMap, typeColor } from "./harbour_map.js?v=20261013-fr3";
-import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261013-fr3";
-import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261013-fr3";
-import { initWatchZones } from "./watch_zones.js?v=20261013-fr3";
-import { initIncidentReplay } from "./incident_replay.js?v=20261013-fr3";
-import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261013-fr3";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261013-fr4";
+import { HarbourMap, typeColor } from "./harbour_map.js?v=20261013-fr4";
+import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261013-fr4";
+import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261013-fr4";
+import { initWatchZones } from "./watch_zones.js?v=20261013-fr4";
+import { initIncidentReplay } from "./incident_replay.js?v=20261013-fr4";
+import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261013-fr4";
 
 const GROUPS = [
   { key: "now", title: "Now" },
@@ -109,11 +109,38 @@ function shipCardHtml(s, selected) {
     </div>
     <p class="ship-lead">${s.lead_sentence}</p>
     <p class="muted ship-meta">${s.shiptype_label}${eta ? ` · ${eta}` : ""}</p>
-    <details class="ship-raw-details"><summary>Details</summary>
+    <details class="ship-raw-details"><summary>Details · MMSI lookup</summary>
+      ${mmsiLookupHtml(s)}
       <p class="mono muted">MMSI ${s.mmsi_display}${s.callsign ? ` · ${s.callsign}` : ""}</p>
       <p class="mono muted">${s.destination_raw || "—"} · ${s.speed_known === false ? "speed unknown" : `${s.speed_kn ?? "—"} kn`} · ${s.message_count ?? 0} msgs</p>
     </details>
   </li>`;
+}
+
+function esc(v) {
+  return String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+}
+
+function mmsiLookupHtml(s) {
+  const m = s.mmsi_info;
+  if (!m) return "";
+  const st = m.static || {};
+  const rows = [
+    ["MMSI", m.mmsi],
+    ["Station type", m.kind_label],
+    ["Flag (MID)", m.mid ? `${m.mid_country || "—"} · MID ${m.mid}` : "—"],
+    ["Name", st.shipname],
+    ["Call sign", st.callsign],
+    ["IMO", st.imo],
+    ["Type", st.shiptype_label],
+    ["Size", st.length_m ? `${st.length_m} m × ${st.beam_m ?? "—"} m` : null],
+    ["Draught", st.draught ? `${st.draught} m` : null],
+    ["Destination", st.destination],
+    ["First heard", st.first_seen_utc ? formatMaltaTimeShort(st.first_seen_utc) : null],
+  ].filter(([, v]) => v !== null && v !== undefined && v !== "");
+  return `<dl class="mmsi-lookup" data-test-id="mmsi-lookup">${rows
+    .map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`)
+    .join("")}</dl><p class="mmsi-lookup-src muted">From the MMSI digits (ITU-R M.585), the ITU MID table and AIS data our receiver decoded.</p>`;
 }
 
 function matchesEntityQuery(item, q) {
@@ -162,8 +189,18 @@ function renderShipList(snapshot) {
       return `<li class="ship-group-label">${g.title} · ${list.length}</li>${list.map((s) => shipCardHtml(s, state.selectedMmsi)).join("")}`;
     })
     .join("");
+  state.openDetails = state.openDetails || new Set();
   ul.querySelectorAll(".live-ship-card").forEach((li) => {
     const mmsi = Number(li.getAttribute("data-mmsi"));
+    const det = li.querySelector(".ship-raw-details");
+    if (det) {
+      if (state.openDetails.has(mmsi)) det.open = true;
+      det.addEventListener("toggle", () => {
+        if (det.open) state.openDetails.add(mmsi);
+        else state.openDetails.delete(mmsi);
+      });
+      det.addEventListener("click", (ev) => ev.stopPropagation());
+    }
     li.addEventListener("click", () => selectShip(mmsi));
   });
   const bases = snapshot?.base_stations || [];

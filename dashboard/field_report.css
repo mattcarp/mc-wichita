@@ -213,3 +213,44 @@ body.no-captures #panel-recordings .subtabs,
 body.no-captures #panel-recordings .select-wrap,
 body.no-captures #panel-recordings .bookmark-legend { display: none !important; }
 .badge-paused { color: var(--muted) !important; }
+.mmsi-lookup { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; margin: 6px 0 4px; font-size: 13px; }
+.mmsi-lookup div { border-bottom: 1px dotted var(--rule); padding: 3px 0; }
+.mmsi-lookup dt { font: 700 11px var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.mmsi-lookup dd { margin: 0; color: var(--text); }
+.mmsi-lookup-src { font-size: 12px; margin: 4px 0 6px; }
+
+/* Hero: intent beside the live map */
+.fr-hero { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 0 36px; margin: 0 40px; padding: 22px 0 24px; border-bottom: 1px solid var(--border); align-items: start; }
+.fr-hero .fr-intent { margin: 0; padding: 0; border: 0; }
+.fr-hero .fr-intent h1 { font-size: 40px; line-height: 1.05; }
+.fr-hero .fr-intent-body { font-size: 16px; }
+.fr-hero-map .harbour-map-col { width: 100%; }
+.fr-hero-map .map { min-height: 0; }
+#panel-harbour .harbour-layout { display: block !important; }
+#panel-harbour .harbour-list-col { max-height: none; overflow: visible; }
+@media (min-width: 900px) {
+  #panel-harbour .live-ship-list { display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 28px; max-height: none !important; overflow: visible !important; }
+  #panel-harbour .live-ship-list > .ship-group-label, #panel-harbour .live-ship-list > .roster-note, #panel-harbour .live-ship-list > .muted { grid-column: 1 / -1; }
+}
+.voice-slots { margin: 16px 0; }
+.voice-slot-list { list-style: none; padding: 0; margin: 8px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px 24px; }
+.voice-slot { border-top: 1px dashed var(--rule); padding: 8px 0; }
+.voice-slot-flag { font-size: 12px; font-weight: 700; color: var(--red); margin: 0 0 4px; }
+.voice-slot dl { margin: 0; font-size: 13px; }
+.voice-slot dl div { display: flex; justify-content: space-between; gap: 8px; border-bottom: 1px dotted #ccc; padding: 2px 0; }
+.voice-slot dt { color: var(--muted); }
+.voice-slot dd { margin: 0; color: var(--muted); }
+@media (max-width: 899px) {
+  .fr-hero { display: flex; flex-direction: column-reverse; margin: 0 16px; padding: 12px 0 20px; gap: 18px; }
+  .fr-hero .fr-intent h1 { font-size: 30px; }
+}
+.fr-hero-map { min-width: 0; width: 100%; }
+.fr-hero-map .harbour-map-host, .fr-hero-map .map { height: auto !important; min-height: 0 !important; max-height: none !important; aspect-ratio: 100 / 52; width: 100%; }
+.fr-hero-map .harbour-map-inner { height: 100%; }
+#panel-harbour .harbour-list-col { margin-top: 0 !important; pointer-events: auto !important; }
+#panel-harbour .harbour-ship-sheet { position: static !important; height: auto !important; max-height: none !important; transform: none !important; }
+#panel-harbour .sheet-grab { display: none; }
+#panel-harbour .live-ship-list { max-height: none !important; overflow: visible !important; }
+@media (max-width: 899px) {
+  .fr-hero-map .harbour-map-col, .fr-hero-map .map-coastline { height: auto !important; min-height: 0 !important; flex: none !important; }
+}

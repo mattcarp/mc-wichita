@@ -30,6 +30,12 @@ async def live_ais_status():
     return wal.live_status_payload(stat_raw, ships, online, err)
 
 
+@router.get("/mmsi/{mmsi}")
+async def live_ais_mmsi_lookup(mmsi: int):
+    """In-app MMSI lookup: decoded digits + ITU MID country + AIS static data heard by our receiver."""
+    return wal.wichita_mmsi.lookup(mmsi, None, wal.shiptype_label)
+
+
 @router.get("/ships/{mmsi}")
 async def live_ais_ship(mmsi: int):
     detail, err = wal.live_ship_detail(mmsi)

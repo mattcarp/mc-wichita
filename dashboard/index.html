@@ -7,9 +7,9 @@
   <title>Wichita · Valletta, Malta</title>
   <link rel="icon" href="data:," />
   <link rel="preload" href="/dashboard/fonts/LibreFranklin-var.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261013-fr3" />
-  <link rel="stylesheet" href="/dashboard/field_report.css?v=20261013-fr3" />
-  <script type="module" src="/dashboard/clerk_gate.js?v=20261013-fr3"></script>
+  <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261013-fr4" />
+  <link rel="stylesheet" href="/dashboard/field_report.css?v=20261013-fr4" />
+  <script type="module" src="/dashboard/clerk_gate.js?v=20261013-fr4"></script>
 </head>
 <body class="auth-pending">
   <div id="authGate" class="auth-gate" role="main" aria-label="Sign in">
@@ -46,7 +46,8 @@
     <button type="button" class="tab-btn" data-tab-target="station" aria-label="Station"><span class="tab-icon" data-icon="station"></span><span>Station</span></button>
   </nav>
 
-  <section class="fr-intent" aria-labelledby="intent-heading">
+  <div class="fr-hero">
+    <section class="fr-intent" aria-labelledby="intent-heading">
     <p class="fr-kick">What Wichita is for</p>
     <h1 id="intent-heading">People in trouble rarely say the right words. Wichita listens for how they sound.</h1>
     <p class="fr-intent-body">Wichita exists to help people who are vulnerable in their time of need, anywhere a human voice crosses the radio: in the air, on land, at sea. AI analyses the voice itself (stress, fear, strain, exhaustion) as well as the words, and it also listens for bad actors: threats, coordination, coded intent. Positioning is context, not the point. Built and listening in Valletta, Malta.</p>
@@ -54,6 +55,15 @@
       <li>Aviation 118–137 MHz</li><li>Marine VHF 156–162 MHz</li><li>Land mobile</li><li>Emergency services</li><li>Amateur</li><li>PMR446</li>
     </ul>
   </section>
+    <div class="fr-hero-map" aria-label="Live harbour map">
+      <p class="fr-kick">Harbour · live AIS · Valletta, Malta</p>
+        <div class="harbour-map-col">
+          <div id="harbourMap" class="map map-coastline" aria-label="Malta coastline with live ship positions"></div>
+          <div id="mapFollowCard" class="map-follow-card" hidden></div>
+          <p class="map-attrib muted">OpenStreetMap land and water (ODbL) · offline · not for navigation</p>
+        </div>
+    </div>
+  </div>
 
   <main id="main" class="app">
     <p id="feedBanner" class="feed-banner" role="status" hidden></p>
@@ -114,11 +124,6 @@
         <span id="watchZoneStatus" class="muted small"></span>
       </div>
       <div class="harbour-layout">
-        <div class="harbour-map-col">
-          <div id="harbourMap" class="map map-coastline" aria-label="Malta coastline with live ship positions"></div>
-          <div id="mapFollowCard" class="map-follow-card" hidden></div>
-          <p class="map-attrib muted">OpenStreetMap land and water (ODbL) · offline · not for navigation</p>
-        </div>
         <div class="harbour-list-col">
           <p id="freshnessCounts" class="mono counts harbour-counts-chips"></p>
           <div id="harbourShipSheet" class="harbour-ship-sheet">
@@ -140,6 +145,39 @@
         <span class="badge badge-live">LIVE</span>
       </div>
       <div id="voiceTiles" class="voice-grid voice-grid-heard"></div>
+      <section class="voice-slots" aria-labelledby="voice-clips-heading">
+        <p class="fr-kick" id="voice-clips-heading">Voice clips received · speech recognition</p>
+        <p class="muted small">Each received voice clip will appear here with its faster-whisper transcript and stress score. Nothing below is real data yet.</p>
+        <ol class="voice-slot-list">
+        <li class="voice-slot" data-test-id="voice-slot">
+          <p class="voice-slot-flag mono">Placeholder: awaiting live voice capture</p>
+          <dl>
+            <div><dt>Clip</dt><dd>— no audio yet</dd></div>
+            <div><dt>Channel · time</dt><dd>—</dd></div>
+            <div><dt>Transcript (faster-whisper)</dt><dd>—</dd></div>
+            <div><dt>Stress score 0–100</dt><dd>—</dd></div>
+          </dl>
+        </li>
+        <li class="voice-slot" data-test-id="voice-slot">
+          <p class="voice-slot-flag mono">Placeholder: awaiting live voice capture</p>
+          <dl>
+            <div><dt>Clip</dt><dd>— no audio yet</dd></div>
+            <div><dt>Channel · time</dt><dd>—</dd></div>
+            <div><dt>Transcript (faster-whisper)</dt><dd>—</dd></div>
+            <div><dt>Stress score 0–100</dt><dd>—</dd></div>
+          </dl>
+        </li>
+        <li class="voice-slot" data-test-id="voice-slot">
+          <p class="voice-slot-flag mono">Placeholder: awaiting live voice capture</p>
+          <dl>
+            <div><dt>Clip</dt><dd>— no audio yet</dd></div>
+            <div><dt>Channel · time</dt><dd>—</dd></div>
+            <div><dt>Transcript (faster-whisper)</dt><dd>—</dd></div>
+            <div><dt>Stress score 0–100</dt><dd>—</dd></div>
+          </dl>
+        </li>
+        </ol>
+      </section>
       <div class="activity-head">
         <span class="eyebrow">Harbour busyness</span>
         <div class="activity-toggle mono" role="group" aria-label="Activity window">
@@ -239,6 +277,30 @@
       <p class="eyebrow">Stress score</p>
       <p id="voiceLabStress" class="mono voice-lab-stress" data-test-id="voice-lab-stress">—</p>
       <pre id="voiceLabOutput" class="voice-lab-output mono" aria-label="Voice Lab analysis JSON"></pre>
+      <section class="voice-slots" aria-labelledby="vl-clips-heading">
+        <p class="fr-kick" id="vl-clips-heading">Radio clips analysed</p>
+        <p class="muted small">Radio voice clips will be scored here once live voice capture runs. Nothing below is real data yet.</p>
+        <ol class="voice-slot-list">
+        <li class="voice-slot" data-test-id="voice-slot">
+          <p class="voice-slot-flag mono">Placeholder: awaiting live voice capture</p>
+          <dl>
+            <div><dt>Clip</dt><dd>— no audio yet</dd></div>
+            <div><dt>Channel · time</dt><dd>—</dd></div>
+            <div><dt>Transcript (faster-whisper)</dt><dd>—</dd></div>
+            <div><dt>Stress score 0–100</dt><dd>—</dd></div>
+          </dl>
+        </li>
+        <li class="voice-slot" data-test-id="voice-slot">
+          <p class="voice-slot-flag mono">Placeholder: awaiting live voice capture</p>
+          <dl>
+            <div><dt>Clip</dt><dd>— no audio yet</dd></div>
+            <div><dt>Channel · time</dt><dd>—</dd></div>
+            <div><dt>Transcript (faster-whisper)</dt><dd>—</dd></div>
+            <div><dt>Stress score 0–100</dt><dd>—</dd></div>
+          </dl>
+        </li>
+        </ol>
+      </section>
       <section class="alert-review-panel" aria-labelledby="alert-review-heading">
         <h3 id="alert-review-heading" class="eyebrow">Alert review queue</h3>
         <ul id="alertReviewList" class="alert-review-list"></ul>
