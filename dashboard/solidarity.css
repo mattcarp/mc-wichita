@@ -210,3 +210,15 @@ details[open] > summary.expand-cue .cue-less, .side-ship[aria-expanded="true"] .
 .side-cue { grid-column: 3; grid-row: 1; font-size: 12px; }
 .side-meta { grid-column: 2 / span 2 !important; }
 @media (prefers-reduced-motion: reduce) { .cue-tri { transition: none; } }
+/* Following card: full details, two-column grid */
+.map-follow-card { padding: 0 !important; margin-top: 12px; }
+.follow-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; background: var(--red); color: var(--sun); padding: 6px 6px 6px 14px; }
+.follow-head strong { font: 800 16px var(--display); text-transform: uppercase; }
+.btn-stop-follow { background: var(--sun) !important; color: var(--blue) !important; border: 2px solid var(--blue) !important; font: 700 13px var(--sans) !important; min-height: 40px; padding: 0 12px; border-radius: 0 !important; cursor: pointer; }
+.map-follow-card .ship-lead { margin: 10px 14px 0; color: var(--ink); }
+.follow-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px; margin: 8px 14px 0; }
+.follow-grid div { display: flex; justify-content: space-between; gap: 10px; border-bottom: 1px solid #e3d290; padding: 6px 0; font-size: 14px; }
+.follow-grid dt { font: 800 11px var(--display); text-transform: uppercase; letter-spacing: .04em; color: var(--blue-soft); }
+.follow-grid dd { margin: 0; text-align: right; color: var(--ink); font-variant-numeric: tabular-nums; }
+.follow-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 4px 16px; margin: 4px 14px 6px; font-size: 12px; }
+@media (max-width: 520px) { .follow-grid { grid-template-columns: 1fr; } }

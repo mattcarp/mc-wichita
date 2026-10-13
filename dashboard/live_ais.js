@@ -1,10 +1,10 @@
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261013-sp4";
-import { HarbourMap, typeColor } from "./harbour_map.js?v=20261013-sp4";
-import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261013-sp4";
-import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261013-sp4";
-import { initWatchZones } from "./watch_zones.js?v=20261013-sp4";
-import { initIncidentReplay } from "./incident_replay.js?v=20261013-sp4";
-import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261013-sp4";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261013-sp5";
+import { HarbourMap, typeColor } from "./harbour_map.js?v=20261013-sp5";
+import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261013-sp5";
+import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261013-sp5";
+import { initWatchZones } from "./watch_zones.js?v=20261013-sp5";
+import { initIncidentReplay } from "./incident_replay.js?v=20261013-sp5";
+import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261013-sp5";
 
 const GROUPS = [
   { key: "now", title: "Now" },
@@ -370,9 +370,30 @@ function renderFollowCard() {
   if (state.follow.kind === "ship") {
     const ship = shipFromSnapshot(state.follow.id);
     if (!ship) return;
-    el.innerHTML = `<p><strong>Following ${ship.display_name}</strong></p>
-      <p class="ship-lead">${ship.lead_sentence || ""}</p>
-      <button type="button" class="btn-stop-follow" id="stopFollowBtn">Stop following</button>`;
+    const m = ship.mmsi_info || {};
+    const st = m.static || {};
+    const rows = [
+      ["MMSI", ship.mmsi_display || m.mmsi || ship.mmsi],
+      ["Flag (MID)", m.mid ? `${m.mid_country || "—"} · MID ${m.mid}` : null],
+      ["Station type", m.kind_label],
+      ["Type", ship.shiptype_label || st.shiptype_label],
+      ["Call sign", ship.callsign || st.callsign],
+      ["IMO", st.imo],
+      ["Speed", ship.speed_known === false || ship.speed_kn == null ? null : `${Number(ship.speed_kn).toFixed(1)} kn`],
+      ["Heading", ship.cog_deg != null ? `${Math.round(ship.cog_deg)}°` : null],
+      ["Nav status", ship.nav_status_label],
+      ["Destination", ship.destination_display || ship.destination_raw || st.destination],
+      ["ETA", ship.eta_malta ? `${ship.eta_malta}${ship.eta_malta_stale ? " (out of date)" : ""} Malta` : null],
+      ["Size", st.length_m ? `${st.length_m} m × ${st.beam_m ?? "—"} m` : null],
+      ["Last heard", ship.last_heard_utc ? `${formatMaltaTimeShort(ship.last_heard_utc)}${agoLabel(ship.last_signal_s) ? ` · ${agoLabel(ship.last_signal_s)}` : ""}` : agoLabel(ship.last_signal_s) || null],
+      ["Signals", ship.message_count ? `${ship.message_count} msgs${ship.level_db != null ? ` · ${ship.level_db.toFixed(1)} dB` : ""}` : null],
+    ].filter(([, v]) => v !== null && v !== undefined && v !== "" && v !== "—");
+    el.innerHTML = `<div class="follow-head"><strong>Following ${esc(ship.display_name)}</strong>
+        <button type="button" class="btn-stop-follow" id="stopFollowBtn">Stop following</button></div>
+      ${ship.lead_sentence ? `<p class="ship-lead">${ship.lead_sentence}</p>` : ""}
+      <dl class="follow-grid" data-test-id="follow-grid">${rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>
+      <p class="follow-foot"><span class="muted">In-house lookup: MMSI digits (ITU-R M.585), ITU MID table, AIS our receiver decoded.</span>
+        <a class="mmsi-link" href="https://www.vesselfinder.com/?mmsi=${ship.mmsi}" rel="noopener noreferrer" target="_blank">Look up MMSI on VesselFinder (external) ↗</a></p>`;
     $("#stopFollowBtn")?.addEventListener("click", () => selectShip(null));
     return;
   }
