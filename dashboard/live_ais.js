@@ -1,10 +1,10 @@
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261013-fr6";
-import { HarbourMap, typeColor } from "./harbour_map.js?v=20261013-fr6";
-import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261013-fr6";
-import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261013-fr6";
-import { initWatchZones } from "./watch_zones.js?v=20261013-fr6";
-import { initIncidentReplay } from "./incident_replay.js?v=20261013-fr6";
-import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261013-fr6";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261013-fr7";
+import { HarbourMap, typeColor } from "./harbour_map.js?v=20261013-fr7";
+import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261013-fr7";
+import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261013-fr7";
+import { initWatchZones } from "./watch_zones.js?v=20261013-fr7";
+import { initIncidentReplay } from "./incident_replay.js?v=20261013-fr7";
+import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261013-fr7";
 
 const GROUPS = [
   { key: "now", title: "Now" },
@@ -565,23 +565,8 @@ async function pollLive() {
     if (!res.ok) throw new Error(String(res.status));
     const data = await res.json();
     state.snapshot = data;
-    if (!state.map) {
-      const host = $("#harbourMap");
-      if (host) {
-        state.map = new HarbourMap(host);
-        state.map.setReceiver({ ...data.receiver, label: data.receiver?.label });
-        state.map.onSelect((mmsi) => selectShip(mmsi));
-        state.map.onPlaneSelect((id) => selectPlane(id));
-        initWatchZones(state.map, {
-          drawBtn: $("#watchZoneDraw"),
-          status: $("#watchZoneStatus"),
-          nameInput: $("#watchZoneName"),
-        });
-        $("#harbourMap")?.addEventListener("wichita-wall-mode", (ev) => {
-          state.map?.setWallMode(Boolean(ev.detail?.on));
-        });
-      }
-    }
+    ensureMap();
+    setMapListening(false);
     state.map?.setReceiver({ ...data.receiver, label: data.receiver?.label });
     state.map?.update({
       ships: (isReplayActive() ? replayShipsNow() : null) || data.ships,
@@ -676,7 +661,33 @@ function refreshMapFromState() {
   });
 }
 
+function ensureMap() {
+  if (!state.map) {
+      const host = $("#harbourMap");
+      if (host) {
+        state.map = new HarbourMap(host);
+                state.map.onSelect((mmsi) => selectShip(mmsi));
+        state.map.onPlaneSelect((id) => selectPlane(id));
+        initWatchZones(state.map, {
+          drawBtn: $("#watchZoneDraw"),
+          status: $("#watchZoneStatus"),
+          nameInput: $("#watchZoneName"),
+        });
+        $("#harbourMap")?.addEventListener("wichita-wall-mode", (ev) => {
+          state.map?.setWallMode(Boolean(ev.detail?.on));
+        });
+      }
+    }
+}
+
+function setMapListening(on) {
+  const col = document.querySelector('.harbour-map-col');
+  if (col) col.classList.toggle('map-listening', on);
+}
+
 export function initLiveAis() {
+  setMapListening(true);
+  ensureMap();
   setupTimelinePaging();
   setupEntitySearch();
   initHarbourSheetDrag();

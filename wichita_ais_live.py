@@ -5,6 +5,9 @@ from __future__ import annotations
 import json
 import logging
 import os
+import threading
+import time
+from concurrent.futures import ThreadPoolExecutor
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
@@ -406,10 +409,55 @@ def merge_roster(
     return out, roster.get("last_ok_epoch")
 
 
+_POOL = None
+_CACHE_LOCK = threading.Lock()
+_CACHE: Dict[str, Any] = {"bundle": None, "at": 0.0}
+_POLLER_STARTED = False
+POLL_INTERVAL_S = float(os.environ.get("WICHITA_AIS_POLL_S", "4"))
+
+
+def _fetch_three() -> Tuple[Tuple[Any, Any], Tuple[Any, Any], Tuple[Any, Any]]:
+    """Fetch ships, stat and paths from AIS-catcher in parallel (worst case one timeout, not three)."""
+    global _POOL
+    if _POOL is None:
+        _POOL = ThreadPoolExecutor(max_workers=3, thread_name_prefix="ais-fetch")
+    futs = [_POOL.submit(fetch_ais_json, p) for p in ("/api/ships.json", "/api/stat.json", "/api/allpath.geojson")]
+    return tuple(f.result() for f in futs)  # type: ignore[return-value]
+
+
+def _poll_loop() -> None:
+    while True:
+        try:
+            b = live_dashboard_bundle()
+            with _CACHE_LOCK:
+                _CACHE["bundle"], _CACHE["at"] = b, time.time()
+        except Exception:  # noqa: BLE001 - keep the poller alive
+            logger.exception("AIS background poll failed")
+        time.sleep(POLL_INTERVAL_S)
+
+
+def cached_dashboard_bundle() -> Dict[str, Any]:
+    """Answer instantly from the background poller's latest bundle; compute once if none yet."""
+    global _POLLER_STARTED
+    if not _POLLER_STARTED:
+        with _CACHE_LOCK:
+            if not _POLLER_STARTED:
+                _POLLER_STARTED = True
+                threading.Thread(target=_poll_loop, name="ais-poller", daemon=True).start()
+    with _CACHE_LOCK:
+        b, at = _CACHE["bundle"], _CACHE["at"]
+    if b is None:
+        b = live_dashboard_bundle()
+        with _CACHE_LOCK:
+            _CACHE["bundle"], _CACHE["at"] = b, time.time()
+        at = time.time()
+    out = dict(b)
+    out["cache_age_s"] = round(max(0.0, time.time() - at), 2)
+    return out
+
+
 def live_dashboard_bundle() -> Dict[str, Any]:
-    ships_raw, err_ships = fetch_ais_json("/api/ships.json")
-    stat_raw, err_stat = fetch_ais_json("/api/stat.json")
-    paths_raw, err_paths = fetch_ais_json("/api/allpath.geojson")
+    (ships_raw, err_ships), (stat_raw, err_stat), (paths_raw, err_paths) = _fetch_three()
     online = ships_raw is not None
     err = err_ships or (None if stat_raw else err_stat)
     registry = wichita_mmsi.update_registry((ships_raw or {}).get("ships") or []) if online else wichita_mmsi.load_registry()

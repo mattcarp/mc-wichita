@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import os
 
 from fastapi import APIRouter, HTTPException
@@ -18,7 +19,7 @@ router = APIRouter(prefix="/api/live-ais", tags=["live-ais"])
 @router.get("/snapshot")
 async def live_ais_snapshot():
     """Ship list, tracks, and receiver status in one poll-friendly payload."""
-    return wal.live_dashboard_bundle()
+    return await asyncio.to_thread(wal.cached_dashboard_bundle)
 
 
 @router.get("/status")

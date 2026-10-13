@@ -18,6 +18,7 @@ from fastapi import (
     Form,
 )
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field, validator
 from typing import Optional, List, Dict, Any, Tuple
@@ -118,6 +119,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(GZipMiddleware, minimum_size=1024)
 app.add_middleware(WichitaSecurityMiddleware)
 app.add_middleware(ClerkAuthMiddleware)
 
@@ -2144,6 +2146,15 @@ async def dashboard_clerk_env():
     return clerk_public_config()
 
 
+def dashboard_cache_control(filename: str) -> str:
+    """Static map data, fonts and vendored libs are cacheable; app JS/CSS are versioned via ?v=."""
+    if filename.startswith(("data/", "fonts/", "vendor/", "map/")) or filename.endswith((".geojson", ".woff2", ".pbf")):
+        return "public, max-age=604800"
+    if filename.endswith((".js", ".mjs", ".css")):
+        return "public, max-age=86400, must-revalidate"
+    return "no-cache, must-revalidate"
+
+
 @app.get("/dashboard/{filename:path}", include_in_schema=False)
 async def dashboard_asset(filename: str):
     base = Path(__file__).resolve().parent / "dashboard"
@@ -2161,12 +2172,16 @@ async def dashboard_asset(filename: str):
         media_type = "text/javascript"
     elif filename.endswith(".woff2"):
         media_type = "font/woff2"
+    elif filename.endswith(".geojson") or filename.endswith(".json"):
+        media_type = "application/geo+json" if filename.endswith(".geojson") else "application/json"
+    elif filename.endswith(".pbf"):
+        media_type = "application/x-protobuf"
     else:
         media_type = "application/octet-stream"
     return FileResponse(
         str(asset),
         media_type=media_type,
-        headers={"Cache-Control": "no-cache, must-revalidate"},
+        headers={"Cache-Control": dashboard_cache_control(filename)},
     )
 
 
