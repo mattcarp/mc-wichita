@@ -1,7 +1,8 @@
 import { test, expect } from "@playwright/test";
 
 const TABS = ["harbour", "heard", "sky", "recordings", "station"];
-const FORBIDDEN = /voice\s*lab|kansas|mayday|i['’]ve been everywhere/i;
+const FORBIDDEN = /voice\s*lab|kansas|mayday|i['’]ve been everywhere|people who are vulnerable rarely say the right words/i;
+const H2 = "People in trouble rarely say the right words. Wichita listens for how they sound.";
 // Live regions masked in screenshot baselines (real data changes every poll).
 const DYNAMIC = [
   "#harbourMap", "#mapSideList", "#mapFollowCard", "#headerLive", "#maltaClock", "#harbourSummary", "#maltaWeather",
@@ -67,7 +68,10 @@ test("(f) no console errors, no horizontal overflow; (h) no forbidden strings", 
   const errors = await openApp(page);
   const ov = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }));
   expect(ov.sw, "horizontal overflow").toBeLessThanOrEqual(ov.cw);
-  expect(await page.innerText("body")).not.toMatch(FORBIDDEN);
+  const body = await page.innerText("body");
+  expect(body).not.toMatch(FORBIDDEN);
+  expect(body.split(H2).length - 1, "H2 text appears exactly once").toBe(1);
+  expect((body.match(/rarely say the right words/gi) || []).length, "phrase not repeated").toBe(1);
   expect(await page.locator('[data-tab-target="voicelab"], #panel-voicelab').count()).toBe(0);
   expect(errors, errors.join("\n")).toEqual([]);
 });

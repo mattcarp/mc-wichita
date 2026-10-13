@@ -52,12 +52,6 @@ from capture_provenance import ProvenanceImportError, import_capture
 from whisper_transcription import WhisperConfig, transcribe_audio_file
 from ai_analysis_pipeline import analyze_audio_file, extract_stress_features, score_stress
 from alert_store import append_alert_record, load_alert_records
-from voice_lab import (
-    SOURCE_TAG as VOICE_LAB_SOURCE,
-    analyze_voice_lab_clip,
-    capture_mic_clip,
-    mic_capture_enabled,
-)
 
 from contextlib import asynccontextmanager
 
@@ -1717,72 +1711,6 @@ async def import_provenance_capture(
     record = AlertRecord(**alert_fields)
     _replace_alert(record)
     return record
-
-
-# ==================== VOICE LAB (test mic only; never creates alerts) ====================
-
-
-@app.get("/voice-lab/status", tags=["voice-lab"])
-async def voice_lab_status():
-    return {
-        "mic_enabled": mic_capture_enabled(),
-        "banner": "TEST MICROPHONE - not radio, not evidence",
-        "source_tag": VOICE_LAB_SOURCE,
-        "feeds_alerts": False,
-    }
-
-
-@app.post("/voice-lab/analyze", tags=["voice-lab"])
-async def voice_lab_analyze(
-    file: Optional[UploadFile] = File(None),
-    use_mic: bool = Form(False),
-    frequency_mhz: Optional[float] = Form(None),
-    mic_seconds: float = Form(3.0),
-):
-    """
-    Analyze uploaded audio or a short local mic capture (when WICHITA_VOICE_LAB_MIC is set).
-    Results are for the Voice Lab panel only and never enqueue /alerts or Telegram.
-    """
-    temp_paths: List[Path] = []
-    try:
-        if use_mic:
-            if not mic_capture_enabled():
-                raise HTTPException(
-                    status_code=400,
-                    detail="Mic capture disabled. Set WICHITA_VOICE_LAB_MIC=1 to enable.",
-                )
-            clip = capture_mic_clip(duration_sec=mic_seconds)
-            temp_paths.append(clip)
-            audio_path = clip
-        elif file is not None and file.filename:
-            suffix = Path(file.filename).suffix or ".wav"
-            fd, tmp = tempfile.mkstemp(suffix=suffix, prefix="wichita-voice-lab-upload-")
-            os.close(fd)
-            audio_path = Path(tmp)
-            temp_paths.append(audio_path)
-            content = await file.read()
-            audio_path.write_bytes(content)
-        else:
-            raise HTTPException(
-                status_code=400,
-                detail="Provide an audio file upload or set use_mic=true with WICHITA_VOICE_LAB_MIC.",
-            )
-
-        return analyze_voice_lab_clip(audio_path, frequency_mhz=frequency_mhz)
-    except HTTPException:
-        raise
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
-    except RuntimeError as exc:
-        raise HTTPException(status_code=503, detail=str(exc)) from exc
-    except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"Voice Lab analysis failed: {exc}") from exc
-    finally:
-        for path in temp_paths:
-            try:
-                path.unlink(missing_ok=True)
-            except OSError:
-                pass
 
 
 @app.get("/stress-alerts", tags=["alerts"], response_model=List[AlertRecord])
