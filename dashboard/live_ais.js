@@ -1,10 +1,10 @@
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261013-fr7";
-import { HarbourMap, typeColor } from "./harbour_map.js?v=20261013-fr7";
-import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261013-fr7";
-import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261013-fr7";
-import { initWatchZones } from "./watch_zones.js?v=20261013-fr7";
-import { initIncidentReplay } from "./incident_replay.js?v=20261013-fr7";
-import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261013-fr7";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261013-sp1";
+import { HarbourMap, typeColor } from "./harbour_map.js?v=20261013-sp1";
+import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261013-sp1";
+import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261013-sp1";
+import { initWatchZones } from "./watch_zones.js?v=20261013-sp1";
+import { initIncidentReplay } from "./incident_replay.js?v=20261013-sp1";
+import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261013-sp1";
 
 const GROUPS = [
   { key: "now", title: "Now" },

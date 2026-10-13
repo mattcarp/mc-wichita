@@ -1,4 +1,4 @@
-import { provenanceBadge, feedHealthChip } from "./entity_labels.js?v=20261013-fr7";
+import { provenanceBadge, feedHealthChip } from "./entity_labels.js?v=20261013-sp1";
 
 function $(sel) {
   return document.querySelector(sel);

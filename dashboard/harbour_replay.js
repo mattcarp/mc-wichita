@@ -1,4 +1,4 @@
-import { formatMaltaTimeShort } from "./time_malta.js?v=20261013-fr7";
+import { formatMaltaTimeShort } from "./time_malta.js?v=20261013-sp1";
 
 const replayState = {
   active: false,

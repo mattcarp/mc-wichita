@@ -1,0 +1,152 @@
+/* Solidarity print (chosen 13 Oct 2026). After the OSPAAAL posters: flat inks, 3px blue rules,
+   Alexandria display, Libre Franklin body. Loaded after field_report.css, which keeps the layout.
+   No gradients, no glass, no shadows. Depth comes from blue rules and ink overprint. */
+@font-face { font-family: "Alexandria"; src: url("/dashboard/fonts/Alexandria-var.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+:root {
+  --sun: #f3c318; --red: #9e1a0c; --blue: #10306a; --paper: #fbf3d0; --ink: #141414; --blue-soft: #3a4a72;
+  --bg: var(--paper); --surface: var(--paper); --surface-2: #f5e7a8;
+  --border: var(--blue); --rule: var(--blue-soft); --text: var(--ink); --muted: var(--blue-soft);
+  --marine: var(--red); --aviation: var(--blue); --fault: var(--red);
+  --display: "Alexandria", "Libre Franklin", sans-serif;
+  --mono: "Libre Franklin", system-ui, sans-serif;
+  --blue-rule: 3px solid var(--blue);
+}
+html, body { background: var(--paper); color: var(--ink); }
+.mono, code { font-family: var(--sans); font-variant-numeric: tabular-nums; }
+pre { font-family: ui-monospace, monospace; }
+::selection { background: var(--blue); color: var(--sun); }
+:focus-visible { outline: 3px solid var(--red) !important; outline-offset: 3px; }
+.num, .summary-num, .ship-moving, .voice-lab-stress, #maltaClock { font-variant-numeric: tabular-nums; }
+
+/* Edge text: the sheet border, the only tagline in four languages. */
+.sp-edge { display: flex; gap: 48px; white-space: nowrap; overflow: hidden; background: var(--sun); border-bottom: var(--blue-rule);
+  height: 36px; align-items: center; padding-left: 24px; font: 800 15px/1 var(--display); text-transform: uppercase; color: var(--blue); }
+.sp-edge span:nth-child(4n+2) { color: var(--red); }
+.sp-edge [lang=ar] { text-transform: none; font-size: 17px; }
+
+/* Header: sun field, blue name, red tagline */
+.site-header, .site-header-compact { background: var(--sun) !important; border-bottom: var(--blue-rule) !important; }
+.fr-brand { font: 800 26px/1 var(--display) !important; letter-spacing: -.01em !important; color: var(--blue) !important; text-transform: uppercase; }
+.sp-tag { font: 800 14px/1 var(--display); text-transform: uppercase; color: var(--red); letter-spacing: .02em; }
+.fr-place { color: var(--blue); font-weight: 600; }
+.header-live, #maltaClock { color: var(--blue) !important; }
+.header-live .pill { font: 700 13px var(--sans) !important; color: var(--red) !important; }
+.header-live .pill-offline { color: var(--blue-soft) !important; }
+.wichita-user-trigger { background: var(--sun) !important; border: var(--blue-rule) !important; color: var(--blue) !important; min-height: 44px; }
+.wichita-user-avatar { background: var(--blue) !important; color: var(--sun) !important; }
+.wichita-user-dropdown, .settings-menu { background: var(--paper) !important; border: var(--blue-rule) !important; }
+.icon-btn { color: var(--blue) !important; }
+
+/* Tabs: pressed-button group */
+.tab-bar { background: var(--paper) !important; border-bottom: var(--blue-rule) !important; gap: 0 !important; padding: 0 40px !important; }
+.tab-btn { font: 700 14px var(--display) !important; text-transform: uppercase; letter-spacing: .04em; color: var(--blue) !important; padding: 0 16px !important; border-bottom: 0 !important; }
+.tab-btn.active { background: var(--blue) !important; color: var(--sun) !important; font-weight: 800 !important; }
+
+/* Hero: the print. Sun field, blue rule, intent beside the live map. */
+.fr-hero { margin: 0 !important; padding: 32px 40px 36px !important; background: var(--sun); border-bottom: var(--blue-rule) !important; }
+.fr-kick, .eyebrow { font: 800 13px var(--display) !important; letter-spacing: .06em !important; color: var(--red) !important; }
+.fr-hero .fr-intent h1, .fr-intent h1 { font: 800 clamp(40px, 4.4vw, 72px)/.95 var(--display) !important; letter-spacing: -.03em; text-transform: uppercase; color: var(--blue); }
+.fr-intent h1 .sp-red { color: var(--red); display: block; }
+.sp-tagline { font: 700 clamp(22px, 1.8vw, 30px)/1.15 var(--display); color: var(--red); margin: 18px 0 0; }
+.fr-intent-body { font-size: 17px !important; color: var(--ink); max-width: 52ch; }
+.fr-intent-body b { color: var(--blue); }
+.fr-bands { color: var(--blue) !important; font-weight: 600; gap: 6px 8px !important; }
+.fr-bands li { border: 2px solid var(--blue); padding: 3px 8px; }
+
+/* Map: two inks. Paper water, sun land, blue coast and contacts; red is the pull. */
+.map, .map-coastline { background: var(--paper) !important; border: var(--blue-rule) !important; }
+.map-sea, .map-water { fill: var(--paper) !important; }
+.map-land { fill: #e9c64a !important; stroke: var(--blue) !important; stroke-width: 1px; }
+.map-ship, .map-ship-arrow, .map-base polygon, .map-plane polygon, .map-plane-edge polygon { fill: var(--blue) !important; stroke: var(--paper); stroke-width: 1px; }
+.map-ship-stale { opacity: .45; }
+.map-track { stroke: var(--blue) !important; opacity: .55; }
+.map-track-selected, .map-follow-trail { stroke: var(--red) !important; opacity: 1; }
+.map-watch-zone { fill: rgba(158, 26, 12, .12) !important; stroke: var(--red) !important; stroke-width: 2px !important; }
+.map-watch-draft { stroke: var(--red) !important; }
+.map-range { stroke: var(--blue) !important; opacity: .5; }
+.map-receiver { fill: var(--red) !important; }
+.map-label, .map-place { fill: var(--blue) !important; font-family: var(--display) !important; font-weight: 700; }
+.map-attrib { color: var(--blue-soft) !important; }
+.map-zoom-bar button { background: var(--sun) !important; color: var(--blue) !important; border: 2px solid var(--blue) !important; font: 700 12px var(--display) !important; text-transform: uppercase; min-height: 32px; }
+.map-zoom-bar button.active { background: var(--blue) !important; color: var(--sun) !important; }
+.map-follow-card { background: var(--paper) !important; border: var(--blue-rule) !important; border-radius: 0 !important; box-shadow: none !important; }
+
+/* Loading: "Listening…" strip as the blue receiver block */
+.harbour-map-col.map-listening .map-listening-note { background: var(--blue) !important; border-bottom: 0 !important; left: 3px; right: 3px; top: 3px; }
+.map-listening-note .ml-line { font: 800 14px var(--display) !important; color: var(--sun) !important; }
+.map-listening-note .ml-sub { color: var(--paper) !important; }
+.map-listening-note .ml-rule { background: var(--blue-soft) !important; height: 3px !important; }
+.map-listening-note .ml-rule::after { background: var(--red) !important; height: 3px !important; }
+
+/* Sections */
+.app { padding-top: 8px !important; }
+.panel { border-top: var(--blue-rule) !important; }
+.panel h2, .panel-head h2 { font: 800 26px/1.1 var(--display) !important; color: var(--blue) !important; letter-spacing: -.01em; }
+.panel h3 { font-family: var(--display) !important; color: var(--blue); }
+.badge, .badge-live, .badge-recorded { font: 800 12px var(--display) !important; color: var(--sun) !important; background: var(--red) !important; padding: 3px 8px 2px !important; }
+.badge-recorded, .badge-paused { background: var(--blue) !important; color: var(--sun) !important; }
+.fr-pipe li { border-top: var(--blue-rule) !important; color: var(--blue-soft); }
+.fr-pipe li::before { font: 800 13px var(--display) !important; color: var(--red) !important; opacity: 1 !important; }
+.fr-pipe b { font-family: var(--display); color: var(--blue) !important; }
+.summary-num { font: 800 36px/1.05 var(--display) !important; color: var(--blue) !important; }
+.summary-tiles > div { border-left: var(--blue-rule) !important; }
+.chip { border: 2px solid var(--blue) !important; color: var(--blue) !important; }
+
+/* Roster */
+.ship-group-label { font: 800 13px var(--display) !important; color: var(--sun) !important; background: var(--red); padding: 6px 10px 4px !important; border-bottom: 0 !important; margin-top: 12px; }
+.live-ship-card { border-bottom: 1px solid var(--blue-soft) !important; }
+.live-ship-card strong { font-family: var(--display); color: var(--blue); font-weight: 800; }
+.live-ship-card.selected { background: var(--sun) !important; box-shadow: inset 4px 0 0 var(--red) !important; padding-left: 10px !important; }
+.ship-moving { font: 700 12px var(--sans) !important; color: var(--red) !important; }
+.roster-note-paused { border-left: 4px solid var(--red) !important; color: var(--blue) !important; }
+.mmsi-lookup div { border-bottom: 1px solid #e3d290 !important; }
+.mmsi-lookup dt { font: 800 11px var(--display) !important; color: var(--blue-soft) !important; }
+
+/* Controls: square, 44px, sun at rest, blue when pressed, red for action */
+.entity-search-input, .watch-zone-name, select, input[type="text"], input[type="search"], input[type="email"] {
+  background: #fffbe8 !important; border: 2px solid var(--blue) !important; color: var(--ink) !important; min-height: 44px; font: 15px var(--sans) !important; }
+.timeline-more, button.subtab, .activity-window, .voice-lab-controls button {
+  background: var(--sun) !important; color: var(--blue) !important; border: 2px solid var(--blue) !important; font: 700 14px var(--sans) !important; min-height: 44px; }
+.subtab.active, .activity-window.active, .watch-zone-draw[aria-pressed="true"], #replayPlay[aria-pressed="true"] { background: var(--blue) !important; color: var(--sun) !important; }
+#voiceLabUploadBtn, #voiceLabMicBtn { background: var(--red) !important; border-color: var(--red) !important; color: var(--sun) !important; }
+input[type="range"], input[type="checkbox"] { accent-color: var(--red) !important; }
+
+/* Heard, voice, spectrum */
+.voice-slot { border-top: var(--blue-rule) !important; background: #fffbe8; padding: 10px 12px !important; }
+.voice-slot-flag { color: var(--red) !important; font-family: var(--display) !important; }
+.voice-slot dl div { border-bottom: 1px solid #e3d290 !important; }
+.voice-lab-stress { font: 800 44px var(--display) !important; color: var(--blue) !important; }
+.voice-lab-banner, .feed-banner { border-left: 6px solid var(--red) !important; color: var(--blue) !important; background: var(--sun) !important; padding: 10px 14px !important; }
+.voice-lab-output, pre { background: #fffbe8 !important; border: 2px solid var(--blue) !important; }
+canvas { background: var(--paper) !important; border-color: var(--blue) !important; }
+.spectrum-markers span { background: rgba(251, 243, 208, .94) !important; color: var(--blue) !important; font-family: var(--sans) !important; }
+.activity-strip { background: repeating-linear-gradient(90deg, #e3d290 0 1px, transparent 1px 8.33%) !important; }
+.timeline-shell { border-top: var(--blue-rule) !important; }
+.station-strip > div { border-bottom: 1px solid #e3d290 !important; }
+.station-strip dt { color: var(--blue-soft) !important; }
+.recorded-capture-note { border-left: 4px solid var(--blue) !important; }
+.ship-sheet, .live-ship-drawer { background: var(--paper) !important; border: var(--blue-rule) !important; }
+
+/* Footer */
+.site-footer { border-top: var(--blue-rule) !important; color: var(--blue); }
+.site-footer .muted { color: var(--blue-soft) !important; }
+
+/* Sign-in gate: the print, no user details */
+.auth-gate { background: var(--sun) !important; }
+.auth-gate-inner { border-top: 0 !important; border: var(--blue-rule) !important; background: var(--paper) !important; padding: 32px !important; }
+.auth-gate-brand { font: 800 44px/1 var(--display) !important; letter-spacing: -.02em !important; color: var(--blue) !important; }
+.auth-gate-tagline { color: var(--red) !important; font: 700 18px var(--display) !important; }
+.auth-gate-sub { color: var(--blue-soft); font-size: 14px; margin: 4px 0 16px; }
+#clerkSignIn button[type="submit"], .auth-form-shell button[type="submit"] { background: var(--red) !important; border: 0 !important; color: var(--sun) !important; font: 800 16px var(--display) !important; text-transform: uppercase; min-height: 48px; }
+
+@media (max-width: 899px) {
+  .sp-edge { height: 30px; font-size: 13px; gap: 28px; padding-left: 16px; }
+  .sp-tag { display: none; }
+  .fr-brand { font-size: 22px !important; }
+  .tab-bar { padding: 0 8px !important; }
+  .tab-btn { padding: 0 12px !important; }
+  .fr-hero { padding: 16px 16px 24px !important; }
+  .fr-hero .fr-intent h1, .fr-intent h1 { font-size: 38px !important; }
+  .sp-tagline { font-size: 22px; }
+}
+@media (prefers-reduced-motion: reduce) { .map-listening-note .ml-rule::after { animation: none !important; } }

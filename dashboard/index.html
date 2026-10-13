@@ -7,24 +7,32 @@
   <title>Wichita · Valletta, Malta</title>
   <link rel="icon" href="data:," />
   <link rel="preload" href="/dashboard/fonts/LibreFranklin-var.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261013-fr7" />
-  <link rel="stylesheet" href="/dashboard/field_report.css?v=20261013-fr7" />
-  <script type="module" src="/dashboard/clerk_gate.js?v=20261013-fr7"></script>
+  <link rel="preload" href="/dashboard/fonts/Alexandria-var.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261013-sp1" />
+  <link rel="stylesheet" href="/dashboard/field_report.css?v=20261013-sp1" />
+  <link rel="stylesheet" href="/dashboard/solidarity.css?v=20261013-sp1" />
+  <script type="module" src="/dashboard/clerk_gate.js?v=20261013-sp1"></script>
 </head>
 <body class="auth-pending">
   <div id="authGate" class="auth-gate" role="main" aria-label="Sign in">
     <div class="auth-gate-inner">
       <p class="auth-gate-brand fr-brand">Wichita</p>
-      <p class="auth-gate-tagline muted">Valletta, Malta · sign in with an email link or code</p>
+      <p class="auth-gate-tagline">No place left behind</p>
+      <p class="auth-gate-sub">Balcony receiver, Valletta, Malta · sign in with an email link or code</p>
       <div id="clerkSignIn"></div>
     </div>
   </div>
   <div id="appShell" hidden>
+  <!-- Edge text: the tagline "No place left behind" in English, Maltese, Italian and Arabic.
+       NOTE: the Maltese, Italian and Arabic lines are UNREVIEWED machine drafts; they need native-speaker review. -->
+  <div class="sp-edge" aria-hidden="true"><span>No place left behind</span><span lang="mt">Ebda post ma jitħalla lura</span><span lang="it">Nessun luogo lasciato indietro</span><span lang="ar" dir="rtl">لا مكان يُترك وراءنا</span><span>No place left behind</span><span lang="mt">Ebda post ma jitħalla lura</span><span lang="it">Nessun luogo lasciato indietro</span><span lang="ar" dir="rtl">لا مكان يُترك وراءنا</span></div>
+
   <a class="skip-link" href="#main">Skip to dashboard</a>
   <header class="site-header site-header-compact">
     <div class="brand brand-compact">
       <span class="fr-brand">Wichita</span>
-      <span class="fr-place mono">Valletta, Malta</span>
+      <span class="sp-tag">No place left behind</span>
+      <span class="fr-place mono">Balcony receiver · Valletta, Malta</span>
       <div id="headerLive" class="header-live mono" role="status">Checking AIS…</div>
     </div>
     <div class="header-meta">
@@ -48,9 +56,10 @@
 
   <div class="fr-hero">
     <section class="fr-intent" aria-labelledby="intent-heading">
-    <p class="fr-kick">What Wichita is for</p>
-    <h1 id="intent-heading">People in trouble rarely say the right words. Wichita listens for how they sound.</h1>
-    <p class="fr-intent-body">Wichita exists to help people who are vulnerable in their time of need, anywhere a human voice crosses the radio: in the air, on land, at sea. AI analyses the voice itself (stress, fear, strain, exhaustion) as well as the words, and it also listens for bad actors: threats, coordination, coded intent. Positioning is context, not the point. Built and listening in Valletta, Malta.</p>
+    <p class="fr-kick">Wichita · balcony receiver, Valletta, Malta</p>
+    <h1 id="intent-heading">Hear the voice <span class="sp-red">in trouble.</span></h1>
+    <p class="sp-tagline">No place left behind.</p>
+    <p class="fr-intent-body">People who are vulnerable rarely say the right words. Wichita listens to <b>how they sound</b>: a software-defined radio on a balcony in Valletta, Malta, feeds every human voice it hears, in the air, on land and at sea, through AI that scores stress, fear, strain and exhaustion alongside the words, so a voice in need is noticed sooner. It also listens for bad actors: threats, coordination, coded intent. Ship and aircraft positions are context, not the point. Every alert goes to a person; nothing acts on its own.</p>
     <ul class="fr-bands mono" aria-label="Bands Wichita is built to hear">
       <li>Aviation 118–137 MHz</li><li>Marine VHF 156–162 MHz</li><li>Land mobile</li><li>Emergency services</li><li>Amateur</li><li>PMR446</li>
     </ul>
