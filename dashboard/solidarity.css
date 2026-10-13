@@ -195,3 +195,18 @@ canvas { background: var(--paper) !important; border-color: var(--blue) !importa
 }
 .sp-subhead { font: 700 clamp(22px, 1.9vw, 30px)/1.2 var(--display); color: var(--red); margin: 16px 0 0; max-width: 24ch; letter-spacing: -.01em; }
 @media (max-width: 899px) { .sp-subhead { font-size: 22px; } }
+/* Receiver = the antenna: red marker */
+.map-receiver { fill: #9e1a0c !important; stroke: var(--paper) !important; stroke-width: 1.5px !important; }
+/* Expand cue: triangle + "More details" / "Less" */
+.expand-cue { display: inline-flex; align-items: center; gap: 6px; font: 700 13px var(--sans); color: var(--red); cursor: pointer; }
+summary.expand-cue { list-style: none; min-height: 44px; padding: 0 2px; }
+summary.expand-cue::-webkit-details-marker { display: none; }
+.cue-tri { width: 0; height: 0; border-left: 7px solid currentColor; border-top: 5px solid transparent; border-bottom: 5px solid transparent; transition: transform .15s ease; }
+.cue-less { display: none; }
+details[open] > summary.expand-cue .cue-tri, .side-ship[aria-expanded="true"] .cue-tri { transform: rotate(90deg); }
+details[open] > summary.expand-cue .cue-more, .side-ship[aria-expanded="true"] .cue-more { display: none; }
+details[open] > summary.expand-cue .cue-less, .side-ship[aria-expanded="true"] .cue-less { display: inline; }
+.side-ship { grid-template-columns: 10px minmax(0, 1fr) auto !important; }
+.side-cue { grid-column: 3; grid-row: 1; font-size: 12px; }
+.side-meta { grid-column: 2 / span 2 !important; }
+@media (prefers-reduced-motion: reduce) { .cue-tri { transition: none; } }

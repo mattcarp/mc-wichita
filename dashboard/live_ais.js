@@ -1,10 +1,10 @@
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261013-sp3";
-import { HarbourMap, typeColor } from "./harbour_map.js?v=20261013-sp3";
-import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261013-sp3";
-import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261013-sp3";
-import { initWatchZones } from "./watch_zones.js?v=20261013-sp3";
-import { initIncidentReplay } from "./incident_replay.js?v=20261013-sp3";
-import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261013-sp3";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261013-sp4";
+import { HarbourMap, typeColor } from "./harbour_map.js?v=20261013-sp4";
+import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261013-sp4";
+import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261013-sp4";
+import { initWatchZones } from "./watch_zones.js?v=20261013-sp4";
+import { initIncidentReplay } from "./incident_replay.js?v=20261013-sp4";
+import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261013-sp4";
 
 const GROUPS = [
   { key: "now", title: "Now" },
@@ -109,7 +109,7 @@ function shipCardHtml(s, selected) {
     </div>
     <p class="ship-lead">${s.lead_sentence}</p>
     <p class="muted ship-meta">${s.shiptype_label}${eta ? ` · ${eta}` : ""}</p>
-    <details class="ship-raw-details"><summary>Details · MMSI lookup</summary>
+    <details class="ship-raw-details"><summary class="expand-cue" aria-expanded="false"><span class="cue-tri" aria-hidden="true"></span><span class="cue-more">More details</span><span class="cue-less">Less</span><span class="sr-only"> for ${esc(s.display_name)}: MMSI lookup</span></summary>
       ${mmsiLookupHtml(s)}
       <a class="mmsi-link" href="https://www.vesselfinder.com/?mmsi=${s.mmsi}" rel="noopener noreferrer" target="_blank">Look up MMSI on VesselFinder (external) ↗</a>
       <p class="mono muted">MMSI ${s.mmsi_display}${s.callsign ? ` · ${s.callsign}` : ""}</p>
@@ -196,7 +196,10 @@ function renderShipList(snapshot) {
     const det = li.querySelector(".ship-raw-details");
     if (det) {
       if (state.openDetails.has(mmsi)) det.open = true;
+      const sum = det.querySelector("summary");
+      if (sum) sum.setAttribute("aria-expanded", String(det.open));
       det.addEventListener("toggle", () => {
+        if (sum) sum.setAttribute("aria-expanded", String(det.open));
         if (det.open) state.openDetails.add(mmsi);
         else state.openDetails.delete(mmsi);
       });
@@ -230,7 +233,7 @@ function renderSideList(snapshot) {
   const sinceUtc = snapshot.feed_last_ok_utc;
   const sel = ships.find((s) => s.mmsi === state.selectedMmsi);
   const detail = sel
-    ? `<div class="side-detail" data-test-id="side-detail">
+    ? `<div class="side-detail" id="sideDetail" data-test-id="side-detail">
         <div class="side-detail-head"><strong>${esc(sel.display_name)}</strong><button type="button" class="side-close" aria-label="Close details">×</button></div>
         <p class="ship-lead">${sel.lead_sentence || ""}</p>
         <dl class="ship-detail-dl">
@@ -248,9 +251,10 @@ function renderSideList(snapshot) {
     ? `<p class="side-note side-note-paused" role="status">Feed paused${sinceUtc ? ` since ${formatMaltaTimeShort(sinceUtc)}` : ""}; last ships heard.</p>`
     : `<p class="side-note">${ships.length} heard in the last hour · newest first</p>`;
   const items = ships.length
-    ? ships.map((s) => `<li class="side-ship${s.mmsi === state.selectedMmsi ? " selected" : ""} side-${s.freshness || "earlier"}" data-mmsi="${s.mmsi}" role="button" tabindex="0" style="--ship-type-color:${typeColor(s.shiptype_category)}">
+    ? ships.map((s) => `<li class="side-ship${s.mmsi === state.selectedMmsi ? " selected" : ""} side-${s.freshness || "earlier"}" data-mmsi="${s.mmsi}" role="button" tabindex="0" aria-expanded="${s.mmsi === state.selectedMmsi}" aria-controls="sideDetail" style="--ship-type-color:${typeColor(s.shiptype_category)}">
         <span class="ship-type-icon" aria-hidden="true"></span>
         <span class="side-name">${esc(s.display_name)}</span>
+        <span class="expand-cue side-cue" aria-hidden="true"><span class="cue-tri"></span><span class="cue-more">More details</span><span class="cue-less">Less</span></span>
         <span class="side-meta">${s.speed_known !== false && (s.speed_kn ?? 0) >= 1 ? `${Number(s.speed_kn).toFixed(1)} kn · ` : ""}${agoLabel(s.last_signal_s) || s.freshness_label || ""}</span>
       </li>`).join("")
     : `<li class="side-empty">${paused ? "No ships were heard before the feed paused." : "No vessels heard in the last hour."}</li>`;
