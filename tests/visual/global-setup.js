@@ -31,17 +31,27 @@ export default async function globalSetup(config) {
     await p.keyboard.press("Enter");
     await p.waitForTimeout(4000);
     await p.click("text=Use a code instead").catch(() => {});
-    await p.waitForSelector("#authCode", { timeout: 20000 });
+    const codeUi = await p.waitForSelector("#authCode", { state: "visible", timeout: 10000 }).then(() => true).catch(() => false);
+    if (!codeUi) console.log("[setup] Code entry not shown (Clerk may be rate-limiting codes):", (await p.innerText("body")).slice(0, 200).replace(/\n/g, " "));
     if (fs.existsSync(CODE)) fs.unlinkSync(CODE);
-    console.log(`[setup] Waiting for the Clerk code: set WICHITA_CODE or write it to ${CODE}`);
+    console.log(`[setup] Waiting for the Clerk code or sign-in link: set WICHITA_CODE or write it to ${CODE}`);
     let code = process.env.WICHITA_CODE || null;
     for (let i = 0; i < 600 && !code; i++) {
       if (fs.existsSync(CODE)) code = fs.readFileSync(CODE, "utf8").trim();
       else await p.waitForTimeout(1000);
     }
-    if (!code) throw new Error("No sign-in code received");
-    await p.fill("#authCode", code);
-    await p.keyboard.press("Enter");
+    if (!code) throw new Error("No sign-in code or link received");
+    if (/^https?:/.test(code)) {
+      // Email-link sign-in: open the link in the same browser context, then return to the app.
+      const lp = await ctx.newPage();
+      await lp.goto(code, { waitUntil: "load" });
+      await lp.waitForTimeout(6000);
+      await lp.close();
+      await p.waitForSelector("#appShell:not([hidden])", { timeout: 15000 }).catch(() => p.reload({ waitUntil: "load" }));
+    } else {
+      await p.fill("#authCode", code);
+      await p.keyboard.press("Enter");
+    }
     await p.waitForSelector("#appShell:not([hidden])", { timeout: 30000 });
     await ctx.storageState({ path: STATE });
     await ctx.close();
