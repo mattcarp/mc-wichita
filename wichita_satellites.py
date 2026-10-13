@@ -56,15 +56,71 @@ def _cache_max_age_sec() -> float:
     return float(os.environ.get("WICHITA_TLE_CACHE_HOURS", str(CACHE_HOURS))) * 3600.0
 
 
+def _tle_line_checksum_ok(line: str) -> bool:
+    if len(line) < 2:
+        return False
+    total = 0
+    for ch in line[:-1]:
+        if ch.isdigit():
+            total += int(ch)
+        elif ch == "-":
+            total += 1
+    try:
+        return total % 10 == int(line[-1])
+    except ValueError:
+        return False
+
+
+def _norad_from_tle_line(line: str) -> Optional[int]:
+    if len(line) < 7:
+        return None
+    try:
+        return int(line[2:7])
+    except ValueError:
+        return None
+
+
+def _validate_tle_triplet(tle: List[str], norad: int) -> bool:
+    if len(tle) != 3:
+        return False
+    _name, line1, line2 = tle
+    if not line1.startswith("1 ") or not line2.startswith("2 "):
+        return False
+    if len(line1) != 69 or len(line2) != 69:
+        return False
+    if not _tle_line_checksum_ok(line1) or not _tle_line_checksum_ok(line2):
+        return False
+    n1 = _norad_from_tle_line(line1)
+    n2 = _norad_from_tle_line(line2)
+    return n1 == norad and n2 == norad
+
+
+def _parse_tle_response(text: str, norad: int) -> List[str]:
+    lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
+    for i, line1 in enumerate(lines):
+        if not line1.startswith("1 "):
+            continue
+        if i + 1 >= len(lines):
+            break
+        line2 = lines[i + 1]
+        if not line2.startswith("2 "):
+            continue
+        if i > 0 and not lines[i - 1].startswith(("1 ", "2 ")):
+            name = lines[i - 1]
+        else:
+            name = f"NORAD {norad}"
+        candidate = [name, line1, line2]
+        if _validate_tle_triplet(candidate, norad):
+            return candidate
+    raise ValueError(f"No valid TLE triplet for NORAD {norad}")
+
+
 def _fetch_tle_lines(norad: int) -> List[str]:
     url = f"https://celestrak.org/NORAD/elements/gp.php?CATNR={norad}&FORMAT=TLE"
     req = urllib.request.Request(url, headers={"User-Agent": "Wichita-dashboard/1.0"})
     with urllib.request.urlopen(req, timeout=20) as resp:
         text = resp.read().decode("utf-8", errors="replace")
-    lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
-    if len(lines) < 3:
-        raise ValueError(f"TLE too short for {norad}")
-    return lines[-3:]
+    return _parse_tle_response(text, norad)
 
 
 def load_tle_cache() -> Dict[str, Any]:
@@ -101,15 +157,30 @@ def refresh_tle_cache(force: bool = False) -> Dict[str, Any]:
     if age_ok and cache.get("satellites"):
         return cache
 
+    now_iso = datetime.now(timezone.utc).isoformat()
+    prev_sats: Dict[str, Any] = dict(cache.get("satellites") or {})
     sats: Dict[str, Any] = {}
     for name, norad in SATELLITES:
+        key = str(norad)
         try:
             lines = _fetch_tle_lines(norad)
-            sats[str(norad)] = {"name": name, "norad": norad, "tle": lines}
+            if not _validate_tle_triplet(lines, norad):
+                raise ValueError(f"TLE validation failed for {norad}")
+            sats[key] = {
+                "name": name,
+                "norad": norad,
+                "tle": lines,
+                "tle_fetched_at_utc": now_iso,
+            }
         except (urllib.error.URLError, ValueError, TimeoutError) as exc:
             logger.warning("TLE fetch failed for %s: %s", norad, exc)
+            prev = prev_sats.get(key)
+            if prev and _validate_tle_triplet(prev.get("tle") or [], norad):
+                sats[key] = prev
+            else:
+                logger.warning("No prior valid TLE for NORAD %s; skipping", norad)
     cache = {
-        "fetched_at_utc": datetime.now(timezone.utc).isoformat(),
+        "fetched_at_utc": now_iso,
         "source": "CelesTrak NORAD GP elements",
         "satellites": sats,
     }
@@ -307,30 +378,37 @@ def satellite_overview(force_tle: bool = False) -> Dict[str, Any]:
         entry = (cache.get("satellites") or {}).get(str(norad))
         if not entry:
             continue
-        lines = entry["tle"]
-        sat = Satrec.twoline2rv(lines[1], lines[2])
-        passes = next_passes(sat, entry["name"], norad, now)
-        track = ground_track(sat, now - timedelta(minutes=45), minutes=90)
-        in_progress = False
-        if passes:
-            try:
-                aos = datetime.fromisoformat(passes[0]["aos_utc"].replace("Z", "+00:00"))
-                los_guess = datetime.fromisoformat(passes[0]["max_utc"].replace("Z", "+00:00")) + timedelta(
-                    minutes=12
-                )
-                in_progress = aos <= now <= los_guess
-            except (KeyError, ValueError):
-                in_progress = False
-        out_sats.append(
-            {
-                "name": entry["name"],
-                "norad": norad,
-                "next_passes": passes,
-                "pass_in_progress": in_progress,
-                "ground_track": track,
-                **_satellite_provenance(fetched_at, now),
-            }
-        )
+        lines = entry.get("tle") or []
+        if not _validate_tle_triplet(lines, norad):
+            logger.warning("Skipping NORAD %s: invalid cached TLE", norad)
+            continue
+        sat_fetched = entry.get("tle_fetched_at_utc") or fetched_at
+        try:
+            sat = Satrec.twoline2rv(lines[1], lines[2])
+            passes = next_passes(sat, entry["name"], norad, now)
+            track = ground_track(sat, now - timedelta(minutes=45), minutes=90)
+            in_progress = False
+            if passes:
+                try:
+                    aos = datetime.fromisoformat(passes[0]["aos_utc"].replace("Z", "+00:00"))
+                    los_guess = datetime.fromisoformat(passes[0]["max_utc"].replace("Z", "+00:00")) + timedelta(
+                        minutes=12
+                    )
+                    in_progress = aos <= now <= los_guess
+                except (KeyError, ValueError):
+                    in_progress = False
+            out_sats.append(
+                {
+                    "name": entry["name"],
+                    "norad": norad,
+                    "next_passes": passes,
+                    "pass_in_progress": in_progress,
+                    "ground_track": track,
+                    **_satellite_provenance(sat_fetched, now),
+                }
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("Satellite overview failed for NORAD %s: %s", norad, exc)
 
     def _pass_sort_key(sat: Dict[str, Any]) -> str:
         passes = sat.get("next_passes") or []
