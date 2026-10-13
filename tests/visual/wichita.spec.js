@@ -155,7 +155,10 @@ test("(a) screenshot baselines per tab", async ({ page }) => {
   await openApp(page);
   const mask = DYNAMIC.map((s) => page.locator(s));
   await page.evaluate(() => window.scrollTo(0, 0));
-  await expect(page).toHaveScreenshot("top.png", { mask, maxDiffPixelRatio: 0.05 });
+  // Top of the page down to the bottom of the map; the live sidebar below it changes height with real data.
+  const mapBox = await page.locator(".harbour-map-col").boundingBox();
+  const vw = page.viewportSize().width;
+  await expect(page).toHaveScreenshot("top.png", { mask, maxDiffPixelRatio: 0.05, clip: { x: 0, y: 0, width: vw, height: Math.min(Math.floor(mapBox.y + mapBox.height), page.viewportSize().height) } });
   for (const name of TABS) {
     await page.click(`.tab-btn[data-tab-target="${name}"]`);
     await page.waitForTimeout(700);
