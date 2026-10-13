@@ -8,6 +8,10 @@
 
 These two elements define the project and must NEVER be changed in any UI, demo, or documentation.
 
+## INTRO
+
+Wichita helps people who are vulnerable in their time of need, anywhere a human voice can be heard on radio: air, land or sea, on any frequency. AI analysis of the voice (stress, fear, strain, exhaustion, alongside the words) is the core; positioning data is secondary context. Receive-only, built and listening in Valletta, Malta. The two goals above are unchanged.
+
 ## THE DUAL MISSION
 
 ### 🚨 MISSION 1: CATCH BAD GUYS

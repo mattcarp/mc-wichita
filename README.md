@@ -3,9 +3,16 @@
 **RF forensics platform with speech-to-speech emotional intelligence.**
 Repository: `mc-wichita`.
 
-Wichita listens to maritime, aviation and terrestrial radio from a rooftop antenna
-in Valletta, Malta, and analyses *how* people speak, not only what they say. Its
-two missions are fixed and not up for revision:
+Wichita exists to help people who are vulnerable in their time of need, anywhere
+a human voice crosses the radio: in the air, on land and at sea, on any band
+(aviation, marine VHF, land mobile, emergency services, amateur, PMR446). AI
+analysis of the voice is the core: it hears *how* people speak, not only what
+they say (pitch variance, zero-crossing rate, speech rate and loudness feed a
+0–100 stress score), and a person reviews every alert. Positioning (AIS, ADS-B)
+is secondary context. Receive-only; built and listening in Valletta, Malta, on
+an SDRplay RSPdx-R2. Written for technologists and technical investors.
+
+Its two missions are fixed and not up for revision:
 
 1. **Detect bad actors** — threatening language, criminal coordination, illegal
    activity, coded intent, unusual timing and frequency behaviour.
