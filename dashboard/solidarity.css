@@ -193,3 +193,5 @@ canvas { background: var(--paper) !important; border-color: var(--blue) !importa
   .map-side-list { border-left: var(--blue-rule); border-top: 0; max-height: 360px; }
   .side-detail { max-height: none; }
 }
+.sp-subhead { font: 700 clamp(22px, 1.9vw, 30px)/1.2 var(--display); color: var(--red); margin: 16px 0 0; max-width: 24ch; letter-spacing: -.01em; }
+@media (max-width: 899px) { .sp-subhead { font-size: 22px; } }
