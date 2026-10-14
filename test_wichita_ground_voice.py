@@ -108,3 +108,8 @@ def test_routes_split(monkeypatch, tmp_path):
     tok = c.post("/api/ground-voice/channels/marine-ch16/ticket").json()["ticket"]
     assert c.get(f"/api/ground-voice/listen/marine-ch16?ticket={tok}").status_code == 502
     assert gv.LIMITER.count() == 0  # released after failure
+
+
+def test_unreachable_receiver_is_idle():
+    st = {c["id"]: c for c in gv.channel_status({"marine-ch16": "http://127.0.0.1/x"}, cleared=True, reachable=[])}
+    assert st["marine-ch16"]["state"] == "idle" and "not answering" in st["marine-ch16"]["reason"]

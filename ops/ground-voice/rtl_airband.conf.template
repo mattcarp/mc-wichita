@@ -1,0 +1,12 @@
+# Wichita ground voice: receive-only, marine VHF channel 16 only. Password comes from secrets.env.
+fft_size = 1024;
+devices: ({
+  type = "rtlsdr"; index = 0; gain = 40.0;
+  centerfreq = 157.000; correction = 0; mode = "multichannel"; sample_rate = 1.024;
+  channels: ({
+    freq = 156.800; modulation = "nfm";
+    outputs: ({ type = "icecast"; server = "127.0.0.1"; port = 8000; mountpoint = "ch16";
+                name = "Wichita marine ch16"; genre = "receive-only"; username = "source"; password = "${SRC_PW}";
+                send_scan_freq_tags = false; });
+  });
+});

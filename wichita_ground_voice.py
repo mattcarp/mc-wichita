@@ -214,7 +214,8 @@ TICKETS = Tickets()
 
 # ------------------------------------------------------------ public status
 def channel_status(sources: Dict[str, str], limiter: ListenerLimiter = LIMITER,
-                   cleared: Optional[bool] = None) -> List[dict]:
+                   cleared: Optional[bool] = None,
+                   reachable: Optional[Iterable[str]] = None) -> List[dict]:
     cleared = legally_cleared() if cleared is None else cleared
     out = []
     for ch in ALLOWLIST:
@@ -222,6 +223,8 @@ def channel_status(sources: Dict[str, str], limiter: ListenerLimiter = LIMITER,
             state, reason = "idle", "Waiting for the MCA and IDPC opinions; no audio is received yet."
         elif ch.id not in sources:
             state, reason = "idle", "No receiver is tuned to this channel."
+        elif reachable is not None and ch.id not in set(reachable):
+            state, reason = "idle", "Receiver not answering."
         elif limiter.count(ch.id) >= limiter.per_channel or limiter.count() >= limiter.total:
             state, reason = "limit", "Listener limit reached."
         else:

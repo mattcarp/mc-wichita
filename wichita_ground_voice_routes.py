@@ -10,14 +10,42 @@ import wichita_ground_voice as gv
 router = APIRouter(prefix="/api/ground-voice", tags=["ground-voice"])
 
 
+_probe_cache: dict = {}
+
+
+async def _reachable(sources: dict) -> set:
+    """Live only if the receiver stream actually answers (cached 30 s)."""
+    import time
+    import httpx
+    ok = set()
+    for cid, url in sources.items():
+        hit = _probe_cache.get(url)
+        if hit and time.time() - hit[1] < 30:
+            if hit[0]:
+                ok.add(cid)
+            continue
+        good = False
+        try:
+            async with httpx.AsyncClient(timeout=3.0) as c:
+                async with c.stream("GET", url) as r:
+                    good = r.status_code == 200
+        except Exception:
+            good = False
+        _probe_cache[url] = (good, time.time())
+        if good:
+            ok.add(cid)
+    return ok
+
+
 @router.get("/channels")
 async def channels():
     """Public metadata only. Never includes source URLs."""
     sources = gv.load_private_sources()
+    reach = await _reachable(sources) if gv.legally_cleared() else set()
     return {"cleared": gv.legally_cleared(),
             "max_total_listeners": gv.LIMITER.total,
             "listeners": gv.LIMITER.count(),
-            "channels": gv.channel_status(sources)}
+            "channels": gv.channel_status(sources, reachable=reach)}
 
 
 def _limit_response(scope: str) -> JSONResponse:
