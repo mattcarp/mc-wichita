@@ -1,12 +1,12 @@
-import { plural, pluralWord } from "./plural.js?v=20261014-air1";
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261014-air1";
-import { HarbourMap, typeColor } from "./harbour_map.js?v=20261014-air1";
-import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261014-air1";
-import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261014-air1";
-import { initWatchZones } from "./watch_zones.js?v=20261014-air1";
-import { initGroundVoice } from "./ground_voice.js?v=20261014-air1";
-import { initIncidentReplay } from "./incident_replay.js?v=20261014-air1";
-import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261014-air1";
+import { plural, pluralWord } from "./plural.js?v=20261014-air2";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261014-air2";
+import { HarbourMap, typeColor } from "./harbour_map.js?v=20261014-air2";
+import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261014-air2";
+import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261014-air2";
+import { initWatchZones } from "./watch_zones.js?v=20261014-air2";
+import { initGroundVoice } from "./ground_voice.js?v=20261014-air2";
+import { initIncidentReplay } from "./incident_replay.js?v=20261014-air2";
+import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261014-air2";
 
 const GROUPS = [
   { key: "now", title: "Now" },

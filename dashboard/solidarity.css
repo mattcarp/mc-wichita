@@ -246,3 +246,5 @@ details[open] > summary.expand-cue .cue-less, .side-ship[aria-expanded="true"] .
 .live-plane-card.plane-emergency strong, .plane-squawk-em, .plane-em-count { color: var(--red); font-weight: 700; }
 .squawk-alert.squawk-red { color: var(--red); font-weight: 700; font-size: 0.78rem; margin: 0.25rem 0 0; }
 .map-plane-emergency polygon { stroke: var(--ink); stroke-width: 1.2; }
+.live-plane-card > .mono { display: block; }
+.plane-details p { margin: 0.15rem 0; }

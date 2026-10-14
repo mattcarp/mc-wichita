@@ -1,5 +1,5 @@
-import { plural, pluralWord } from "./plural.js?v=20261014-air1";
-import { provenanceBadge, feedHealthChip } from "./entity_labels.js?v=20261014-air1";
+import { plural, pluralWord } from "./plural.js?v=20261014-air2";
+import { provenanceBadge, feedHealthChip } from "./entity_labels.js?v=20261014-air2";
 
 function $(sel) {
   return document.querySelector(sel);
@@ -28,6 +28,8 @@ export function planeSummaryLine(p) {
   const hdg = p.heading_deg != null ? `${Math.round(p.heading_deg)}°` : "—";
   return `${alt} · ${gs} · ${hdg}`;
 }
+
+const openPlaneDetails = new Set();
 
 export function renderPlanesPanel(adsb) {
   const el = $("#planesPanel");
@@ -70,6 +72,20 @@ export function renderPlanesPanel(adsb) {
         })
         .join("")}
     </ul>`;
+  el.querySelectorAll(".live-plane-card").forEach((li) => {
+    const id = li.getAttribute("data-plane-id");
+    const det = li.querySelector(".plane-details");
+    if (!det) return;
+    const sum = det.querySelector("summary");
+    if (openPlaneDetails.has(id)) det.open = true;
+    sum?.setAttribute("aria-expanded", String(det.open));
+    det.addEventListener("toggle", () => {
+      sum?.setAttribute("aria-expanded", String(det.open));
+      if (det.open) openPlaneDetails.add(id);
+      else openPlaneDetails.delete(id);
+    });
+    det.addEventListener("click", (ev) => ev.stopPropagation());
+  });
 }
 
 export function renderSatellitesPanel(sky) {
