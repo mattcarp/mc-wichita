@@ -1,12 +1,12 @@
-import { plural, pluralWord } from "./plural.js?v=20261014-gv1";
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261014-gv1";
-import { HarbourMap, typeColor } from "./harbour_map.js?v=20261014-gv1";
-import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261014-gv1";
-import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261014-gv1";
-import { initWatchZones } from "./watch_zones.js?v=20261014-gv1";
-import { initGroundVoice } from "./ground_voice.js?v=20261014-gv1";
-import { initIncidentReplay } from "./incident_replay.js?v=20261014-gv1";
-import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261014-gv1";
+import { plural, pluralWord } from "./plural.js?v=20261014-air1";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261014-air1";
+import { HarbourMap, typeColor } from "./harbour_map.js?v=20261014-air1";
+import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261014-air1";
+import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261014-air1";
+import { initWatchZones } from "./watch_zones.js?v=20261014-air1";
+import { initGroundVoice } from "./ground_voice.js?v=20261014-air1";
+import { initIncidentReplay } from "./incident_replay.js?v=20261014-air1";
+import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261014-air1";
 
 const GROUPS = [
   { key: "now", title: "Now" },
@@ -403,8 +403,9 @@ function renderFollowCard() {
   if (!plane) return;
   el.innerHTML = `${provenanceBadge(plane)}
     <p><strong>Following ${plane.display_name}</strong> — tap again or press Esc to stop.</p>
-    <p class="mono muted">${plane.altitude_ft != null ? `${Math.round(plane.altitude_ft)} ft` : "—"} · squawk ${plane.squawk || "—"}</p>
-    ${plane.squawk_note ? `<p class="squawk-alert calm">${plane.squawk_note}</p>` : ""}`;
+    <p class="mono muted">${[plane.registration, plane.type].filter(Boolean).join(" · ") || "—"} · ${plane.source || ""}</p>
+    <p class="mono muted">${plane.altitude_ft != null ? `${Math.round(plane.altitude_ft)} ft` : "—"} · ${plane.speed_kts != null ? `${Math.round(plane.speed_kts)} kt` : "—"} · ${plane.heading_deg != null ? `${Math.round(plane.heading_deg)}°` : "—"} · squawk ${plane.squawk || "—"}</p>
+    ${plane.squawk_note ? `<p class="squawk-alert${plane.is_emergency ? " squawk-red" : " calm"}">${plane.squawk_note}</p>` : ""}`;
 }
 
 function satelliteTracksForMap(sky) {

@@ -234,3 +234,15 @@ details[open] > summary.expand-cue .cue-less, .side-ship[aria-expanded="true"] .
   .map-side-list { max-height: none !important; height: auto !important; overflow: visible !important; }
   .side-scroll { max-height: 320px; flex: none; }
 }
+
+/* Sky tab aircraft (adsb.lol + local antenna, one list) */
+.planes-panel .live-plane-list { max-height: 30rem; overflow-y: auto; }
+.live-plane-head { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
+.plane-src { font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.04em; padding: 0.05rem 0.35rem; border: 1px solid var(--blue); color: var(--blue); }
+.plane-src.src-local, .plane-src.src-both { background: var(--blue); color: var(--paper); }
+.plane-feed-label { color: var(--blue); margin: 0 0 0.25rem; }
+.plane-feed-paused { color: var(--red); }
+.live-plane-card.plane-emergency { border: 2px solid var(--red); }
+.live-plane-card.plane-emergency strong, .plane-squawk-em, .plane-em-count { color: var(--red); font-weight: 700; }
+.squawk-alert.squawk-red { color: var(--red); font-weight: 700; font-size: 0.78rem; margin: 0.25rem 0 0; }
+.map-plane-emergency polygon { stroke: var(--ink); stroke-width: 1.2; }

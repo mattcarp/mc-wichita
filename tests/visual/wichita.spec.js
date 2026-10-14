@@ -207,3 +207,33 @@ test("(a) screenshot baselines per tab", async ({ page }) => {
     await page.screenshot({ path: test.info().outputPath(`tab-${name}.png`), mask });
   }
 });
+
+test("(i) aircraft: exactly one aircraft layer, one row per ICAO hex, source labelled", async ({ page }) => {
+  await openApp(page);
+  // Only one plane layer on the map: every plane marker is a direct child of the single map SVG,
+  // and no ICAO hex has two markers.
+  const svgs = await page.locator("#harbourMap svg").evaluateAll((els) =>
+    els.filter((s) => s.querySelector("[data-plane-id]")).length);
+  expect(svgs, "SVG layers carrying aircraft").toBeLessThanOrEqual(1);
+  const markerIds = await page.locator("#harbourMap [data-plane-id]").evaluateAll((els) => els.map((e) => e.getAttribute("data-plane-id")));
+  expect(new Set(markerIds).size, "duplicate aircraft markers").toBe(markerIds.length);
+  await page.click('.tab-btn[data-tab-target="sky"]');
+  await expect(page.locator("#planesPanel [data-test-id=aircraft-source-label]")).toContainText("adsb.lol, community feed");
+  expect(await page.locator("#planesPanel").count(), "aircraft panels").toBe(1);
+  const paused = await page.locator("#planesPanel [data-test-id=aircraft-paused]").count();
+  if (!paused) {
+    const rowIds = await page.locator("#planesPanel .live-plane-card").evaluateAll((els) => els.map((e) => e.getAttribute("data-plane-id")));
+    expect(rowIds.length, "aircraft rows").toBeGreaterThan(0);
+    expect(new Set(rowIds).size, "duplicate aircraft rows").toBe(rowIds.length);
+    const cards = page.locator("#planesPanel .live-plane-card");
+    for (let i = 0; i < Math.min(rowIds.length, 5); i++) {
+      await expect(cards.nth(i).locator("[data-test-id=plane-source]")).toHaveText(/^(adsb\.lol|local antenna|local \+ adsb\.lol)$/);
+      await expect(cards.nth(i).locator("summary .cue-more")).toHaveText("More details");
+    }
+    // Emergencies pinned to the top.
+    const em = await cards.evaluateAll((els) => els.map((e) => e.classList.contains("plane-emergency")));
+    const firstNon = em.indexOf(false);
+    if (firstNon >= 0) expect(em.slice(firstNon).includes(true), "emergency below a normal aircraft").toBe(false);
+    await expect(page.locator("#planesPanel .counts")).not.toContainText(/\b1 aircrafts\b/);
+  }
+});

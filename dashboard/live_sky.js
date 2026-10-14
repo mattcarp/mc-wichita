@@ -1,42 +1,71 @@
-import { plural, pluralWord } from "./plural.js?v=20261014-gv1";
-import { provenanceBadge, feedHealthChip } from "./entity_labels.js?v=20261014-gv1";
+import { plural, pluralWord } from "./plural.js?v=20261014-air1";
+import { provenanceBadge, feedHealthChip } from "./entity_labels.js?v=20261014-air1";
 
 function $(sel) {
   return document.querySelector(sel);
+}
+
+function esc(v) {
+  return String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+}
+
+function agoShort(sec) {
+  if (sec == null) return "—";
+  const s = Math.max(0, Math.round(sec));
+  if (s < 60) return `${s} s ago`;
+  return `${Math.round(s / 60)} min ago`;
+}
+
+export function planeSourceBadge(p) {
+  const src = p.source || "local antenna";
+  const cls = src === "adsb.lol" ? "src-feed" : src === "local antenna" ? "src-local" : "src-both";
+  return `<span class="plane-src ${cls}" data-test-id="plane-source">${esc(src)}</span>`;
+}
+
+export function planeSummaryLine(p) {
+  const alt = p.altitude_ft != null ? `${Math.round(p.altitude_ft).toLocaleString("en")} ft` : "—";
+  const gs = p.speed_kts != null ? `${Math.round(p.speed_kts)} kt` : "—";
+  const hdg = p.heading_deg != null ? `${Math.round(p.heading_deg)}°` : "—";
+  return `${alt} · ${gs} · ${hdg}`;
 }
 
 export function renderPlanesPanel(adsb) {
   const el = $("#planesPanel");
   if (!el) return;
   if (!adsb) {
-    el.innerHTML = "<p class='muted'>Checking ADS-B…</p>";
+    el.innerHTML = "<p class='muted'>Checking aircraft feed…</p>";
     return;
   }
-  const health = adsb.receiver_health ? feedHealthChip(adsb.receiver_health) : "";
-  if (!adsb.receiver_connected) {
-    el.innerHTML = `${health}<p class="adsb-offline">${adsb.error || "Receiver not connected"}</p>
-      <p class="muted small">Our readsb feed will appear here when the RTL-SDR is on 1090 MHz.</p>`;
+  const label = `<p class="mono small plane-feed-label" data-test-id="aircraft-source-label">${esc(adsb.source_label || "Aircraft: adsb.lol, community feed")}</p>`;
+  if (adsb.feed_paused || !adsb.receiver_connected) {
+    el.innerHTML = `${label}<p class="plane-feed-paused" role="status" data-test-id="aircraft-paused"><span class="pill pill-paused">Feed paused</span> ${esc(adsb.error || "Aircraft feed unreachable")}; retrying.</p>`;
     return;
   }
   const planes = adsb.aircraft || [];
   if (!planes.length) {
-    el.innerHTML = `${health}<p class="muted">${adsb.coverage_label || "No aircraft with position from our receiver right now."}</p>`;
+    el.innerHTML = `${label}<p class="muted">No aircraft with position right now.</p>`;
     return;
   }
-  el.innerHTML = `${health}<p class="mono counts">${plural(planes.length, "aircraft")} with position</p>
+  const em = planes.filter((p) => p.is_emergency).length;
+  el.innerHTML = `${label}<p class="mono counts">${plural(planes.length, "aircraft")} with position${em ? ` · <span class="plane-em-count">${plural(em, "emergency", "emergencies")}</span>` : ""}</p>
     <p class="muted small observed-caveat">Observed ADS-B only — not ground truth.</p>
     <ul class="live-plane-list">
       ${planes
         .map((p) => {
-          const squawk = p.squawk_note
-            ? `<p class="squawk-alert calm">${p.squawk_note}</p>`
-            : "";
-          return `<li class="live-plane-card" data-plane-id="${p.id}" role="button" tabindex="0">
-            ${provenanceBadge(p)}
-            <strong>${p.display_name}</strong>
-            <span class="mono muted">${p.altitude_ft != null ? `${Math.round(p.altitude_ft)} ft` : "—"} · ${p.speed_kts != null ? `${Math.round(p.speed_kts)} kt` : "—"} · ${p.heading_deg != null ? `${Math.round(p.heading_deg)}°` : "—"}</span>
-            ${p.squawk ? `<span class="mono muted">Squawk ${p.squawk}</span>` : ""}
-            ${squawk}
+          const emCls = p.is_emergency ? " plane-emergency" : "";
+          const sub = [p.registration, p.type].filter(Boolean).map(esc).join(" · ");
+          return `<li class="live-plane-card${emCls}" data-plane-id="${esc(p.id)}" role="button" tabindex="0">
+            <div class="live-plane-head"><strong>${esc(p.display_name)}</strong>${planeSourceBadge(p)}</div>
+            ${sub ? `<span class="mono muted">${sub}</span>` : ""}
+            <span class="mono muted">${planeSummaryLine(p)}${p.squawk ? ` · squawk <span class="${p.is_emergency ? "plane-squawk-em" : ""}">${esc(p.squawk)}</span>` : ""}</span>
+            ${p.squawk_note ? `<p class="squawk-alert${p.is_emergency ? " squawk-red" : " calm"}">${esc(p.squawk_note)}</p>` : ""}
+            <details class="ship-raw-details plane-details"><summary class="expand-cue" aria-expanded="false"><span class="cue-tri" aria-hidden="true"></span><span class="cue-more">More details</span><span class="cue-less">Less</span><span class="sr-only"> for ${esc(p.display_name)}</span></summary>
+              <p class="mono muted">Callsign ${esc(p.callsign || "—")} · ICAO ${esc((p.hex || "").toUpperCase())}</p>
+              <p class="mono muted">Registration ${esc(p.registration || "—")} · type ${esc(p.type || "—")}${p.type_desc ? ` (${esc(p.type_desc)})` : ""}</p>
+              <p class="mono muted">Altitude ${p.altitude_ft != null ? `${Math.round(p.altitude_ft).toLocaleString("en")} ft` : "—"} · speed ${p.speed_kts != null ? `${Math.round(p.speed_kts)} kt` : "—"} · heading ${p.heading_deg != null ? `${Math.round(p.heading_deg)}°` : "—"}</p>
+              <p class="mono muted">Squawk ${esc(p.squawk || "—")} · emergency ${esc(p.emergency || "none")} · last seen ${agoShort(p.last_signal_s)}</p>
+              <p class="mono muted">Source: ${esc(p.source || "—")}</p>
+            </details>
           </li>`;
         })
         .join("")}
@@ -85,7 +114,7 @@ export async function fetchSkySnapshots() {
     fetch("/api/sky/adsb/snapshot"),
     fetch("/api/sky/satellites"),
   ]);
-  const adsb = adsbRes.ok ? await adsbRes.json() : { receiver_connected: false, error: "ADS-B unavailable" };
+  const adsb = adsbRes.ok ? await adsbRes.json() : { receiver_connected: false, feed_paused: true, error: "Aircraft feed unavailable" };
   const satellites = satRes.ok ? await satRes.json() : { error: "Satellites unavailable" };
   return { adsb, satellites };
 }

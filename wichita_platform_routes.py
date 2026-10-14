@@ -41,7 +41,7 @@ def feed_health():
         entity_count=len(ships),
     )
     adsb_h = wrh.feed_health_payload(
-        receiver="readsb",
+        receiver="readsb" if adsb.get("local_antenna_connected") else "adsb.lol",
         band="ADS-B 1090 MHz",
         online=bool(adsb.get("receiver_connected")),
         error=adsb.get("error"),
@@ -50,7 +50,9 @@ def feed_health():
     )
     badge = wrh.heard_last_60s_badge(
         ais_count=wrh.count_heard_within(ships),
-        adsb_count=wrh.count_heard_within(planes),
+        adsb_count=wrh.count_heard_within(
+            [p for p in planes if p.get("source") in (wad.SRC_LOCAL, wad.SRC_BOTH)]
+        ),
     )
     return {"ais": ais_h, "adsb": adsb_h, "heard_badge": badge}
 

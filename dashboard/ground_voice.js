@@ -1,7 +1,7 @@
 // Ground voice: real state only. Lists the Malta allowlist from the server and
 // shows each channel as live, idle or at its listener limit. Audio plays only
 // through the server proxy, via a one-time ticket; the browser never sees a source URL.
-import { plural } from "./plural.js?v=20261014-gv1";
+import { plural } from "./plural.js?v=20261014-air1";
 
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const STATE_LABEL = { live: "Live", idle: "Idle", limit: "Listener limit reached" };

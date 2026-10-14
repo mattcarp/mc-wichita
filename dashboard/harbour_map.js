@@ -1,4 +1,4 @@
-import { EntityMotion } from "./map_motion.js?v=20261014-gv1";
+import { EntityMotion } from "./map_motion.js?v=20261014-air1";
 
 const TYPE_COLORS = {
   // Solidarity print inks only: blue, ink, blue-soft. Red is reserved for selection and alerts.
@@ -638,7 +638,8 @@ export class HarbourMap {
       const hdg = (p.heading_deg ?? 0) * (Math.PI / 180);
       const sel = p.id === this.selectedPlaneId;
       const r = sel ? 8 : 6;
-      const col = "#c9a4ff";
+      const col = p.is_emergency ? "#d62828" : "#c9a4ff";
+      const tip = `${p.display_name || p.hex}${p.registration ? ` · ${p.registration}` : ""}${p.type ? ` · ${p.type}` : ""} · ${p.altitude_ft != null ? Math.round(p.altitude_ft) + " ft" : "—"} · ${p.speed_kts != null ? Math.round(p.speed_kts) + " kt" : "—"} · ${p.heading_deg != null ? Math.round(p.heading_deg) + "°" : "—"}${p.squawk ? ` · squawk ${p.squawk}` : ""} · ${p.source || ""}`.replace(/[<>&"]/g, "");
       const tipX = proj.x + Math.sin(hdg) * r;
       const tipY = proj.y - Math.cos(hdg) * r;
       const lx = proj.x + Math.sin(hdg + 2.4) * (r * 0.65);
@@ -654,9 +655,9 @@ export class HarbourMap {
         );
       } else {
         parts.push(
-          `<g class="map-plane" data-plane-id="${p.id}" role="button" tabindex="0">
+          `<g class="map-plane${p.is_emergency ? " map-plane-emergency" : ""}" data-plane-id="${p.id}" role="button" tabindex="0">
             <polygon points="${tipX.toFixed(1)},${tipY.toFixed(1)} ${lx.toFixed(1)},${ly.toFixed(1)} ${rx.toFixed(1)},${ry.toFixed(1)}" fill="${col}" class="${sel ? "map-plane-selected" : ""}"/>
-            ${estimated ? `<title>Estimated position</title>` : ""}
+            <title>${tip}${estimated ? " · estimated position" : ""}</title>
           </g>`,
         );
       }

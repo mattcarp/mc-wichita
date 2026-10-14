@@ -63,8 +63,13 @@ from wichita_live_events import get_engine
 async def _wichita_lifespan(app):  # noqa: ARG001
     _bootstrap_alerts_from_disk()
     get_engine().start()
+    import wichita_adsb_live as _wad
+
+    if _wad.adsblol_enabled():
+        _wad.get_poller().start()
     yield
     get_engine().stop()
+    _wad.get_poller().stop()
 
 
 # Initialize FastAPI with rich metadata
