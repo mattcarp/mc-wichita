@@ -55,6 +55,8 @@ Synthetic audio, `fake_audio_backup/` and mocked scores do not count. Record the
 
 **Approved exception (2026-10-14): ground voice.** Mattie approved the receive-only ground-voice feature (Heard tab, "Ground voice") during the freeze. Code: `wichita_ground_voice.py`, `wichita_ground_voice_routes.py`, `dashboard/ground_voice.js`. It ships gated: no audio flows until `WICHITA_GROUND_VOICE_CLEARED=true` is set after the MCA/IDPC opinions (item 2 below), and only for the Malta allowlist. The freeze otherwise stays on.
 
+**Gate unlocked for the one-user alpha (2026-10-14 09:59 Malta).** Mattie's decision in chat: "Unlock for my one-user alpha, I take responsibility." `WICHITA_GROUND_VOICE_CLEARED=true` is set in the `wichita-dashboard` unit on Hetzner (unit backed up to `/opt/wichita/backups/`). Scope: one user (Mattie), non-commercial, behind Clerk sign-in; Mattie accepts the legal responsibility. The MCA and IDPC opinions are still recommended before any wider use (more users, public access, sharing clips). Unchanged: the five-channel Malta allowlist, never TETRA, private business radio, PMR446 content or phones, scores-only retention with flagged clips at most 72 h.
+
 **Next listening work, in order:**
 1. ADS-B from our own receiver: 1090 MHz antenna, readsb and the OpenSky feeder on the Mini. This gives the map real data, but the freeze stays on.
 2. Get the legal opinions for ground voice. See `docs/notes/opensky.md`, to-do list. No ground-voice capture before they arrive (hard rule 8).
