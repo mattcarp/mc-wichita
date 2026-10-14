@@ -1,5 +1,5 @@
-import { plural, pluralWord } from "./plural.js?v=20261013-sp10";
-import { provenanceBadge, feedHealthChip } from "./entity_labels.js?v=20261013-sp10";
+import { plural, pluralWord } from "./plural.js?v=20261014-gv1";
+import { provenanceBadge, feedHealthChip } from "./entity_labels.js?v=20261014-gv1";
 
 function $(sel) {
   return document.querySelector(sel);

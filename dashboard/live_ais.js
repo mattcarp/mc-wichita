@@ -1,11 +1,12 @@
-import { plural, pluralWord } from "./plural.js?v=20261013-sp10";
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261013-sp10";
-import { HarbourMap, typeColor } from "./harbour_map.js?v=20261013-sp10";
-import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261013-sp10";
-import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261013-sp10";
-import { initWatchZones } from "./watch_zones.js?v=20261013-sp10";
-import { initIncidentReplay } from "./incident_replay.js?v=20261013-sp10";
-import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261013-sp10";
+import { plural, pluralWord } from "./plural.js?v=20261014-gv1";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261014-gv1";
+import { HarbourMap, typeColor } from "./harbour_map.js?v=20261014-gv1";
+import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261014-gv1";
+import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261014-gv1";
+import { initWatchZones } from "./watch_zones.js?v=20261014-gv1";
+import { initGroundVoice } from "./ground_voice.js?v=20261014-gv1";
+import { initIncidentReplay } from "./incident_replay.js?v=20261014-gv1";
+import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261014-gv1";
 
 const GROUPS = [
   { key: "now", title: "Now" },
@@ -774,6 +775,7 @@ export function initLiveAis() {
   setupEntitySearch();
   initHarbourSheetDrag();
   initIncidentReplay();
+  initGroundVoice();
   pollLive().then(() => {
     initHarbourReplay(
       () => refreshMapFromState(),

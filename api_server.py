@@ -48,6 +48,7 @@ from wichita_platform_routes import router as platform_router
 from wichita_security import WichitaSecurityMiddleware
 from wichita_clerk_auth import ClerkAuthMiddleware, clerk_public_config, require_websocket_auth
 from wichita_capture_routes import router as capture_feed_router
+from wichita_ground_voice_routes import router as ground_voice_router
 from capture_provenance import ProvenanceImportError, import_capture
 from whisper_transcription import WhisperConfig, transcribe_audio_file
 from ai_analysis_pipeline import analyze_audio_file, extract_stress_features, score_stress
@@ -2132,6 +2133,7 @@ app.include_router(capture_feed_router)
 app.include_router(live_ais_router)
 app.include_router(sky_router)
 app.include_router(platform_router)
+app.include_router(ground_voice_router)
 
 if __name__ == "__main__":
     import uvicorn

@@ -53,6 +53,8 @@ The dashboard is ahead of the product. The hero says Wichita listens for how peo
 
 Synthetic audio, `fake_audio_backup/` and mocked scores do not count. Record the lift in this section with the date and the commit.
 
+**Approved exception (2026-10-14): ground voice.** Mattie approved the receive-only ground-voice feature (Heard tab, "Ground voice") during the freeze. Code: `wichita_ground_voice.py`, `wichita_ground_voice_routes.py`, `dashboard/ground_voice.js`. It ships gated: no audio flows until `WICHITA_GROUND_VOICE_CLEARED=true` is set after the MCA/IDPC opinions (item 2 below), and only for the Malta allowlist. The freeze otherwise stays on.
+
 **Next listening work, in order:**
 1. ADS-B from our own receiver: 1090 MHz antenna, readsb and the OpenSky feeder on the Mini. This gives the map real data, but the freeze stays on.
 2. Get the legal opinions for ground voice. See `docs/notes/opensky.md`, to-do list. No ground-voice capture before they arrive (hard rule 8).

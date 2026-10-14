@@ -8,10 +8,10 @@
   <link rel="icon" href="data:," />
   <link rel="preload" href="/dashboard/fonts/LibreFranklin-var.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="/dashboard/fonts/Alexandria-var.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261013-sp10" />
-  <link rel="stylesheet" href="/dashboard/field_report.css?v=20261013-sp10" />
-  <link rel="stylesheet" href="/dashboard/solidarity.css?v=20261013-sp10" />
-  <script type="module" src="/dashboard/clerk_gate.js?v=20261013-sp10"></script>
+  <link rel="stylesheet" href="/dashboard/dashboard.css?v=20261014-gv1" />
+  <link rel="stylesheet" href="/dashboard/field_report.css?v=20261014-gv1" />
+  <link rel="stylesheet" href="/dashboard/solidarity.css?v=20261014-gv1" />
+  <script type="module" src="/dashboard/clerk_gate.js?v=20261014-gv1"></script>
 </head>
 <body class="auth-pending">
   <div id="authGate" class="auth-gate" role="main" aria-label="Sign in">
@@ -189,6 +189,12 @@
           </dl>
         </li>
         </ol>
+      </section>
+      <section class="voice-slots ground-voice" aria-labelledby="ground-voice-heading">
+        <p class="fr-kick" id="ground-voice-heading">Ground voice · receive-only, our antenna</p>
+        <p class="muted small" id="groundVoiceSummary">Checking…</p>
+        <p class="muted small">Only channels lawful to receive in Malta. We keep scores and timings, not audio, except a flagged distress clip, kept for 72 hours at most.</p>
+        <ol id="groundVoiceList" class="voice-slot-list"></ol>
       </section>
       <section class="alert-review-panel" aria-labelledby="alert-review-heading">
         <h3 id="alert-review-heading" class="eyebrow">Alert review queue</h3>

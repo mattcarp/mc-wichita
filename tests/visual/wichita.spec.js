@@ -9,7 +9,7 @@ const DYNAMIC = [
   "#heardBadge", "#feedHealthRow", "#freshnessCounts", "#liveShipList", "#shoreStations", "#voiceTiles",
   "#activityStrip", "#timeline", "#incidentReplayPanel", "#alertReviewList", "#planesPanel", "#satellitesPanel",
   "#stationLive", "#stationStrip", "#captureCompare", "canvas", "#captureAisNote", "#bookmarkLegend",
-  "#spectrumMarkers", ".sp-edge",
+  "#spectrumMarkers", ".sp-edge", "#groundVoiceSummary", "#groundVoiceList",
 ];
 
 async function openApp(page) {
@@ -77,7 +77,44 @@ test("(f) no console errors, no horizontal overflow; (h) no forbidden strings", 
   expect(body, "0 and many take the plural").not.toMatch(/\b(0|[2-9]|\d{2,}) (ship|vessel|satellite|recording|alert|message)\b/);
   expect((body.match(/rarely say the right words/gi) || []).length, "phrase not repeated").toBe(1);
   expect(await page.locator('[data-tab-target="voicelab"], #panel-voicelab').count()).toBe(0);
-  expect(errors, errors.join("\n")).toEqual([]);
+  // Clerk's own bot-protection probe (client.protect.clerk.com) fails CORS on its side since 14 Oct;
+  // ignore exactly those and one paired ERR_FAILED each. Every other console error still fails.
+  let probes = errors.filter((e) => /client\.protect\.clerk\.com\/.*\/probe/.test(e)).length;
+  const ours = errors.filter((e) => {
+    if (/client\.protect\.clerk\.com\/.*\/probe/.test(e)) return false;
+    if (probes > 0 && e === "Failed to load resource: net::ERR_FAILED") { probes--; return false; }
+    return true;
+  });
+  expect(ours, ours.join("\n")).toEqual([]);
+});
+
+test("(i) ground voice: allowlist only, honest state, no source URLs", async ({ page }) => {
+  await openApp(page);
+  await page.click('[data-tab-target="heard"]');
+  const rows = page.locator('[data-test-id="ground-voice-channel"]');
+  await expect(rows).toHaveCount(5);
+  const ids = await rows.evaluateAll((els) => els.map((e) => e.dataset.channel).sort());
+  expect(ids).toEqual(["air-121-5", "cb-ch9", "ham-2m-calling", "ham-70cm-calling", "marine-ch16"]);
+  const states = await rows.evaluateAll((els) => els.map((e) => e.dataset.state));
+  for (const s of states) expect(["live", "idle", "limit"]).toContain(s);
+  const html = await page.locator("#groundVoiceList").innerHTML();
+  expect(html, "no stream URLs in the page").not.toMatch(/https?:\/\/|rtl_tcp|:1234|100\.\d+\.\d+/);
+  expect(await page.locator("#groundVoiceList").innerText()).not.toMatch(/tetra|pmr446|446\.\d/i);
+  // Idle channels offer no Listen button.
+  expect(await page.locator('[data-state="idle"] .gv-listen').count()).toBe(0);
+  const api = await page.evaluate(async () => (await fetch("/api/ground-voice/channels")).text());
+  expect(api).not.toMatch(/https?:\/\//);
+});
+
+test("(j) ground voice API and audio proxy refuse signed-out callers", async ({ browser }) => {
+  const ctx = await browser.newContext({ storageState: { cookies: [], origins: [] } });
+  const r1 = await ctx.request.get("/api/ground-voice/channels", { failOnStatusCode: false });
+  expect(r1.status()).toBe(401);
+  const r2 = await ctx.request.post("/api/ground-voice/channels/marine-ch16/ticket", { failOnStatusCode: false });
+  expect(r2.status()).toBe(401);
+  const r3 = await ctx.request.get("/api/ground-voice/listen/marine-ch16?ticket=nope", { failOnStatusCode: false });
+  expect(r3.status()).toBe(401);
+  await ctx.close();
 });
 
 test("(b) every tab button and panel heading is styled identically", async ({ page }) => {

@@ -36,6 +36,9 @@ _PUBLIC_PREFIXES = (
     "/docs",
     "/redoc",
     "/openapi.json",
+    # <audio> cannot send a bearer header: this route instead requires a one-time
+    # ticket minted by the signed-in POST /api/ground-voice/channels/{id}/ticket.
+    "/api/ground-voice/listen/",
 )
 
 _jwks_lock = threading.Lock()
