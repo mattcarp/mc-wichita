@@ -1,0 +1,48 @@
+# HELP channel_activity_counter Loops of output_thread with frequency active.
+# TYPE channel_activity_counter counter
+channel_activity_counter{freq="156.800"}	0
+
+# HELP channel_noise_level Raw squelch noise_level.
+# TYPE channel_noise_level gauge
+channel_noise_level{freq="156.800"}	0.072
+
+# HELP channel_dbfs_noise_level Squelch noise_level as dBFS.
+# TYPE channel_dbfs_noise_level gauge
+channel_dbfs_noise_level{freq="156.800"}	-50.767
+
+# HELP channel_signal_level Raw squelch signal_level.
+# TYPE channel_signal_level gauge
+channel_signal_level{freq="156.800"}	0.087
+
+# HELP channel_dbfs_signal_level Squelch signal_level as dBFS.
+# TYPE channel_dbfs_signal_level gauge
+channel_dbfs_signal_level{freq="156.800"}	-49.184
+
+# HELP channel_squelch_counter Squelch open_count.
+# TYPE channel_squelch_counter counter
+channel_squelch_counter{freq="156.800"}	0
+
+# HELP channel_squelch_level Squelch squelch_level.
+# TYPE channel_squelch_level gauge
+channel_squelch_level{freq="156.800"}	0.217
+
+# HELP channel_flappy_counter Squelch flappy_count.
+# TYPE channel_flappy_counter counter
+channel_flappy_counter{freq="156.800"}	0
+
+# HELP channel_ctcss_counter count of windows with CTCSS detected.
+# TYPE channel_ctcss_counter counter
+channel_ctcss_counter{freq="156.800"}	0
+
+# HELP channel_no_ctcss_counter count of windows without CTCSS detected.
+# TYPE channel_no_ctcss_counter counter
+channel_no_ctcss_counter{freq="156.800"}	0
+
+# HELP buffer_overflow_count Number of times a device's buffer has overflowed.
+# TYPE buffer_overflow_count counter
+buffer_overflow_count{device="0"}	0
+
+# HELP output_overrun_count Number of times a device or mixer output has overrun.
+# TYPE output_overrun_count counter
+output_overrun_count{device="0"}	0
+

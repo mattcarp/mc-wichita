@@ -1,4 +1,5 @@
 # Wichita ground voice: receive-only, marine VHF channel 16 only. Password comes from secrets.env.
+stats_filepath = "/Users/mattcarp/wichita/live/airband/stats.txt";
 fft_size = 1024;
 devices: ({
   type = "rtlsdr"; index = 0; gain = 40.0;

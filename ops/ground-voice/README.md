@@ -21,3 +21,11 @@ launchctl bootout user/501/com.sottosound.wichita.icecast
 nohup /bin/sh ~/rtltcp-loop.sh >/dev/null 2>&1 &
 # Hetzner: drop the WICHITA_GROUND_VOICE_SOURCES line from wichita-dashboard.service, daemon-reload, restart
 ```
+
+Baseline log (added 2026-10-15): rtl_airband writes channel stats to `~/wichita/live/airband/stats.txt`
+every 15 s (`stats_filepath` in the config). The launch agent `com.sottosound.wichita.airband-baseline`
+runs `airband_baseline.py`, which appends noise floor, signal level, squelch threshold and the
+squelch/activity counters to `~/wichita/live/airband/baseline.csv` once a minute. No audio is kept.
+Use it to compare antennas: counters reset when rtl_airband restarts. Install the agent with
+`launchctl bootstrap user/$(id -u) ~/Library/LaunchAgents/com.sottosound.wichita.airband-baseline.plist`
+(`kickstart` on `gui/` fails over ssh; to restart rtl_airband over ssh, kill it and KeepAlive relaunches it).
