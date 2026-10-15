@@ -23,7 +23,7 @@ def test_select_demod_mode_uses_nfm_for_maritime_band() -> None:
     assert capture._select_demod_mode(161.975) == "nfm"
     assert capture._select_demod_mode(162.025) == "nfm"
     assert capture._select_demod_mode(406.028) == "nfm"
-    assert capture._select_demod_mode(146.52) == "nfm"
+    assert capture._select_demod_mode(145.5) == "nfm"  # 2m FM calling, IARU Region 1
 
 
 def test_detect_frequency_band_boundaries() -> None:

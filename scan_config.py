@@ -55,11 +55,12 @@ SCAN_BANDS: List[Dict[str, object]] = [
         "autonomous_key": "CH22A",
         "voice_key": "CH22A Coast Guard",
     },
+    # Amateur bands: Malta follows the IARU Region 1 (European) band plan.
     {
         "name": "Amateur 6m Calling",
-        "frequency_mhz": 52.525,
+        "frequency_mhz": 51.510,
         "demod_mode": "nfm",
-        "autonomous_key": "HAM_6M_52.525",
+        "autonomous_key": "HAM_6M_51.51",
         "voice_key": "Amateur 6m Calling",
     },
     {
@@ -71,24 +72,25 @@ SCAN_BANDS: List[Dict[str, object]] = [
     },
     {
         "name": "Amateur 2m Calling",
-        "frequency_mhz": 146.520,
+        "frequency_mhz": 145.500,
         "demod_mode": "nfm",
-        "autonomous_key": "HAM_2M_146.52",
+        "autonomous_key": "HAM_2M_145.5",
         "voice_key": "Amateur 2m Calling",
     },
     {
-        "name": "Amateur 1.25m Calling",
-        "frequency_mhz": 223.500,
-        "demod_mode": "nfm",
-        "autonomous_key": "HAM_125CM_223.5",
-        "voice_key": "Amateur 1.25m Calling",
-    },
-    {
         "name": "Amateur 70cm Calling",
-        "frequency_mhz": 446.000,
+        "frequency_mhz": 433.500,
         "demod_mode": "nfm",
-        "autonomous_key": "HAM_70CM_446.0",
+        "autonomous_key": "HAM_70CM_433.5",
         "voice_key": "Amateur 70cm Calling",
+    },
+    # Ground-level voice: CB channel 9 only. PMR446 is refused (private conversations).
+    {
+        "name": "CB CH9 Emergency",
+        "frequency_mhz": 27.065,
+        "demod_mode": "am",
+        "autonomous_key": "CB_CH9_27.065",
+        "voice_key": "CB CH9 Emergency",
     },
 ]
 

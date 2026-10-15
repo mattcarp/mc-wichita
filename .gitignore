@@ -41,3 +41,4 @@ processing_report_*.json
 *.app/
 SDR++.app/
 fake_audio_backup/
+output/

@@ -51,17 +51,17 @@ receivers = {
             },
             "Amateur_2m_Calling": {
                 "name": "Amateur 2m Calling",
-                "center_freq": 146520000,
+                "center_freq": 145500000,
                 "samp_rate": 2400000,
-                "start_freq": 146520000,
+                "start_freq": 145500000,
                 "start_mod": "nfm",
                 "waterfall_auto_level_margin": 10
             },
             "Amateur_70cm_Calling": {
                 "name": "Amateur 70cm Calling",
-                "center_freq": 446000000,
+                "center_freq": 433500000,
                 "samp_rate": 2400000,
-                "start_freq": 446000000,
+                "start_freq": 433500000,
                 "start_mod": "nfm",
                 "waterfall_auto_level_margin": 10
             },
