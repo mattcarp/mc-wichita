@@ -31,7 +31,7 @@ Voice and sentiment analysis of human voices on radio, to help vulnerable people
 - Gram (kiosk display): relaunched after every deploy (commit 170166c).
 
 ## Hosting
-- Hetzner 91.99.2.222, user `matt`. App at /opt/wichita/app (not a git checkout, files are uploaded), venv at /opt/wichita/venv, data at /opt/wichita/data, backups at /opt/wichita/backups. systemd unit `wichita-dashboard` (uvicorn on 127.0.0.1:3140, env set in the unit file; read it with `systemctl cat wichita-dashboard`). Tailscale links it to the Mini.
+- Hetzner 91.99.2.222, user `matt`. App at /opt/wichita/app (symlink to a git release; see Deploy), venv at /opt/wichita/venv, data at /opt/wichita/data, backups at /opt/wichita/backups. systemd unit `wichita-dashboard` (uvicorn on 127.0.0.1:3140, env set in the unit file; read it with `systemctl cat wichita-dashboard`). Tailscale links it to the Mini.
 - DNS: wichitawire.com via Cloudflare, DNS-only A record to Hetzner. All hosting is on Hetzner.
 - Auth: Clerk app `mc-wichita`, invite-only, passwordless email code or link, 15-day sessions. `WICHITA_AUTH_REQUIRED=true`. Production instance live since 2026-10-15: Frontend API `clerk.wichitawire.com` (DNS via Cloudflare Domain Connect, verified), set on Hetzner by the drop-in `ops/hetzner/clerk-prod.conf`. Code defaults remain the dev instance for local runs. Password sign-up is off in production (it came on with the clone). Production users are separate from dev: add people under Users > Create user.
 - Secrets: Infisical (`infisical run --env=dev -- ...`), plus env on Hetzner and Mini files (Icecast passwords in `~/wichita/live/icecast/secrets.env` on the Mini, mode 600).
@@ -39,7 +39,7 @@ Voice and sentiment analysis of human voices on radio, to help vulnerable people
 ## Run, test, deploy
 - Run locally: `infisical run --env=dev -- python3 api_server.py` (see AGENTS.md for ports). Python tests: `python3 -m pytest test_wichita_*.py test_plural_copy.py`.
 - Visual suite: `tests/visual/` (Playwright against the live site, see its README). It reuses a saved Clerk storageState (`.auth/state.json`, not committed) so Mattie gets fewer verification-code emails; on a new machine, or after it expires, a code must be emailed and put in `.auth/code.txt`. Refresh baselines only for intended design changes.
-- Deploy (from the MacBook Air, which has ssh to `matt@91.99.2.222`): back up the file under /opt/wichita/backups, copy the new file to /opt/wichita/app, `sudo systemctl restart wichita-dashboard`. Bump the static cache key after front-end changes (previous keys: sp1 to sp10, gv1, 20261014-air2, then "air2" in dcf5c78). Then run the visual suite and look at the live site.
+- Deploy: `ops/hetzner/deploy.sh` (origin/main, or a sha; `--rollback` to go back). It deploys a pushed git commit: bare mirror at /opt/wichita/repo.git, one directory per commit under /opt/wichita/releases with a REVISION file, /opt/wichita/app is a symlink to the live one. It import-checks the app with the live venv before switching, health-checks after restart, and restores the previous release on failure. Python packages are not auto-installed; if requirements.txt changed, install deliberately into /opt/wichita/venv. The pre-git hand-uploaded tree is kept as releases/legacy-20261014. Never edit files in /opt/wichita/app by hand. Bump the static cache key after front-end changes (current: 20261014-air2), then run the visual suite and look at the live site.
 - Mini receiver runbook and rollback: `ops/ground-voice/README.md`.
 
 ## Open tasks
