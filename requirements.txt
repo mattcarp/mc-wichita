@@ -6,3 +6,8 @@ numpy
 pydantic
 httpx
 PyJWT[crypto]  # Clerk session JWT verification (RS256 + JWKS)
+
+# Voice path (speech_finder, transcription)
+faster-whisper==1.2.1
+scipy
+soundfile
