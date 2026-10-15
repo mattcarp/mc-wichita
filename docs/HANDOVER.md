@@ -33,7 +33,7 @@ Voice and sentiment analysis of human voices on radio, to help vulnerable people
 ## Hosting
 - Hetzner 91.99.2.222, user `matt`. App at /opt/wichita/app (not a git checkout, files are uploaded), venv at /opt/wichita/venv, data at /opt/wichita/data, backups at /opt/wichita/backups. systemd unit `wichita-dashboard` (uvicorn on 127.0.0.1:3140, env set in the unit file; read it with `systemctl cat wichita-dashboard`). Tailscale links it to the Mini.
 - DNS: wichitawire.com via Cloudflare, DNS-only A record to Hetzner. All hosting is on Hetzner.
-- Auth: Clerk app `mc-wichita`, invite-only, passwordless email code or link, 15-day sessions. Dev keys are still in use. `WICHITA_AUTH_REQUIRED=true`.
+- Auth: Clerk app `mc-wichita`, invite-only, passwordless email code or link, 15-day sessions. `WICHITA_AUTH_REQUIRED=true`. Production instance live since 2026-10-15: Frontend API `clerk.wichitawire.com` (DNS via Cloudflare Domain Connect, verified), set on Hetzner by the drop-in `ops/hetzner/clerk-prod.conf`. Code defaults remain the dev instance for local runs. Password sign-up is off in production (it came on with the clone). Production users are separate from dev: add people under Users > Create user.
 - Secrets: Infisical (`infisical run --env=dev -- ...`), plus env on Hetzner and Mini files (Icecast passwords in `~/wichita/live/icecast/secrets.env` on the Mini, mode 600).
 
 ## Run, test, deploy
@@ -43,20 +43,20 @@ Voice and sentiment analysis of human voices on radio, to help vulnerable people
 - Mini receiver runbook and rollback: `ops/ground-voice/README.md`.
 
 ## Open tasks
-1. Firewall on the Mini (needs Mattie's admin password, run in cmux on the Mini), then ch16 shows Live: `sudo /usr/libexec/ApplicationFirewall/socketfilterfw --add /opt/homebrew/Cellar/icecast/2.4.4_4/bin/icecast --unblockapp /opt/homebrew/Cellar/icecast/2.4.4_4/bin/icecast`. Then check the Listen button on the live site.
+1. Done 2026-10-15 (ch16 reports Live from Hetzner). Firewall command for reference: `sudo /usr/libexec/ApplicationFirewall/socketfilterfw --add /opt/homebrew/Cellar/icecast/2.4.4_4/bin/icecast --unblockapp /opt/homebrew/Cellar/icecast/2.4.4_4/bin/icecast`. Then check the Listen button on the live site.
 2. Buy the antenna and adapter (above).
 3. Fiona's background colour: she dislikes the bright yellow hero (`.fr-hero`, `--sun #f3c318`). Six numbered options were built as a page in the separate repo mattcarp/mc-sottosound-site, commit 168a263 ("mockups: Wichita background colour options"), NOT deployed and not Wichita's repo. Mattie has not answered about hosting it on Hetzner. Once she picks, change the hero colour only.
 4. OpenSky licence email draft is unsent and OpenSky is skipped (Mattie is not attending the Madrid symposium). See `docs/notes/opensky.md`.
 5. Google Maps API key (secret card `GOOGLE_MAPS_API_KEY`, not provided yet).
 6. Decide which Irish city to feature.
-7. Clerk production keys (dev keys in use).
-8. Hetzner disk: was ~92%, measured 99% full (71G of 75G) on 2026-10-15. Urgent: clean old backups under /opt/wichita/backups and large data before anything else.
+7. Done 2026-10-15: Clerk production instance (see Hosting). The visual suite's saved `.auth/state.json` is a dev session and must be refreshed with one emailed code.
+8. Hetzner disk: 99% on 2026-10-15, cleaned to 88% (8.7G free) the same day. /opt/wichita is small (backups 1.2M, data 60M); the space is containerd images (17G, in use), ~/.hermes (11G), ~/projects (9.5G) and ~/models (5.6G).
 9. Legal opinions (MCA/IDPC) before wider ground-voice use. Pick a Maltese-capable ASR (candidate: mc-vuci Maltese Whisper, 19.37% WER on FLEURS mt). The freeze lifts only when one real received transmission shows end to end (see AGENTS.md).
 
 ## Known issues
 - Ch16 shows "Receiver not answering" until the firewall step is done (accurate, not a bug).
 - Hetzner disk nearly full (above).
-- Dev Clerk keys. AGENTS.md hard rules conflict with the push-to-main rule (above).
+- AGENTS.md hard rules conflict with the push-to-main rule (above).
 - Stray tracked build files (`__pycache__`, `wichita-websdr/.next/trace`) show as deleted in old checkouts; harmless.
 - Local checkouts on the Grok box (/workspace/taudit/mc-wichita, /workspace/wichita-research/mc-wichita) are stale; use a fresh clone of origin/main.
 
