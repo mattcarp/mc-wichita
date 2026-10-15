@@ -5,7 +5,7 @@ Each task is one slice, verified with real audio. No mocks for hardware-touching
 - [ ] 1. **Fixture.** Find or record real voice transmissions: at least one airband (AM) and one
       marine VHF (narrow FM) clip with speech. The three 2025 captures are 5 s each and may be
       carrier only; check them by ear first.
-- [ ] 2. **Record contract.** One evidence record schema: clip path, sidecar, UTC observed and
+- [x] 2. **Record contract.** Done 2026-10-15: `voice_record.py` builds the record, writes the SigMF sidecar and persists through `alert_store` into the review queue; `test_voice_record.py` uses the real 2025 ch16 capture. One evidence record schema: clip path, sidecar, UTC observed and
       ingested times, frequency, mode, transcript, language and confidence, scores, trigger.
       Unknown fields stay explicitly unknown. Persist to disk.
 - [ ] 3. **Speech finder.** Voice activity on a demodulated file: speech segments in, silence out.
