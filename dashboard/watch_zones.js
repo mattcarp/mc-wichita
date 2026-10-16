@@ -1,4 +1,4 @@
-const V = "?v=20261016-replay-voice";
+const V = "?v=20261016-loading";
 
 let drawPoints = [];
 let drawing = false;

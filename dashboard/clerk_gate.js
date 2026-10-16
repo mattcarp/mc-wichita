@@ -273,7 +273,7 @@ async function bootDashboard(Clerk, env) {
   updateUserMenu(Clerk, env);
   if (dashboardBooted) return;
   dashboardBooted = true;
-  await import("./dashboard.js?v=20261016-replay-voice");
+  await import("./dashboard.js?v=20261016-loading");
 }
 
 function revealSignedInDashboard(Clerk, env) {

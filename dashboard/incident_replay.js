@@ -1,6 +1,6 @@
-import { plural } from "./plural.js?v=20261016-replay-voice";
-import { formatMaltaTimeShort } from "./time_malta.js?v=20261016-replay-voice";
-import { createReplayClock, parseReplayTs } from "./harbour_replay.js?v=20261016-replay-voice";
+import { plural } from "./plural.js?v=20261016-loading";
+import { formatMaltaTimeShort } from "./time_malta.js?v=20261016-loading";
+import { createReplayClock, parseReplayTs } from "./harbour_replay.js?v=20261016-loading";
 
 const incidentState = {
   active: false,
@@ -164,8 +164,10 @@ async function applyIncidentFrame(scene, cursorMs, anchorUtc) {
   const frame = await fetchFrame(iso, anchorUtc);
   if (!frame) return;
   incidentState.frame = frame;
-  $("#incidentReplayTime")?.textContent = formatMaltaTimeShort(frame.ts_utc);
-  $("#incidentWeatherText")?.textContent = frame.weather?.plain_english || "—";
+  const timeEl = $("#incidentReplayTime");
+  if (timeEl) timeEl.textContent = formatMaltaTimeShort(frame.ts_utc);
+  const weatherEl = $("#incidentWeatherText");
+  if (weatherEl) weatherEl.textContent = frame.weather?.plain_english || "—";
   const assist = $("#incidentAssist");
   if (assist) assist.innerHTML = assistHtml(frame.nearest_assist);
   document.dispatchEvent(
@@ -262,7 +264,12 @@ export function initIncidentReplay() {
     const li = ev.target.closest("li[data-ts]");
     if (!li) return;
     const ts = li.getAttribute("data-ts");
+    host.hidden = false;
+    host.innerHTML = '<div class="load-state" role="status" data-state="loading"><span class="load-spin" aria-hidden="true"></span><span class="load-msg">Loading replay…</span></div>';
     const scene = await loadScene(ts);
     if (scene) await startIncidentReplay(host, scene);
+    else if (window.wichitaLoadError) {
+      window.wichitaLoadError(host, "The replay could not be loaded.", () => li.click());
+    }
   });
 }

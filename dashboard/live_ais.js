@@ -1,12 +1,12 @@
-import { plural, pluralWord } from "./plural.js?v=20261016-replay-voice";
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261016-replay-voice";
-import { HarbourMap, typeColor } from "./harbour_map.js?v=20261016-replay-voice";
-import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261016-replay-voice";
-import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261016-replay-voice";
-import { initWatchZones } from "./watch_zones.js?v=20261016-replay-voice";
-import { initGroundVoice } from "./ground_voice.js?v=20261016-replay-voice";
-import { initIncidentReplay, isIncidentReplayActive, incidentReplayFrameNow } from "./incident_replay.js?v=20261016-replay-voice";
-import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261016-replay-voice";
+import { plural, pluralWord } from "./plural.js?v=20261016-loading";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261016-loading";
+import { HarbourMap, typeColor } from "./harbour_map.js?v=20261016-loading";
+import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261016-loading";
+import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261016-loading";
+import { initWatchZones } from "./watch_zones.js?v=20261016-loading";
+import { initGroundVoice } from "./ground_voice.js?v=20261016-loading";
+import { initIncidentReplay, isIncidentReplayActive, incidentReplayFrameNow } from "./incident_replay.js?v=20261016-loading";
+import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261016-loading";
 
 const GROUPS = [
   { key: "now", title: "Now" },
@@ -674,15 +674,43 @@ function renderStationLive(snapshot) {
   dl.innerHTML = items.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("");
 }
 
+function markLoaded() {
+  for (const id of ["mapLoading", "sideLoading"]) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.setAttribute("data-state", "done");
+      el.hidden = true;
+    }
+  }
+}
+
+function showLoadFailure(message) {
+  if (state.snapshot) return; // already showing data; the header reports staleness
+  for (const [id, msg] of [["mapLoading", message], ["sideLoading", "Ships could not be loaded."]]) {
+    const el = document.getElementById(id);
+    if (el && window.wichitaLoadError) {
+      window.wichitaLoadError(el, msg, () => pollLive());
+    }
+  }
+}
+
 async function pollLive() {
   try {
     const healthP = fetch("/api/feed-health").catch(() => null);
-    const res = await fetch("/api/live-ais/snapshot");
+    const ctl = new AbortController();
+    const timeout = setTimeout(() => ctl.abort(), 15000);
+    let res;
+    try {
+      res = await fetch("/api/live-ais/snapshot", { signal: ctl.signal });
+    } finally {
+      clearTimeout(timeout);
+    }
     if (!res.ok) throw new Error(String(res.status));
     const data = await res.json();
     state.snapshot = data;
     ensureMap();
     setMapListening(false);
+    markLoaded();
     state.map?.setReceiver({ ...data.receiver, label: data.receiver?.label });
     state.map?.update({
       ships: replayShipsForMap() || data.ships,
@@ -738,8 +766,9 @@ async function pollLive() {
     renderSideList(data);
     renderStationLive(data);
     await renderLiveEvents();
-  } catch {
+  } catch (err) {
     renderHeader({ online: false, freshness_counts: { now: 0, today: 0 } });
+    showLoadFailure(err && err.name === "AbortError" ? "The map timed out while loading." : "The map could not be loaded.");
   }
 }
 

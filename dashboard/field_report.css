@@ -269,3 +269,14 @@ body.no-captures #panel-recordings .bookmark-legend { display: none !important; 
 .map-listening-note .ml-rule::after { content: ""; position: absolute; top: 0; left: -40%; width: 40%; height: 1px; background: var(--red); animation: ml-sweep 1.6s ease-in-out infinite; }
 @keyframes ml-sweep { to { left: 100%; } }
 @media (prefers-reduced-motion: reduce) { .map-listening-note .ml-rule::after { animation: none; left: 30%; } }
+
+/* Loading / error states for the Harbour map and side panel */
+.load-state { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 24px 16px; min-height: 120px; font: 700 13px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--blue, #12306b); }
+.load-state[data-state="done"] { display: none; }
+.harbour-map-col > .load-state { position: absolute; inset: 3px; z-index: 5; background: var(--paper, #fff6d6); }
+.harbour-map-col { position: relative; }
+.load-state[data-state="error"] { flex-direction: column; color: var(--red, #b42318); text-align: center; }
+.load-spin { width: 18px; height: 18px; border: 3px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: load-rot .9s linear infinite; }
+.load-retry { font: 700 13px var(--mono); padding: 6px 14px; border: 2px solid currentColor; background: transparent; color: inherit; cursor: pointer; }
+@keyframes load-rot { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .load-spin { animation: none; } }
