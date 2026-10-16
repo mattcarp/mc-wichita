@@ -53,8 +53,9 @@ test("Heard and Sky tabs render without errors", async ({ page }) => {
   const errors = watch(page);
   await page.goto("/", { waitUntil: "load" });
   await page.waitForSelector("#appShell:not([hidden])", { timeout: 20000 });
+  await page.waitForSelector("#harbourMap svg path", { state: "attached", timeout: 20000 }); // app scripts have booted
   for (const tab of ["heard", "sky"]) {
-    await page.click(`[data-tab-target="${tab}"]`);
+    await page.click(`.tab-btn[data-tab-target="${tab}"]`);
     await page.waitForTimeout(2500);
     const panel = page.locator(`#panel-${tab}`);
     await expect(panel).toBeVisible();
@@ -68,7 +69,8 @@ test("Incident replay opens from a timeline event and the scrubber moves (if eve
   const errors = watch(page);
   await page.goto("/", { waitUntil: "load" });
   await page.waitForSelector("#appShell:not([hidden])", { timeout: 20000 });
-  await page.click('[data-tab-target="heard"]').catch(() => {});
+  await page.waitForSelector("#harbourMap svg path", { state: "attached", timeout: 20000 });
+  await page.click(".tab-btn[data-tab-target=\"heard\"]").catch(() => {});
   await page.waitForTimeout(3000);
   const rows = page.locator("#timeline li[data-ts]");
   const n = await rows.count();
