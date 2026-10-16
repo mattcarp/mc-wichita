@@ -3,19 +3,19 @@ import pytest
 import wichita_ground_voice as gv
 
 
-@pytest.mark.parametrize("f", [145.5, 433.5, 27.065, 156.8, 121.5])
+@pytest.mark.parametrize("f", [145.5, 433.5, 27.065, 156.8, 121.5, 446.00625, 446.01875, 446.03125, 446.04375, 446.05625, 446.06875, 446.08125, 446.09375])
 def test_allowlisted_frequencies_pass(f):
     gv.check_frequency(f)
 
 
-@pytest.mark.parametrize("f", [380.0, 390.5, 446.00625, 446.1, 900.0, 1890.0, 156.65, 135.1, 118.0, 162.025])
+@pytest.mark.parametrize("f", [380.0, 390.5, 445.99375, 446.1, 446.10625, 900.0, 1890.0, 156.65, 135.1, 118.0, 162.025])
 def test_forbidden_or_unlisted_rejected(f):
     with pytest.raises(gv.NotAllowed):
         gv.check_frequency(f)
 
 
 def test_allowlist_is_exactly_the_malta_set():
-    assert set(gv.CHANNELS) == {"ham-2m-calling", "ham-70cm-calling", "cb-ch9", "marine-ch16", "air-121-5"}
+    assert set(gv.CHANNELS) == {"ham-2m-calling", "ham-70cm-calling", "cb-ch9", "marine-ch16", "air-121-5"} | {f"pmr446-ch{n}" for n in range(1, 9)}
     with pytest.raises(gv.NotAllowed):
         gv.get_channel("tetra-1")
 
@@ -113,3 +113,16 @@ def test_routes_split(monkeypatch, tmp_path):
 def test_unreachable_receiver_is_idle():
     st = {c["id"]: c for c in gv.channel_status({"marine-ch16": "http://127.0.0.1/x"}, cleared=True, reachable=[])}
     assert st["marine-ch16"]["state"] == "idle" and "not answering" in st["marine-ch16"]["reason"]
+
+
+def test_pmr446_is_eight_nfm_channels_at_12_5_khz_steps():
+    ch = [gv.CHANNELS[f"pmr446-ch{n}"] for n in range(1, 9)]
+    assert [c.frequency_mhz for c in ch] == [446.00625, 446.01875, 446.03125, 446.04375,
+                                              446.05625, 446.06875, 446.08125, 446.09375]
+    assert all(c.mode == "NFM" for c in ch)
+
+
+@pytest.mark.parametrize("f", [380.0, 390.5, 1890.0, 900.0, 1900.0])
+def test_tetra_dect_phones_still_refused(f):
+    with pytest.raises(gv.NotAllowed):
+        gv.check_frequency(f)

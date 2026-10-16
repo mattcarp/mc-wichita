@@ -47,7 +47,7 @@ class ScanConfigTest(unittest.TestCase):
                 self.assertTrue(430.0 <= e["frequency_mhz"] <= 440.0, e)
 
     def test_no_refused_bands(self) -> None:
-        # PMR446, TETRA, DECT and phones are refused by the ground-voice allowlist.
+        # TETRA, DECT and phones are refused by the ground-voice allowlist.
         from wichita_ground_voice import FORBIDDEN_RANGES
         for e in load_scan_config()["bands"]:
             for lo, hi, label in FORBIDDEN_RANGES:

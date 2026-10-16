@@ -117,7 +117,7 @@ Wichita helps people who are vulnerable in their time of need, anywhere a human 
   - Aviation (108-137 MHz)
   - Emergency frequencies (121.5, 243.0, 406 MHz)
   - Amateur radio bands
-  - Ground-level voice: amateur 2 m and 70 cm calling (IARU Region 1 plan), CB channel 9 (27.065 MHz). PMR446, TETRA, DECT and phones are refused.
+  - Ground-level voice: amateur 2 m and 70 cm calling (IARU Region 1 plan), CB channel 9 (27.065 MHz). PMR446 channels 1-8 are on the allowlist (R&D, 2026-10-16). TETRA, DECT and phones are refused.
   - Commercial radio (FM/AM)
   - Cellular bands
   - Satellite downlinks

@@ -92,14 +92,14 @@ test("(i) ground voice: allowlist only, honest state, no source URLs", async ({ 
   await openApp(page);
   await page.click('[data-tab-target="heard"]');
   const rows = page.locator('[data-test-id="ground-voice-channel"]');
-  await expect(rows).toHaveCount(5);
+  await expect(rows).toHaveCount(13);
   const ids = await rows.evaluateAll((els) => els.map((e) => e.dataset.channel).sort());
-  expect(ids).toEqual(["air-121-5", "cb-ch9", "ham-2m-calling", "ham-70cm-calling", "marine-ch16"]);
+  expect(ids).toEqual(["air-121-5", "cb-ch9", "ham-2m-calling", "ham-70cm-calling", "marine-ch16", ...[1, 2, 3, 4, 5, 6, 7, 8].map((n) => `pmr446-ch${n}`)].sort());
   const states = await rows.evaluateAll((els) => els.map((e) => e.dataset.state));
   for (const s of states) expect(["live", "idle", "limit"]).toContain(s);
   const html = await page.locator("#groundVoiceList").innerHTML();
   expect(html, "no stream URLs in the page").not.toMatch(/https?:\/\/|rtl_tcp|:1234|100\.\d+\.\d+/);
-  expect(await page.locator("#groundVoiceList").innerText()).not.toMatch(/tetra|pmr446|446\.\d/i);
+  expect(await page.locator("#groundVoiceList").innerText()).not.toMatch(/tetra|dect/i);
   // Idle channels offer no Listen button.
   expect(await page.locator('[data-state="idle"] .gv-listen').count()).toBe(0);
   const api = await page.evaluate(async () => (await fetch("/api/ground-voice/channels")).text());

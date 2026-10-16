@@ -84,7 +84,7 @@ SCAN_BANDS: List[Dict[str, object]] = [
         "autonomous_key": "HAM_70CM_433.5",
         "voice_key": "Amateur 70cm Calling",
     },
-    # Ground-level voice: CB channel 9 only. PMR446 is refused (private conversations).
+    # Ground-level voice: CB channel 9 here; PMR446 channels live in wichita_ground_voice.ALLOWLIST.
     {
         "name": "CB CH9 Emergency",
         "frequency_mhz": 27.065,

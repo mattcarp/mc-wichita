@@ -8,7 +8,7 @@ Two separate models, on purpose:
 
 Rules enforced here, server-side:
   * Malta allowlist (docs/notes/opensky.md, section 5.1). Anything else, and any
-    frequency inside a forbidden range (TETRA, PMR446, phones, DECT), is refused.
+    frequency inside a forbidden range (TETRA, phones, DECT), is refused.
   * Receive-only: nothing in this module can key a transmitter. Sources are
     plain HTTP audio streams that the server reads.
   * Listener cap per channel and overall.
@@ -45,6 +45,10 @@ class GroundChannel:
     legal_status: str
 
 
+# PMR446 analogue channels 1-8: 12.5 kHz steps from 446.00625 to 446.09375 MHz.
+PMR446_MHZ: Tuple[float, ...] = (446.00625, 446.01875, 446.03125, 446.04375,
+                                 446.05625, 446.06875, 446.08125, 446.09375)
+
 # The only channels Wichita may receive. Source: docs/notes/opensky.md 5.1/5.2.
 ALLOWLIST: Tuple[GroundChannel, ...] = (
     GroundChannel("ham-2m-calling", "Amateur 2 m calling", "Amateur 2 m", 145.500, "NFM",
@@ -57,6 +61,10 @@ ALLOWLIST: Tuple[GroundChannel, ...] = (
                   "Defensible: distress and calling, meant to be heard by all stations"),
     GroundChannel("air-121-5", "Aeronautical emergency 121.5", "Airband", 121.500, "AM",
                   "Defensible: international aeronautical emergency frequency"),
+) + tuple(
+    GroundChannel(f"pmr446-ch{n}", f"PMR446 channel {n}", "PMR446", f, "NFM",
+                  "Licence-exempt public-use channel, receive-only R&D")
+    for n, f in enumerate(PMR446_MHZ, start=1)
 )
 
 # Allowed bands (MHz) a channel frequency must sit inside.
@@ -66,12 +74,12 @@ ALLOWED_BANDS: Tuple[Tuple[float, float, str], ...] = (
     (26.965, 27.405, "CB 27 MHz"),
     (156.800, 156.800, "Marine VHF"),  # ch16 only; other marine channels are Art. 17 secret
     (121.500, 121.500, "Airband"),     # emergency only; routine ATC is not on the list
+    (446.00625, 446.09375, "PMR446"),  # licence-exempt channels 1-8
 )
 
 # Never receivable, whatever config says.
 FORBIDDEN_RANGES: Tuple[Tuple[float, float, str], ...] = (
     (380.0, 400.0, "TETRA emergency services"),
-    (446.0, 446.2, "PMR446 (private conversations)"),
     (1880.0, 1900.0, "DECT"),
     (698.0, 6000.0, "Mobile phones / cellular"),
 )
