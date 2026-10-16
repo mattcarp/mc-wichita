@@ -1,0 +1,15 @@
+title = "mc-wichita gitleaks config"
+[extend]
+useDefault = true
+
+# Clerk publishable keys (pk_live_/pk_test_) are public by design (shipped to browsers).
+# Real secrets (sk_live_, whsec_, API tokens) must never be committed.
+[[allowlists]]
+description = "Clerk publishable key in systemd drop-in"
+paths = ['''ops/hetzner/clerk-prod\.conf''']
+regexes = ['''WICHITA_CLERK_PUBLISHABLE_KEY=pk_(live|test)_[A-Za-z0-9]+''']
+
+[[allowlists]]
+description = "Scan band label, not a credential"
+paths = ['''scan_config\.py''']
+regexes = ['''"autonomous_key":\s*"[^"]+"''']
