@@ -1,4 +1,4 @@
-import { formatMaltaTimeShort } from "./time_malta.js?v=20261014-air2";
+import { formatMaltaTimeShort } from "./time_malta.js?v=20261016-replay-voice";
 
 const replayState = {
   active: false,
@@ -11,14 +11,67 @@ const replayState = {
   ships: [],
 };
 
-function $(sel) {
-  return document.querySelector(sel);
-}
-
-function parseTs(ts) {
+export function parseReplayTs(ts) {
   if (!ts) return null;
   const d = new Date(ts);
   return Number.isNaN(d.getTime()) ? null : d.getTime();
+}
+
+export function createReplayClock({
+  firstMs,
+  lastMs,
+  stepMs = 5000,
+  tickMs = 400,
+  getSpeed = () => 1,
+  onStep,
+}) {
+  let playing = false;
+  let cursorMs = lastMs;
+  let timer = null;
+
+  const stop = () => {
+    playing = false;
+    if (timer) {
+      clearInterval(timer);
+      timer = null;
+    }
+  };
+
+  const start = () => {
+    if (firstMs == null || lastMs == null) return;
+    playing = true;
+    timer = setInterval(() => {
+      if (!playing) return;
+      let next = (cursorMs ?? firstMs) + stepMs * (getSpeed() || 1);
+      if (next > lastMs) next = firstMs;
+      cursorMs = next;
+      onStep?.(cursorMs, { playing });
+    }, tickMs);
+  };
+
+  const setCursor = (ms) => {
+    cursorMs = ms;
+    onStep?.(cursorMs, { playing });
+  };
+
+  const destroy = () => stop();
+
+  return {
+    get playing() {
+      return playing;
+    },
+    get cursorMs() {
+      return cursorMs;
+    },
+    setCursor,
+    start,
+    stop,
+    destroy,
+  };
+}
+
+function $(sel) {
+  return document.querySelector(sel);
 }
 
 async function loadMeta() {
@@ -79,8 +132,8 @@ function startPlay(onFrame) {
     }
     replayState.cursorMs = next;
     const scrub = $("#replayScrub");
-    if (scrub) scrub.value = String(next);
-    applyFrame(new Date(next).toISOString(), onFrame);
+    if (scrub) scrub.value = String(replayState.cursorMs);
+    applyFrame(new Date(replayState.cursorMs).toISOString(), onFrame);
   }, 400);
 }
 
@@ -92,8 +145,8 @@ export async function initHarbourReplay(onFrame, onExit) {
     bar.hidden = true;
     return;
   }
-  replayState.firstMs = parseTs(meta.first_ts_utc);
-  replayState.lastMs = parseTs(meta.last_ts_utc);
+  replayState.firstMs = parseReplayTs(meta.first_ts_utc);
+  replayState.lastMs = parseReplayTs(meta.last_ts_utc);
   replayState.cursorMs = replayState.lastMs;
   bar.hidden = false;
   const scrub = $("#replayScrub");

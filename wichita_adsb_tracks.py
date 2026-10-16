@@ -8,7 +8,7 @@ import threading
 from collections import deque
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Deque, Dict, List, Optional
+from typing import Any, Deque, Dict, List, Optional, Tuple
 
 from wichita_adsb_live import EMERGENCY_SQUAWKS
 
@@ -108,6 +108,42 @@ class AdsbTrackStore:
                         out.append(row)
             except (OSError, json.JSONDecodeError, KeyError, ValueError):
                 pass
+        out.sort(key=lambda r: r.get("ts_utc", ""))
+        return out
+
+    def snapshot_nearest(self, ts_utc: str, max_delta_s: float = 120.0) -> List[Dict[str, Any]]:
+        """One position per hex nearest the requested UTC time (stored tracks only)."""
+        try:
+            target = datetime.fromisoformat(ts_utc.replace("Z", "+00:00"))
+        except (TypeError, ValueError):
+            return []
+        if target.tzinfo is None:
+            target = target.replace(tzinfo=timezone.utc)
+        root = tracks_dir()
+        out: List[Dict[str, Any]] = []
+        for path in root.glob("*.jsonl"):
+            hex_id = path.stem
+            track = self.track_for_hex(hex_id)
+            best: Optional[Tuple[float, Dict[str, Any]]] = None
+            for row in track:
+                try:
+                    t = datetime.fromisoformat(row["ts_utc"].replace("Z", "+00:00"))
+                except (KeyError, ValueError):
+                    continue
+                delta = abs((t - target).total_seconds())
+                if delta > max_delta_s:
+                    continue
+                if row.get("lat") is None or row.get("lon") is None:
+                    continue
+                if best is None or delta < best[0]:
+                    best = (delta, row)
+            if best is not None:
+                rec = dict(best[1])
+                rec["hex"] = hex_id
+                rec["delta_s"] = best[0]
+                rec["id"] = hex_id
+                rec["display_name"] = rec.get("callsign") or hex_id.upper()
+                out.append(rec)
         out.sort(key=lambda r: r.get("ts_utc", ""))
         return out
 

@@ -5,11 +5,13 @@ from __future__ import annotations
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 import wichita_adsb_live as wad
 import wichita_adsb_tracks as wat
 import wichita_ais_live as wal
+import wichita_ground_voice as gv
 import wichita_incident_replay as wir
 import wichita_malta_weather as wmw
 import wichita_receiver_health as wrh
@@ -79,6 +81,25 @@ async def incident_scene(ts_utc: str):
     if scene is None:
         raise HTTPException(status_code=404, detail="event not found for timestamp")
     return scene
+
+
+@router.get("/api/incident-replay/frame")
+async def incident_frame(ts_utc: str, anchor_utc: str, window_min: int = 30):
+    frame = wir.replay_frame(ts_utc, anchor_utc, window_min=window_min)
+    if frame is None:
+        raise HTTPException(status_code=404, detail="time outside incident replay window")
+    return frame
+
+
+@router.get("/api/incident-replay/clips/{clip_name}")
+async def incident_replay_clip(clip_name: str):
+    """Retained receive-only clips (score >= 70, <= 72 h). Clerk session required."""
+    if not gv.legally_cleared():
+        raise HTTPException(status_code=409, detail="Ground voice not cleared")
+    path = gv.resolve_clip_path(clip_name)
+    if path is None:
+        raise HTTPException(status_code=404, detail="clip not found or expired")
+    return FileResponse(str(path), media_type="audio/wav", filename=path.name, headers={"Cache-Control": "no-store"})
 
 
 @router.post("/api/incident-replay/export")

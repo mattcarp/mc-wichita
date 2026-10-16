@@ -286,6 +286,37 @@ def submit_segment(channel_id: str, wav_path: str, started_at: float,
     return ev
 
 
+def read_events(base: Optional[Path] = None) -> List[dict]:
+    """Score events from events.jsonl (metadata only; clips may be absent)."""
+    base = base or _events_dir()
+    path = base / "events.jsonl"
+    if not path.is_file():
+        return []
+    out: List[dict] = []
+    try:
+        for line in path.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            out.append(json.loads(line))
+    except (OSError, json.JSONDecodeError):
+        return []
+    return out
+
+
+def resolve_clip_path(filename: str, base: Optional[Path] = None) -> Optional[Path]:
+    """Basename-only lookup inside the retained-clips directory."""
+    name = Path(filename).name
+    if not name or name != filename.strip():
+        return None
+    base = base or _events_dir()
+    clip = (base / "clips" / name).resolve()
+    try:
+        clip.relative_to((base / "clips").resolve())
+    except ValueError:
+        return None
+    return clip if clip.is_file() else None
+
+
 def purge_expired(base: Optional[Path] = None, now: Optional[float] = None) -> int:
     base = base or _events_dir()
     clips = base / "clips"

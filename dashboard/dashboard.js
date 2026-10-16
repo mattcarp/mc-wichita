@@ -1,15 +1,15 @@
-import { plural, pluralWord } from "./plural.js?v=20261014-air2";
+import { plural, pluralWord } from "./plural.js?v=20261016-replay-voice";
 import {
   PLOT_PAD_X,
   freqToPlotX,
   plotInnerWidth,
   psdSpan,
   samplePsdAtMhz,
-} from "./spectrum_geometry.mjs?v=20261014-air2";
-import { initLiveAis } from "./live_ais.js?v=20261014-air2";
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261014-air2";
-import { GEAR_ICON, TAB_ICONS } from "./tab_icons.js?v=20261014-air2";
-import { initAlertReview } from "./alert_review.js?v=20261014-air2";
+} from "./spectrum_geometry.mjs?v=20261016-replay-voice";
+import { initLiveAis } from "./live_ais.js?v=20261016-replay-voice";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261016-replay-voice";
+import { GEAR_ICON, TAB_ICONS } from "./tab_icons.js?v=20261016-replay-voice";
+import { initAlertReview } from "./alert_review.js?v=20261016-replay-voice";
 const VALLETTA = { lat: 35.8987, lon: 14.5145, span: 0.06 };
 
 const BOOKMARKS = [

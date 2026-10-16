@@ -1,12 +1,12 @@
-import { plural, pluralWord } from "./plural.js?v=20261014-air2";
-import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261014-air2";
-import { HarbourMap, typeColor } from "./harbour_map.js?v=20261014-air2";
-import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261014-air2";
-import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261014-air2";
-import { initWatchZones } from "./watch_zones.js?v=20261014-air2";
-import { initGroundVoice } from "./ground_voice.js?v=20261014-air2";
-import { initIncidentReplay } from "./incident_replay.js?v=20261014-air2";
-import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261014-air2";
+import { plural, pluralWord } from "./plural.js?v=20261016-replay-voice";
+import { formatMalta, formatMaltaTimeShort } from "./time_malta.js?v=20261016-replay-voice";
+import { HarbourMap, typeColor } from "./harbour_map.js?v=20261016-replay-voice";
+import { provenanceBadge, freshnessClass, heardAntennaBadge, feedHealthChip } from "./entity_labels.js?v=20261016-replay-voice";
+import { fetchSkySnapshots, renderPlanesPanel, renderSatellitesPanel } from "./live_sky.js?v=20261016-replay-voice";
+import { initWatchZones } from "./watch_zones.js?v=20261016-replay-voice";
+import { initGroundVoice } from "./ground_voice.js?v=20261016-replay-voice";
+import { initIncidentReplay, isIncidentReplayActive, incidentReplayFrameNow } from "./incident_replay.js?v=20261016-replay-voice";
+import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261016-replay-voice";
 
 const GROUPS = [
   { key: "now", title: "Now" },
@@ -415,6 +415,41 @@ function satelliteTracksForMap(sky) {
   }));
 }
 
+function incidentReplayMapPayload() {
+  const frame = incidentReplayFrameNow();
+  if (!frame) return null;
+  const ships = (frame.ships || []).map((s) => ({
+    ...s,
+    mmsi_display: String(s.mmsi).padStart(9, "0"),
+    freshness: "earlier",
+    freshness_label: "Replay",
+    lead_sentence: s.display_name || `MMSI ${s.mmsi}`,
+    last_signal_s: 99999,
+  }));
+  const planes = (frame.aircraft || []).map((p) => ({
+    ...p,
+    id: p.id || p.hex,
+    display_name: p.display_name || p.callsign || (p.hex || "").toUpperCase(),
+    source: "stored ADS-B track",
+    last_signal_s: 99999,
+  }));
+  return { ships, planes };
+}
+
+function replayShipsForMap() {
+  if (isIncidentReplayActive()) return incidentReplayMapPayload()?.ships ?? null;
+  return isReplayActive() ? replayShipsNow() : null;
+}
+
+function replayPlanesForMap() {
+  if (isIncidentReplayActive()) return incidentReplayMapPayload()?.planes ?? null;
+  return null;
+}
+
+function isAnyReplayActive() {
+  return isIncidentReplayActive() || isReplayActive();
+}
+
 async function selectShip(mmsi) {
   if (mmsi && state.follow?.kind === "ship" && state.follow.id === mmsi) {
     state.follow = null;
@@ -650,15 +685,15 @@ async function pollLive() {
     setMapListening(false);
     state.map?.setReceiver({ ...data.receiver, label: data.receiver?.label });
     state.map?.update({
-      ships: (isReplayActive() ? replayShipsNow() : null) || data.ships,
+      ships: replayShipsForMap() || data.ships,
       baseStations: data.base_stations,
       paths: data.paths,
-      planes: state.sky?.adsb?.aircraft,
+      planes: replayPlanesForMap() || state.sky?.adsb?.aircraft,
       satelliteTracks: satelliteTracksForMap(state.sky?.satellites),
       selectedMmsi: state.selectedMmsi,
       selectedPlaneId: state.selectedPlaneId,
       follow: state.follow,
-      replayMode: isReplayActive(),
+      replayMode: isAnyReplayActive(),
     });
     renderHeader(data);
     renderShipList(data);
@@ -685,18 +720,19 @@ async function pollLive() {
       li.addEventListener("click", () => selectPlane(li.getAttribute("data-plane-id")));
     });
     state.map?.setReceiver({ ...data.receiver, label: data.receiver?.label });
-    const replayShips = isReplayActive() ? replayShipsNow() : null;
+    const replayShips = replayShipsForMap();
+    const replayPlanes = replayPlanesForMap();
     const shipsForMap = replayShips || data.ships;
     state.map?.update({
       ships: shipsForMap,
       baseStations: data.base_stations,
       paths: data.paths,
-      planes: state.sky?.adsb?.aircraft,
+      planes: replayPlanes || state.sky?.adsb?.aircraft,
       satelliteTracks: satelliteTracksForMap(state.sky?.satellites),
       selectedMmsi: state.selectedMmsi,
       selectedPlaneId: state.selectedPlaneId,
       follow: state.follow,
-      replayMode: Boolean(replayShips),
+      replayMode: Boolean(replayShips || replayPlanes),
     });
     refreshSelectedShipPanels();
     renderSideList(data);
@@ -731,17 +767,18 @@ function initHarbourSheetDrag() {
 }
 
 function refreshMapFromState() {
-  const replayShips = isReplayActive() ? replayShipsNow() : null;
+  const replayShips = replayShipsForMap();
+  const replayPlanes = replayPlanesForMap();
   state.map?.update({
     ships: replayShips || state.snapshot?.ships,
     baseStations: state.snapshot?.base_stations,
     paths: state.snapshot?.paths,
-    planes: state.sky?.adsb?.aircraft,
+    planes: replayPlanes || state.sky?.adsb?.aircraft,
     satelliteTracks: satelliteTracksForMap(state.sky?.satellites),
     selectedMmsi: state.selectedMmsi,
     selectedPlaneId: state.selectedPlaneId,
     follow: state.follow,
-    replayMode: Boolean(replayShips),
+    replayMode: Boolean(replayShips || replayPlanes),
   });
 }
 
@@ -777,6 +814,8 @@ export function initLiveAis() {
   initHarbourSheetDrag();
   initIncidentReplay();
   initGroundVoice();
+  document.addEventListener("wichita-incident-replay-frame", () => refreshMapFromState());
+  document.addEventListener("wichita-incident-replay-end", () => pollLive());
   pollLive().then(() => {
     initHarbourReplay(
       () => refreshMapFromState(),
