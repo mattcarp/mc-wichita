@@ -106,16 +106,16 @@ function shipCardHtml(s, selected) {
     <div class="live-ship-card-head">
       <span class="ship-type-icon" aria-hidden="true"></span>
       <span class="live-ship-flag" title="${s.country || ""}">${flag}</span>
-      <strong>${s.display_name}</strong>${s.speed_known !== false && (s.speed_kn ?? 0) >= 1 ? `<span class="ship-moving mono">moving ${Number(s.speed_kn).toFixed(1)} kn</span>` : ""}
+      <strong>${esc(s.display_name)}</strong>${s.speed_known !== false && (s.speed_kn ?? 0) >= 1 ? `<span class="ship-moving mono">moving ${Number(s.speed_kn).toFixed(1)} kn</span>` : ""}
       <span class="mono ship-fresh ship-fresh-${s.freshness || "earlier"}">${(() => { const ago = agoLabel(s.last_signal_s); return !ago || ago.toLowerCase() === tierLabel.toLowerCase() ? tierLabel : `${tierLabel} · ${ago}`; })()}</span>
     </div>
-    <p class="ship-lead">${s.lead_sentence}</p>
+    <p class="ship-lead">${esc(s.lead_sentence)}</p>
     <p class="muted ship-meta">${s.shiptype_label}${eta ? ` · ${eta}` : ""}</p>
     <details class="ship-raw-details"><summary class="expand-cue" aria-expanded="false"><span class="cue-tri" aria-hidden="true"></span><span class="cue-more">More details</span><span class="cue-less">Less</span><span class="sr-only"> for ${esc(s.display_name)}: MMSI lookup</span></summary>
       ${mmsiLookupHtml(s)}
       <a class="mmsi-link" href="https://www.vesselfinder.com/?mmsi=${s.mmsi}" rel="noopener noreferrer" target="_blank">Look up MMSI on VesselFinder (external) ↗</a>
-      <p class="mono muted">MMSI ${s.mmsi_display}${s.callsign ? ` · ${s.callsign}` : ""}</p>
-      <p class="mono muted">${s.destination_raw || "—"} · ${s.speed_known === false ? "speed unknown" : `${s.speed_kn ?? "—"} kn`} · ${plural(s.message_count ?? 0, "msg")}</p>
+      <p class="mono muted">MMSI ${s.mmsi_display}${s.callsign ? ` · ${esc(s.callsign)}` : ""}</p>
+      <p class="mono muted">${esc(s.destination_raw || "—")} · ${s.speed_known === false ? "speed unknown" : `${s.speed_kn ?? "—"} kn`} · ${plural(s.message_count ?? 0, "msg")}</p>
     </details>
   </li>`;
 }
@@ -216,7 +216,7 @@ function renderShipList(snapshot) {
       ? `<p class="eyebrow">Shore stations</p><ul class="shore-list">${bases
           .map(
             (b) =>
-              `<li><span class="shore-diamond" aria-hidden="true"></span>${b.display_name} · ${plural(b.message_count ?? 0, "msg")}</li>`,
+              `<li><span class="shore-diamond" aria-hidden="true"></span>${esc(b.display_name)} · ${plural(b.message_count ?? 0, "msg")}</li>`,
           )
           .join("")}</ul>`
       : "";
@@ -237,7 +237,7 @@ function renderSideList(snapshot) {
   const detail = sel
     ? `<div class="side-detail" id="sideDetail" data-test-id="side-detail">
         <div class="side-detail-head"><strong>${esc(sel.display_name)}</strong><button type="button" class="side-close" aria-label="Close details">×</button></div>
-        <p class="ship-lead">${sel.lead_sentence || ""}</p>
+        <p class="ship-lead">${esc(sel.lead_sentence || "")}</p>
         <dl class="ship-detail-dl">
           <dt>Speed / course</dt><dd>${sel.speed_known === false ? "unknown" : `${sel.speed_kn ?? "—"} kn`} · ${sel.cog_deg != null ? Math.round(sel.cog_deg) + "°" : "—"}</dd>
           <dt>Destination</dt><dd>${esc(sel.destination_display || sel.destination_raw || "—")}</dd>
@@ -289,12 +289,12 @@ function renderSheet(ship) {
   document.body.classList.add("sheet-open");
   sheet.innerHTML = `
     <button type="button" class="sheet-close" id="sheetClose" aria-label="Close">×</button>
-    <h3>${flag} ${ship.display_name}</h3>
-    <p class="ship-lead">${ship.lead_sentence}</p>
-    <p class="muted">${ship.shiptype_label}${ship.eta_malta ? ` · ETA ${ship.eta_malta} Malta` : ""}</p>
+    <h3>${flag} ${esc(ship.display_name)}</h3>
+    <p class="ship-lead">${esc(ship.lead_sentence)}</p>
+    <p class="muted">${esc(ship.shiptype_label)}${ship.eta_malta ? ` · ETA ${esc(ship.eta_malta)} Malta` : ""}</p>
     <dl class="ship-detail-dl">
-      <dt>Nav status</dt><dd>${ship.nav_status_label || "—"}</dd>
-      <dt>Destination</dt><dd>${ship.destination_display || ship.destination_raw || "—"}${ship.destination_decoded === false ? " (code not decoded)" : ""}</dd>
+      <dt>Nav status</dt><dd>${esc(ship.nav_status_label || "—")}</dd>
+      <dt>Destination</dt><dd>${esc(ship.destination_display || ship.destination_raw || "—")}${ship.destination_decoded === false ? " (code not decoded)" : ""}</dd>
       <dt>Speed / course</dt><dd>${ship.speed_kn ?? "—"} kn · ${ship.cog_deg != null ? Math.round(ship.cog_deg) + "°" : "—"}</dd>
       <dt>Last heard</dt><dd>${agoLabel(ship.last_signal_s)} (${ship.last_heard_utc ? formatMaltaTimeShort(ship.last_heard_utc) : "—"})</dd>
     </dl>
@@ -316,10 +316,10 @@ function renderDrawer(ship) {
   const flag = flagEmoji(ship.country);
   el.innerHTML = `
     <button type="button" class="detail-close" id="drawerClose">Close</button>
-    <h3>${flag} ${ship.display_name}</h3>
-    <p class="ship-lead">${ship.lead_sentence}</p>
+    <h3>${flag} ${esc(ship.display_name)}</h3>
+    <p class="ship-lead">${esc(ship.lead_sentence)}</p>
     <dl class="ship-detail-dl">
-      <dt>Destination</dt><dd>${ship.destination_display || ship.destination_raw || "—"}</dd>
+      <dt>Destination</dt><dd>${esc(ship.destination_display || ship.destination_raw || "—")}</dd>
       <dt>ETA</dt><dd>${ship.eta_malta ? `${ship.eta_malta}${ship.eta_malta_stale ? " (out of date)" : ""} Malta` : "—"}</dd>
       <dt>Signals</dt><dd>${ship.level_db != null ? ship.level_db.toFixed(1) + " dB" : "—"} · ${plural(ship.message_count ?? 0, "msg")}</dd>
     </dl>
@@ -392,7 +392,7 @@ function renderFollowCard() {
     ].filter(([, v]) => v !== null && v !== undefined && v !== "" && v !== "—");
     el.innerHTML = `<div class="follow-head"><strong>Following ${esc(ship.display_name)}</strong>
         <button type="button" class="btn-stop-follow" id="stopFollowBtn">Stop following</button></div>
-      ${ship.lead_sentence ? `<p class="ship-lead">${ship.lead_sentence}</p>` : ""}
+      ${ship.lead_sentence ? `<p class="ship-lead">${esc(ship.lead_sentence)}</p>` : ""}
       <dl class="follow-grid" data-test-id="follow-grid">${rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>
       <p class="follow-foot"><span class="muted">In-house lookup: MMSI digits (ITU-R M.585), ITU MID table, AIS our receiver decoded.</span>
         <a class="mmsi-link" href="https://www.vesselfinder.com/?mmsi=${ship.mmsi}" rel="noopener noreferrer" target="_blank">Look up MMSI on VesselFinder (external) ↗</a></p>`;
@@ -402,7 +402,7 @@ function renderFollowCard() {
   const plane = (state.sky?.adsb?.aircraft || []).find((p) => p.id === state.follow.id);
   if (!plane) return;
   el.innerHTML = `${provenanceBadge(plane)}
-    <p><strong>Following ${plane.display_name}</strong> — tap again or press Esc to stop.</p>
+    <p><strong>Following ${esc(plane.display_name)}</strong> — tap again or press Esc to stop.</p>
     <p class="mono muted">${[plane.registration, plane.type].filter(Boolean).join(" · ") || "—"} · ${plane.source || ""}</p>
     <p class="mono muted">${plane.altitude_ft != null ? `${Math.round(plane.altitude_ft)} ft` : "—"} · ${plane.speed_kts != null ? `${Math.round(plane.speed_kts)} kt` : "—"} · ${plane.heading_deg != null ? `${Math.round(plane.heading_deg)}°` : "—"} · squawk ${plane.squawk || "—"}</p>
     ${plane.squawk_note ? `<p class="squawk-alert${plane.is_emergency ? " squawk-red" : " calm"}">${plane.squawk_note}</p>` : ""}`;
@@ -538,7 +538,7 @@ function timelineItemHtml(e) {
         ? "timeline-quiet"
         : "timeline-live";
   const tsAttr = e.ts_utc ? ` data-ts="${e.ts_utc}"` : "";
-  return `<li class="${cls}"${tsAttr}><span class="event-time mono">${t}</span> <span class="event-body">${e.sentence}</span></li>`;
+  return `<li class="${cls}"${tsAttr}><span class="event-time mono">${t}</span> <span class="event-body">${esc(e.sentence)}</span></li>`;
 }
 
 async function renderActivityStrip() {

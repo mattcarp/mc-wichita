@@ -8,6 +8,8 @@ from pathlib import Path
 from typing import Dict, Iterable, Optional
 import json
 
+from untrusted_text import MAX_LEN_TRANSCRIPT, sanitize_untrusted_text
+
 ALERTS_FILE = Path("alerts.json")
 
 DISTRESS_KEYWORDS = {
@@ -115,7 +117,7 @@ def _append_alert(alert: Dict[str, object]) -> None:
 
 
 def detect_threats(transcription_dict: dict, frequency_hz: float | None = None) -> dict:
-    text = str((transcription_dict or {}).get("text", "")).strip()
+    text = sanitize_untrusted_text((transcription_dict or {}).get("text"), MAX_LEN_TRANSCRIPT)
     language = str((transcription_dict or {}).get("language", "unknown") or "unknown").lower()
 
     keyword, threat_score = _best_match(text, language)

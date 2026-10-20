@@ -13,6 +13,7 @@ import wave
 import numpy as np
 
 from whisper_transcription import WhisperConfig, transcribe_audio_file
+from untrusted_text import sanitize_transcription_dict, sanitize_untrusted_text, MAX_LEN_TRANSCRIPT
 from alert_dispatcher import send_stress_alert
 from keyword_threat_detection import detect_threats
 
@@ -266,8 +267,8 @@ def analyze_audio_file(
     flagged_terms: Optional[Sequence[str]] = None,
 ) -> Dict[str, object]:
     path = Path(audio_file_path)
-    transcript = transcribe_audio_file(path, whisper_config)
-    transcript_text = str(transcript.get("text", "")).strip()
+    transcript = sanitize_transcription_dict(transcribe_audio_file(path, whisper_config))
+    transcript_text = sanitize_untrusted_text(transcript.get("text"), MAX_LEN_TRANSCRIPT)
     stress_features = extract_stress_features(path)
     stress_score = score_stress(stress_features)
     keyword_result = classify_threat_keywords(transcript_text, flagged_terms)

@@ -17,6 +17,13 @@ from datetime import datetime, timezone
 from dataclasses import dataclass
 from typing import Optional
 
+from untrusted_text import (
+    MAX_LEN_GENERIC,
+    MAX_LEN_TRANSCRIPT,
+    sanitize_untrusted_text,
+    wrap_untrusted_for_prompt,
+)
+
 MATTIE_TELEGRAM_ID = "8508029937"
 
 MAYDAY_KEYWORDS = re.compile(
@@ -42,7 +49,7 @@ class KennethEvent:
 
 
 def has_mayday(transcript: str) -> bool:
-    return bool(MAYDAY_KEYWORDS.search(transcript))
+    return bool(MAYDAY_KEYWORDS.search(sanitize_untrusted_text(transcript, MAX_LEN_TRANSCRIPT)))
 
 
 def should_alert(event: KennethEvent) -> bool:
@@ -76,12 +83,14 @@ def format_alert(event: KennethEvent) -> str:
     if event.indicators:
         lines.append(f"🔍 Indicators: {', '.join(event.indicators)}")
     
-    if event.transcript and event.transcript.strip():
-        transcript_preview = event.transcript[:300].strip()
-        lines.append(f"📝 Transcript: \"{transcript_preview}\"")
-    
-    if event.ais_info:
-        lines.append(f"🗺 AIS: {event.ais_info}")
+    transcript_clean = sanitize_untrusted_text(event.transcript, MAX_LEN_TRANSCRIPT)
+    if transcript_clean:
+        preview = transcript_clean[:300].strip()
+        lines.append(f"📝 Transcript: {wrap_untrusted_for_prompt(preview, 'asr_transcript')}")
+
+    ais_clean = sanitize_untrusted_text(event.ais_info, MAX_LEN_GENERIC)
+    if ais_clean:
+        lines.append(f"🗺 AIS: {wrap_untrusted_for_prompt(ais_clean, 'ais_static')}")
     
     lines.append("━━━━━━━━━━━━━━━")
     return "\n".join(lines)

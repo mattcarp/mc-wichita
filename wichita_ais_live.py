@@ -28,6 +28,12 @@ from wichita_feed_urls import validated_feed_url
 from wichita_provenance import SOURCE_OUR_ANTENNA, provenance_fields
 from wichita_receiver_health import feed_health_payload, heard_last_60s_badge, count_heard_within
 from wichita_captures import VALLETTA_AIS_BASE_MMSIS, mmsi_label
+from untrusted_text import (
+    MAX_LEN_CALLSIGN,
+    MAX_LEN_DESTINATION,
+    MAX_LEN_SHIPNAME,
+    sanitize_untrusted_text,
+)
 import wichita_mmsi
 
 MALTA_TZ = ZoneInfo("Europe/Malta")
@@ -244,10 +250,10 @@ def receiver_health(
 def normalize_ship(raw: Dict[str, Any], now: Optional[datetime] = None) -> Dict[str, Any]:
     now = now or datetime.now(timezone.utc)
     mmsi = int(raw.get("mmsi") or 0)
-    name = (raw.get("shipname") or "").strip()
-    callsign = (raw.get("callsign") or "").strip()
+    name = sanitize_untrusted_text(raw.get("shipname"), MAX_LEN_SHIPNAME)
+    callsign = sanitize_untrusted_text(raw.get("callsign"), MAX_LEN_CALLSIGN)
     country = (raw.get("country") or "").strip().upper() or None
-    dest = (raw.get("destination") or "").strip()
+    dest = sanitize_untrusted_text(raw.get("destination"), MAX_LEN_DESTINATION)
     last_sig = raw.get("last_signal")
     try:
         last_sig_s = float(last_sig) if last_sig is not None else None

@@ -98,6 +98,7 @@ def age_seconds(observed_at: Optional[datetime], now: Optional[datetime] = None)
 
 
 def evidence_context(record: RecordLike) -> Dict[str, Any]:
+    from untrusted_text import MAX_LEN_GENERIC, MAX_LEN_TRANSCRIPT, sanitize_untrusted_text
     data = _as_dict(record)
     observed = observed_at_from_record(record)
     created = _parse_datetime(data.get("created_at"))
@@ -110,7 +111,7 @@ def evidence_context(record: RecordLike) -> Dict[str, Any]:
 
     return {
         "id": data.get("id"),
-        "title": data.get("title"),
+        "title": sanitize_untrusted_text(data.get("title"), MAX_LEN_GENERIC),
         "source": data.get("source"),
         "created_at": created.isoformat() if created else None,
         "observed_at": observed.isoformat() if observed else None,
@@ -122,7 +123,7 @@ def evidence_context(record: RecordLike) -> Dict[str, Any]:
         "audio_url": data.get("audio_url"),
         "frequency_mhz": data.get("frequency_mhz"),
         "language": data.get("language"),
-        "transcript": data.get("transcript"),
+        "transcript": sanitize_untrusted_text(data.get("transcript"), MAX_LEN_TRANSCRIPT),
         "metadata": meta,
     }
 
