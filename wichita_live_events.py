@@ -15,7 +15,6 @@ from wichita_ais_copy import enrich_ship_copy, first_heard_sentence, freshness_b
 from wichita_ais_patterns import AisPatternObserver
 from wichita_ais_tracks import get_snapshot_store
 from wichita_timeline import DEFAULT_HOURS, DEFAULT_LIMIT, paginate_events, prepare_timeline_events
-from untrusted_text import sanitize_radio_payload
 
 logger = logging.getLogger(__name__)
 
@@ -39,14 +38,12 @@ def _day_path(when: datetime) -> Path:
 
 def append_event(kind: str, sentence: str, **fields: Any) -> Dict[str, Any]:
     now = datetime.now(timezone.utc)
-    rec = sanitize_radio_payload(
-        {
-            "ts_utc": now.isoformat(),
-            "kind": kind,
-            "sentence": sentence,
-            **fields,
-        }
-    )
+    rec = {
+        "ts_utc": now.isoformat(),
+        "kind": kind,
+        "sentence": sentence,
+        **fields,
+    }
     path = _day_path(now)
     with path.open("a", encoding="utf-8") as fh:
         fh.write(json.dumps(rec, ensure_ascii=False) + "\n")
@@ -199,7 +196,7 @@ class LiveEventEngine:
                     rec = json.loads(line)
                     ts = datetime.fromisoformat(rec["ts_utc"].replace("Z", "+00:00"))
                     if ts >= cutoff:
-                        out.append(sanitize_radio_payload(rec))
+                        out.append(rec)
             except (OSError, json.JSONDecodeError, KeyError, ValueError):
                 continue
         out.sort(key=lambda r: r.get("ts_utc", ""), reverse=True)

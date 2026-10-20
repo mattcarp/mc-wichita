@@ -9,8 +9,6 @@ import sys
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
-from untrusted_text import sanitize_radio_payload
-
 # Minimal MCP over stdio (JSON-RPC 2.0) — no extra runtime deps.
 
 
@@ -125,7 +123,7 @@ def handle(msg: Dict[str, Any]) -> None:
         name = params.get("name")
         args = params.get("arguments") or {}
         try:
-            payload = sanitize_radio_payload(_tool_result(name, args))
+            payload = _tool_result(name, args)
             _reply(
                 msg_id,
                 {"content": [{"type": "text", "text": json.dumps(payload, ensure_ascii=False)}]},

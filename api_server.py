@@ -52,12 +52,6 @@ from wichita_ground_voice_routes import router as ground_voice_router
 from capture_provenance import ProvenanceImportError, import_capture
 from whisper_transcription import WhisperConfig, transcribe_audio_file
 from ai_analysis_pipeline import analyze_audio_file, extract_stress_features, score_stress
-from untrusted_text import (
-    MAX_LEN_GENERIC,
-    MAX_LEN_TRANSCRIPT,
-    sanitize_transcription_dict,
-    sanitize_untrusted_text,
-)
 from alert_store import append_alert_record, load_alert_records
 
 from contextlib import asynccontextmanager
@@ -883,12 +877,10 @@ def _transcribe_payload(
         backend=backend,
         language=language,
     )
-    transcription = sanitize_transcription_dict(
-        transcribe_audio_file(audio_path, whisper_config)
-    )
+    transcription = transcribe_audio_file(audio_path, whisper_config)
     return {
         "file": audio_path.name,
-        "text": sanitize_untrusted_text(transcription.get("text"), MAX_LEN_TRANSCRIPT),
+        "text": str(transcription.get("text", "")).strip(),
         "language": transcription.get("language"),
         "segments": transcription.get("segments", []),
         "backend": transcription.get("backend"),
@@ -1524,13 +1516,13 @@ async def create_alert(
     record = AlertRecord(
         id=str(uuid.uuid4()),
         created_at=datetime.now(timezone.utc),
-        title=sanitize_untrusted_text(payload.title.strip(), MAX_LEN_GENERIC),
-        description=sanitize_untrusted_text(payload.description, MAX_LEN_GENERIC) or None,
+        title=payload.title.strip(),
+        description=payload.description,
         signal_type=payload.signal_type or SignalType.UNKNOWN,
         severity=severity,
         frequency_mhz=_normalize_frequency_mhz(payload),
         confidence=payload.confidence,
-        transcript=sanitize_untrusted_text(payload.transcript, MAX_LEN_TRANSCRIPT) or None,
+        transcript=payload.transcript,
         language=_resolve_alert_language(payload),
         audio_url=payload.audio_url,
         tags=payload.tags,
@@ -2064,11 +2056,11 @@ async def trigger_alert(request: AlertRequest):
         frequency_mhz=request.frequency_mhz,
         stress_score=request.stress_score,
         alert_level=request.alert_level,
-        transcript=sanitize_untrusted_text(request.transcript, MAX_LEN_TRANSCRIPT),
+        transcript=request.transcript,
         timestamp=ts,
         indicators=request.indicators,
-        channel_name=sanitize_untrusted_text(request.channel_name, MAX_LEN_GENERIC) or None,
-        ais_info=sanitize_untrusted_text(request.ais_info, MAX_LEN_GENERIC) or None,
+        channel_name=request.channel_name,
+        ais_info=request.ais_info,
     )
     sent = send_alert(event, dry_run=request.dry_run)
     return {

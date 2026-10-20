@@ -14,21 +14,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-from untrusted_text import (
-    MAX_LEN_CALLSIGN,
-    MAX_LEN_DESTINATION,
-    MAX_LEN_GENERIC,
-    MAX_LEN_SHIPNAME,
-    sanitize_untrusted_text,
-)
-
 logger = logging.getLogger(__name__)
-
-_STATIC_CAPS = {
-    "shipname": MAX_LEN_SHIPNAME,
-    "callsign": MAX_LEN_CALLSIGN,
-    "destination": MAX_LEN_DESTINATION,
-}
 
 MID_TABLE = Path(__file__).resolve().parent / "data" / "itu_mid.json"
 STATIC_FIELDS = ("shipname", "callsign", "imo", "shiptype", "destination", "draught",
@@ -107,12 +93,11 @@ def load_registry(path: Optional[Path] = None) -> Dict[str, Any]:
         return {}
 
 
-def _clean(v: Any, field: str = "") -> Any:
+def _clean(v: Any) -> Any:
     if v is None:
         return None
     if isinstance(v, str):
-        cap = _STATIC_CAPS.get(field, MAX_LEN_GENERIC)
-        v = sanitize_untrusted_text(v, cap)
+        v = v.strip().strip("@").strip()
         return v or None
     if isinstance(v, (int, float)) and v == 0:
         return None
@@ -137,7 +122,7 @@ def update_registry(ships_raw, path: Optional[Path] = None, now: Optional[dateti
         if raw.get("country") and not entry.get("ais_country"):
             entry["ais_country"] = raw.get("country")
         for f in STATIC_FIELDS:
-            v = _clean(raw.get(f), f)
+            v = _clean(raw.get(f))
             if v is not None and entry.get(f) != v:
                 entry[f] = v
                 changed = True
@@ -164,8 +149,6 @@ def lookup(mmsi: Any, registry: Optional[Dict[str, Any]] = None, shiptype_label=
         st["beam_m"] = port + stbd
     if shiptype_label and st.get("shiptype") is not None:
         st["shiptype_label"] = shiptype_label(st.get("shiptype"))
-    from untrusted_text import sanitize_radio_payload
-
     info["static"] = st
     info["source"] = "MMSI digits (ITU-R M.585), ITU MID table, AIS static data decoded by our receiver"
-    return sanitize_radio_payload(info)
+    return info

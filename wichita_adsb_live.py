@@ -26,12 +26,6 @@ from typing import Any, Dict, List, Optional, Tuple
 from wichita_feed_urls import validated_feed_url
 from wichita_provenance import SOURCE_OUR_ANTENNA, SOURCE_PUBLIC_FEED, provenance_fields
 from wichita_receiver_health import feed_health_payload
-from untrusted_text import (
-    MAX_LEN_AIRCRAFT_ID,
-    MAX_LEN_REGISTRATION,
-    MAX_LEN_TYPE_DESC,
-    sanitize_untrusted_text,
-)
 
 logger = logging.getLogger(__name__)
 
@@ -129,7 +123,7 @@ def normalize_aircraft(
         seen_s = float(seen) if seen is not None else None
     except (TypeError, ValueError):
         seen_s = None
-    flight = sanitize_untrusted_text(raw.get("flight"), MAX_LEN_AIRCRAFT_ID)
+    flight = (raw.get("flight") or "").strip()
     callsign = flight or None
     hex_id = (raw.get("hex") or "").strip().lower()
     if not hex_id:
@@ -162,9 +156,9 @@ def normalize_aircraft(
         "squawk": squawk,
         "squawk_note": _squawk_note(squawk),
         "emergency": emergency,
-        "registration": sanitize_untrusted_text(raw.get("r"), MAX_LEN_REGISTRATION) or None,
-        "type": sanitize_untrusted_text(raw.get("t"), MAX_LEN_AIRCRAFT_ID) or None,
-        "type_desc": sanitize_untrusted_text(raw.get("desc"), MAX_LEN_TYPE_DESC) or None,
+        "registration": (raw.get("r") or "").strip() or None,
+        "type": (raw.get("t") or "").strip() or None,
+        "type_desc": (raw.get("desc") or "").strip() or None,
         "source": source,
         "sources": [source],
         "last_signal_s": seen_s,

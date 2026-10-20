@@ -25,9 +25,7 @@ def _normalize_stress_score(stress_score: float | int) -> float:
 
 
 def _preview_text(text: Optional[str], max_chars: int = 220) -> str:
-    from untrusted_text import sanitize_untrusted_text
-
-    value = sanitize_untrusted_text(text, max_chars)
+    value = (text or "").strip()
     if not value:
         return "N/A"
     if len(value) <= max_chars:
