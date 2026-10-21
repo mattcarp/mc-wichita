@@ -17,6 +17,9 @@ export function initAlertReview() {
       list.innerHTML = "<li class=\"muted\">Could not load alerts.</li>";
       return;
     }
+    if (!Array.isArray(rows)) {
+      rows = [];
+    }
 
     const pending = rows.filter((row) => row.review_status === "pending_review");
     if (!pending.length) {

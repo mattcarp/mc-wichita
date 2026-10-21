@@ -123,6 +123,13 @@ class LiveEventEngine:
                 logger.debug("watch zones ingest skipped: %s", exc)
 
             try:
+                from wichita_interest import get_boat_interest_engine
+
+                get_boat_interest_engine(append_event).ingest_ships(ships)
+            except Exception as exc:
+                logger.debug("boats of interest ingest skipped: %s", exc)
+
+            try:
                 get_snapshot_store().record_ships(ships)
             except Exception as exc:
                 logger.debug("ais snapshot store skipped: %s", exc)

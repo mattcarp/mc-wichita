@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "boats": [
+    {
+      "id": "seawolf-x",
+      "mmsi": 256760000,
+      "label": "SEAWOLF X",
+      "callsign": "9HA5965",
+      "imo": 9971599,
+      "note": "43 m Rossinavi catamaran, Malta flag"
+    }
+  ],
+  "flights": []
+}

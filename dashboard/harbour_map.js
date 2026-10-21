@@ -602,9 +602,15 @@ export class HarbourMap {
           </g>`,
         );
       } else {
+        const interest = s.is_boat_of_interest ? " map-ship-interest" : "";
         parts.push(
-          `<circle cx="${proj.x.toFixed(1)}" cy="${proj.y.toFixed(1)}" r="${sel ? 7 : 5}" class="map-ship${stale ? " map-ship-stale" : ""}${pulse ? " map-ship-pulse" : ""}" fill="${col}" data-mmsi="${s.mmsi}" role="button" tabindex="0"/>`,
+          `<circle cx="${proj.x.toFixed(1)}" cy="${proj.y.toFixed(1)}" r="${sel ? 7 : 5}" class="map-ship${stale ? " map-ship-stale" : ""}${pulse ? " map-ship-pulse" : ""}${interest}" fill="${col}" data-mmsi="${s.mmsi}" role="button" tabindex="0"/>`,
         );
+        if (s.is_boat_of_interest) {
+          parts.push(
+            `<circle cx="${proj.x.toFixed(1)}" cy="${proj.y.toFixed(1)}" r="${sel ? 11 : 9}" class="map-ship-interest-ring" fill="none" data-mmsi="${s.mmsi}" pointer-events="none"/>`,
+          );
+        }
       }
     }
     for (const p of this.planes) {

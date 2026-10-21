@@ -7,6 +7,7 @@ import { initWatchZones } from "./watch_zones.js?v=20261016-loading";
 import { initGroundVoice } from "./ground_voice.js?v=20261016-loading";
 import { initIncidentReplay, isIncidentReplayActive, incidentReplayFrameNow } from "./incident_replay.js?v=20261016-loading";
 import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261016-loading";
+import { initBoatsOfInterest, setBoatsOfInterestRefresh } from "./boats_of_interest.js?v=20261021-interest";
 
 const GROUPS = [
   { key: "now", title: "Now" },
@@ -97,16 +98,25 @@ function renderSummary(snapshot) {
 function shipCardHtml(s, selected) {
   const flag = flagEmoji(s.country);
   const col = typeColor(s.shiptype_category);
+  const interestMark = s.is_boat_of_interest
+    ? `<span class="boat-interest-pin" title="Boat of interest" aria-label="Boat of interest">★</span>`
+    : "";
+  const removeBtn = s.interest_id
+    ? `<button type="button" class="boat-interest-remove" data-interest-remove="${esc(s.interest_id)}" aria-label="Remove from boats of interest">×</button>`
+    : "";
   const eta = s.eta_malta && !s.eta_malta_stale ? `ETA ${s.eta_malta} Malta` : "";
   const tierClass = freshnessClass(s.freshness);
   const fade = s.freshness === "earlier" ? " ship-card-fade" : s.freshness === "recent" ? " ship-card-recent" : "";
   const sel = s.mmsi === selected ? " selected" : "";
   const tierLabel = s.freshness_label || "Earlier";
-  return `<li class="live-ship-card ${tierClass}${fade}${sel}" data-mmsi="${s.mmsi}" role="button" tabindex="0" style="--ship-type-color:${col}">
+  const lastHeard = s.interest_last_malta || (s.last_heard_utc ? formatMaltaTimeShort(s.last_heard_utc) : "");
+  const interestMeta = s.is_boat_of_interest && lastHeard ? `<span class="mono boat-interest-heard">Last heard ${lastHeard}</span>` : "";
+  return `<li class="live-ship-card ${tierClass}${fade}${sel}${s.is_boat_of_interest ? " live-ship-interest" : ""}" data-mmsi="${s.mmsi}" data-test-id="ship-card-${s.mmsi}" role="button" tabindex="0" style="--ship-type-color:${col}">
     <div class="live-ship-card-head">
       <span class="ship-type-icon" aria-hidden="true"></span>
       <span class="live-ship-flag" title="${s.country || ""}">${flag}</span>
-      <strong>${s.display_name}</strong>${s.speed_known !== false && (s.speed_kn ?? 0) >= 1 ? `<span class="ship-moving mono">moving ${Number(s.speed_kn).toFixed(1)} kn</span>` : ""}
+      ${interestMark}<strong>${s.display_name}</strong>${removeBtn}${s.speed_known !== false && (s.speed_kn ?? 0) >= 1 ? `<span class="ship-moving mono">moving ${Number(s.speed_kn).toFixed(1)} kn</span>` : ""}
+      ${interestMeta}
       <span class="mono ship-fresh ship-fresh-${s.freshness || "earlier"}">${(() => { const ago = agoLabel(s.last_signal_s); return !ago || ago.toLowerCase() === tierLabel.toLowerCase() ? tierLabel : `${tierLabel} · ${ago}`; })()}</span>
     </div>
     <p class="ship-lead">${s.lead_sentence}</p>
@@ -163,11 +173,27 @@ function matchesEntityQuery(item, q) {
   return hay.includes(q);
 }
 
+function mergeShipsForMap(snapshot) {
+  const base = replayShipsForMap() || snapshot?.ships || [];
+  const interest = snapshot?.interest_vessels || [];
+  const byMmsi = new Map(base.map((s) => [s.mmsi, s]));
+  for (const s of interest) {
+    const prev = byMmsi.get(s.mmsi);
+    byMmsi.set(s.mmsi, prev ? { ...prev, ...s, is_boat_of_interest: true } : s);
+  }
+  return [...byMmsi.values()];
+}
+
 function renderShipList(snapshot) {
   const ul = $("#liveShipList");
   if (!ul) return;
-  const ships = (snapshot?.ships || [])
+  const interestMmsis = new Set((snapshot?.interest_vessels || []).map((s) => s.mmsi));
+  const pinned = (snapshot?.interest_vessels || [])
     .filter((s) => matchesEntityQuery(s, state.entityQuery))
+    .slice()
+    .sort((a, b) => (a.last_signal_s ?? 1e9) - (b.last_signal_s ?? 1e9));
+  const ships = (snapshot?.ships || [])
+    .filter((s) => matchesEntityQuery(s, state.entityQuery) && !interestMmsis.has(s.mmsi))
     .slice()
     .sort((a, b) => (a.last_signal_s ?? 1e9) - (b.last_signal_s ?? 1e9));
   const paused = Boolean(snapshot?.feed_paused || snapshot?.receiver_offline);
@@ -176,7 +202,10 @@ function renderShipList(snapshot) {
   const note = paused
     ? `<li class="roster-note roster-note-paused" role="status" data-test-id="roster-paused">Feed paused${sinceUtc ? ` since ${formatMaltaTimeShort(sinceUtc)}` : ""}; showing the last ships heard.</li>`
     : `<li class="roster-note" data-test-id="roster-note">${plural(ships.length, "vessel")} heard in the last ${winMin >= 60 ? `${Math.round(winMin / 60)} h` : `${winMin} min`}, newest first.</li>`;
-  if (!ships.length) {
+  const pinnedBlock = pinned.length
+    ? `<li class="ship-group-label ship-group-interest" data-test-id="boats-of-interest-roster">Boats of interest · ${pinned.length}</li>${pinned.map((s) => shipCardHtml(s, state.selectedMmsi)).join("")}`
+    : "";
+  if (!ships.length && !pinned.length) {
     ul.innerHTML = `${note}<li class='muted'>${paused ? "No ships were heard before the feed paused." : "No vessels heard in the last hour."}</li>`;
     return;
   }
@@ -185,7 +214,7 @@ function renderShipList(snapshot) {
     const k = s.freshness || "earlier";
     (byGroup.get(k) || byGroup.get("earlier")).push(s);
   }
-  ul.innerHTML = note + GROUPS
+  ul.innerHTML = note + pinnedBlock + GROUPS
     .map((g) => {
       const list = byGroup.get(g.key) || [];
       if (!list.length) return "";
@@ -207,7 +236,10 @@ function renderShipList(snapshot) {
       });
       det.addEventListener("click", (ev) => ev.stopPropagation());
     }
-    li.addEventListener("click", () => selectShip(mmsi));
+    li.addEventListener("click", (ev) => {
+      if (ev.target.closest(".boat-interest-remove")) return;
+      selectShip(mmsi);
+    });
   });
   const bases = snapshot?.base_stations || [];
   const baseEl = $("#shoreStations");
@@ -331,6 +363,8 @@ function renderDrawer(ship) {
 
 function shipFromSnapshot(mmsi) {
   if (mmsi == null) return null;
+  const fromInterest = (state.snapshot?.interest_vessels || []).find((s) => s.mmsi === mmsi);
+  if (fromInterest) return fromInterest;
   return (state.snapshot?.ships || []).find((s) => s.mmsi === mmsi) || null;
 }
 
@@ -465,7 +499,7 @@ async function selectShip(mmsi) {
   renderSideList(state.snapshot);
   if (state.map) {
     state.map.update({
-      ships: state.snapshot?.ships,
+      ships: mergeShipsForMap(state.snapshot),
       baseStations: state.snapshot?.base_stations,
       paths: state.snapshot?.paths,
       planes: state.sky?.adsb?.aircraft,
@@ -516,7 +550,7 @@ async function selectPlane(id) {
   renderPlanesPanel(state.sky?.adsb);
   renderFollowCard();
   state.map?.update({
-    ships: state.snapshot?.ships,
+    ships: mergeShipsForMap(state.snapshot),
     baseStations: state.snapshot?.base_stations,
     paths: state.snapshot?.paths,
     planes: state.sky?.adsb?.aircraft,
@@ -532,6 +566,8 @@ function timelineItemHtml(e) {
   const kind = e.kind || "";
   const cls = kind.startsWith("receiver")
     ? "timeline-receiver"
+    : kind === "boat_of_interest_heard"
+      ? "timeline-interest"
     : kind.startsWith("pattern_")
       ? "timeline-pattern"
       : kind.includes("silent")
@@ -713,7 +749,7 @@ async function pollLive() {
     markLoaded();
     state.map?.setReceiver({ ...data.receiver, label: data.receiver?.label });
     state.map?.update({
-      ships: replayShipsForMap() || data.ships,
+      ships: mergeShipsForMap(data),
       baseStations: data.base_stations,
       paths: data.paths,
       planes: replayPlanesForMap() || state.sky?.adsb?.aircraft,
@@ -799,7 +835,7 @@ function refreshMapFromState() {
   const replayShips = replayShipsForMap();
   const replayPlanes = replayPlanesForMap();
   state.map?.update({
-    ships: replayShips || state.snapshot?.ships,
+    ships: replayShips || mergeShipsForMap(state.snapshot),
     baseStations: state.snapshot?.base_stations,
     paths: state.snapshot?.paths,
     planes: replayPlanes || state.sky?.adsb?.aircraft,
@@ -838,6 +874,8 @@ function setMapListening(on) {
 export function initLiveAis() {
   setMapListening(true);
   ensureMap();
+  initBoatsOfInterest();
+  setBoatsOfInterestRefresh(() => pollLive());
   setupTimelinePaging();
   setupEntitySearch();
   initHarbourSheetDrag();
@@ -863,7 +901,7 @@ export function initLiveAis() {
       renderPlanesPanel(state.sky?.adsb);
       state.map?.clearFollow();
       state.map?.update({
-        ships: state.snapshot?.ships,
+        ships: mergeShipsForMap(state.snapshot),
         baseStations: state.snapshot?.base_stations,
         paths: state.snapshot?.paths,
         planes: state.sky?.adsb?.aircraft,

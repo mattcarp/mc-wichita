@@ -134,6 +134,28 @@ class AisSnapshotStore:
             "snapshot_count": len(rows),
         }
 
+    def last_known_vessel(self, mmsi: int) -> Optional[Tuple[str, Dict[str, Any]]]:
+        """Most recent snapshot row containing this MMSI (ts_utc, compact ship dict)."""
+        path = _snapshot_path()
+        if not path.is_file():
+            return None
+        target = int(mmsi)
+        try:
+            lines = path.read_text(encoding="utf-8").splitlines()
+        except OSError:
+            return None
+        for line in reversed(lines):
+            if not line.strip():
+                continue
+            try:
+                rec = json.loads(line)
+                for ship in rec.get("ships") or []:
+                    if int(ship.get("mmsi") or 0) == target:
+                        return rec.get("ts_utc"), ship
+            except (json.JSONDecodeError, TypeError, ValueError):
+                continue
+        return None
+
     def snapshot_nearest(self, ts_utc: str, max_delta_s: float = 120.0) -> Optional[Dict[str, Any]]:
         try:
             target = datetime.fromisoformat(ts_utc.replace("Z", "+00:00"))

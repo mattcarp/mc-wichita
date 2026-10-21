@@ -476,6 +476,12 @@ def live_dashboard_bundle() -> Dict[str, Any]:
     voice_busy = os.environ.get("WICHITA_VOICE_LIVE", "0").strip() not in ("1", "true", "yes")
     summary_block = harbour_summary_bundle(vessels, online, voice_busy)
     rx_health = receiver_health(stat_raw, online, error=err, ships=vessels)
+    try:
+        from wichita_interest import interest_vessels_for_bundle
+
+        interest_vessels = interest_vessels_for_bundle(vessels, now)
+    except Exception:
+        interest_vessels = []
     return {
         **status,
         "ships": vessels,
@@ -501,6 +507,8 @@ def live_dashboard_bundle() -> Dict[str, Any]:
         "feed_last_ok_utc": datetime.fromtimestamp(last_ok_epoch, tz=timezone.utc).isoformat()
         if last_ok_epoch
         else None,
+        "interest_vessels": interest_vessels,
+        "boats_of_interest_count": len(interest_vessels),
     }
 
 

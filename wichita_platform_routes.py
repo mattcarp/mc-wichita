@@ -16,6 +16,8 @@ import wichita_incident_replay as wir
 import wichita_malta_weather as wmw
 import wichita_receiver_health as wrh
 import wichita_watch_zones as wwz
+import wichita_interest as wi
+import wichita_ais_live as wal
 
 router = APIRouter(tags=["platform"])
 
@@ -129,3 +131,49 @@ async def watch_zones_delete(zone_id: str):
     if not wwz.delete_zone(zone_id):
         raise HTTPException(status_code=404, detail="not found")
     return {"deleted": zone_id}
+
+
+class InterestLookupBody(BaseModel):
+    query: str = Field(..., min_length=1, max_length=120)
+
+
+class InterestBoatBody(BaseModel):
+    mmsi: int
+    label: Optional[str] = None
+    callsign: Optional[str] = None
+    imo: Optional[int] = None
+    note: Optional[str] = None
+
+
+@router.get("/api/interests/boats")
+async def interests_boats_list():
+    return {"boats": wi.list_boats(), "schema_version": 1}
+
+
+@router.post("/api/interests/boats/lookup")
+async def interests_boats_lookup(body: InterestLookupBody):
+    bundle = wal.cached_dashboard_bundle()
+    ships = bundle.get("ships") or []
+    return {"candidates": wi.lookup_boat_candidates(body.query, ships)}
+
+
+@router.post("/api/interests/boats")
+async def interests_boats_add(body: InterestBoatBody):
+    try:
+        boat = wi.add_boat(
+            mmsi=body.mmsi,
+            label=body.label,
+            callsign=body.callsign,
+            imo=body.imo,
+            note=body.note,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    return boat
+
+
+@router.delete("/api/interests/boats/{boat_id}")
+async def interests_boats_delete(boat_id: str):
+    if not wi.remove_boat(boat_id):
+        raise HTTPException(status_code=404, detail="not found")
+    return {"deleted": boat_id}

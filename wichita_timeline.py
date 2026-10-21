@@ -8,6 +8,7 @@ from typing import Any, Dict, List, Optional, Tuple
 EVENT_KIND_PRIORITY = {
     "receiver_down": 0,
     "receiver_up": 1,
+    "boat_of_interest_heard": 2,
     "ship_first_heard": 2,
     "ship_status_change": 3,
     "ship_silent": 4,

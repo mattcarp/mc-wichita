@@ -137,6 +137,26 @@
         <button type="button" id="watchZoneDraw" class="timeline-more watch-zone-draw" aria-pressed="false">Draw watch zone</button>
         <span id="watchZoneStatus" class="muted small"></span>
       </div>
+      <div class="boats-interest-bar">
+        <button type="button" id="boatInterestAdd" class="timeline-more boat-interest-add" data-test-id="boat-interest-add" title="Add boat of interest">+ Add boat of interest</button>
+      </div>
+      <dialog id="boatInterestDialog" class="boat-interest-dialog" aria-labelledby="boat-interest-dialog-title">
+        <form method="dialog" class="boat-interest-form">
+          <h3 id="boat-interest-dialog-title" class="eyebrow">Add boat of interest</h3>
+          <label class="boat-interest-label" for="boatInterestQuery">MMSI, call sign, or name</label>
+          <input type="search" id="boatInterestQuery" class="boat-interest-query" autocomplete="off" placeholder="e.g. 256760000 or SEAWOLF" />
+          <div id="boatInterestCandidates" class="boat-interest-candidates"></div>
+          <div id="boatInterestConfirm" class="boat-interest-confirm" hidden>
+            <p class="muted small">Confirm this vessel:</p>
+            <p><strong id="boatInterestConfirmName"></strong> <span class="mono muted" id="boatInterestConfirmMeta"></span></p>
+            <button type="button" id="boatInterestSave" class="timeline-more" data-test-id="boat-interest-save">Save to list</button>
+          </div>
+          <p id="boatInterestStatus" class="muted small" role="status"></p>
+          <div class="boat-interest-actions">
+            <button type="button" class="timeline-more" data-interest-cancel>Cancel</button>
+          </div>
+        </form>
+      </dialog>
       <div class="harbour-layout">
         <div class="harbour-list-col">
           <p id="freshnessCounts" class="mono counts harbour-counts-chips"></p>
