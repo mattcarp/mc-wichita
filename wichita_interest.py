@@ -16,7 +16,7 @@ from zoneinfo import ZoneInfo
 
 import wichita_ais_live as wal
 import wichita_mmsi
-from wichita_ais_copy import freshness_bucket
+from wichita_ais_copy import enrich_ship_copy, freshness_bucket
 from wichita_ais_tracks import get_snapshot_store
 
 logger = logging.getLogger(__name__)
@@ -298,6 +298,25 @@ def _interest_label(boat: Dict[str, Any], ship: Optional[Dict[str, Any]]) -> str
     return f"MMSI {int(boat['mmsi']):09d}"
 
 
+def _finalize_interest_vessel(boat: Dict[str, Any], ship: Dict[str, Any]) -> Dict[str, Any]:
+    ship["is_boat_of_interest"] = True
+    ship["interest_id"] = boat.get("id")
+    ship["interest_label"] = _interest_label(boat, ship)
+    if boat.get("label"):
+        ship["display_name"] = boat["label"]
+    ship = enrich_ship_copy(ship)
+    heard_utc = ship.get("last_heard_utc")
+    if heard_utc:
+        ship["interest_last_malta"] = _format_malta(heard_utc)
+        ship["interest_heard_label"] = f"Last heard {ship['interest_last_malta']}"
+    else:
+        ship.pop("interest_last_malta", None)
+        ship["lead_sentence"] = "Not heard yet on our receiver."
+        ship["freshness_label"] = "Not heard yet"
+        ship["interest_heard_label"] = "Not heard yet"
+    return ship
+
+
 def _vessel_from_interest(
     boat: Dict[str, Any],
     live_by_mmsi: Dict[int, Dict[str, Any]],
@@ -307,12 +326,9 @@ def _vessel_from_interest(
     live = live_by_mmsi.get(mmsi)
     if live:
         out = dict(live)
-        out["is_boat_of_interest"] = True
-        out["interest_id"] = boat.get("id")
-        out["interest_label"] = _interest_label(boat, live)
         if boat.get("label"):
             out["display_name"] = boat["label"]
-        return out
+        return _finalize_interest_vessel(boat, out)
 
     raw = _roster_raw_by_mmsi(mmsi)
     if raw:
@@ -363,13 +379,7 @@ def _vessel_from_interest(
         except (TypeError, ValueError):
             pass
 
-    ship["is_boat_of_interest"] = True
-    ship["interest_id"] = boat.get("id")
-    ship["interest_label"] = _interest_label(boat, ship)
-    if boat.get("label"):
-        ship["display_name"] = boat["label"]
-    ship["interest_last_malta"] = _format_malta(ship.get("last_heard_utc"))
-    return ship
+    return _finalize_interest_vessel(boat, ship)
 
 
 def interest_vessels_for_bundle(vessels: List[Dict[str, Any]], now: Optional[datetime] = None) -> List[Dict[str, Any]]:

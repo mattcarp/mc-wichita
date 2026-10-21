@@ -55,6 +55,19 @@ def interest_env(tmp_path, monkeypatch):
     return interests
 
 
+def test_interest_vessel_never_heard_labels(interest_env):
+    import wichita_interest as wi
+
+    rows = wi.interest_vessels_for_bundle([])
+    seawolf = next(v for v in rows if int(v["mmsi"]) == SEAWOLF_MMSI)
+    assert seawolf.get("interest_heard_label") == "Not heard yet"
+    assert seawolf.get("lead_sentence") == "Not heard yet on our receiver."
+    for key in ("lead_sentence", "interest_heard_label", "display_name", "shiptype_label", "freshness_label"):
+        val = seawolf.get(key)
+        if val is not None:
+            assert "undefined" not in str(val).lower()
+
+
 def test_seawolf_seed_and_lookup(interest_env, monkeypatch):
     import wichita_interest as wi
 

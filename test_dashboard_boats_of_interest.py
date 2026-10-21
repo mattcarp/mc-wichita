@@ -92,5 +92,12 @@ def test_boat_interest_add_flow_screenshot(dashboard_server, tmp_path):
         page.locator("button[data-interest-cancel]").click()
         text = page.locator('[data-test-id="boats-of-interest-roster"]').inner_text()
         assert "boats of interest" in text.lower()
+        heard = page.locator('[data-test-id="boat-interest-heard-256760000"]')
+        page.wait_for_selector('[data-test-id="boat-interest-heard-256760000"]', timeout=15_000)
+        heard_text = heard.inner_text()
+        assert "undefined" not in heard_text.lower()
+        assert "not heard yet" in heard_text.lower()
+        card = page.locator('[data-test-id="ship-card-256760000"]')
+        assert "undefined" not in card.inner_text().lower()
         assert page.locator('[data-test-id^="ship-card-"]').count() >= 1
         browser.close()

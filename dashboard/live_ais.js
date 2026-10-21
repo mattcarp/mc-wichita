@@ -109,18 +109,22 @@ function shipCardHtml(s, selected) {
   const fade = s.freshness === "earlier" ? " ship-card-fade" : s.freshness === "recent" ? " ship-card-recent" : "";
   const sel = s.mmsi === selected ? " selected" : "";
   const tierLabel = s.freshness_label || "Earlier";
-  const lastHeard = s.interest_last_malta || (s.last_heard_utc ? formatMaltaTimeShort(s.last_heard_utc) : "");
-  const interestMeta = s.is_boat_of_interest && lastHeard ? `<span class="mono boat-interest-heard">Last heard ${lastHeard}</span>` : "";
+  const interestMeta = s.is_boat_of_interest
+    ? `<span class="mono boat-interest-heard" data-test-id="boat-interest-heard-${s.mmsi}">${esc(interestHeardLine(s))}</span>`
+    : "";
+  const lead = displayField(s.lead_sentence, s.is_boat_of_interest ? "Not heard yet" : "Movement unknown");
+  const typeLabel = displayField(s.shiptype_label, "unknown type");
+  const displayName = displayField(s.display_name, `MMSI ${displayField(s.mmsi_display, String(s.mmsi))}`);
   return `<li class="live-ship-card ${tierClass}${fade}${sel}${s.is_boat_of_interest ? " live-ship-interest" : ""}" data-mmsi="${s.mmsi}" data-test-id="ship-card-${s.mmsi}" role="button" tabindex="0" style="--ship-type-color:${col}">
     <div class="live-ship-card-head">
       <span class="ship-type-icon" aria-hidden="true"></span>
       <span class="live-ship-flag" title="${s.country || ""}">${flag}</span>
-      ${interestMark}<strong>${s.display_name}</strong>${removeBtn}${s.speed_known !== false && (s.speed_kn ?? 0) >= 1 ? `<span class="ship-moving mono">moving ${Number(s.speed_kn).toFixed(1)} kn</span>` : ""}
+      ${interestMark}<strong>${esc(displayName)}</strong>${removeBtn}${s.speed_known !== false && (s.speed_kn ?? 0) >= 1 ? `<span class="ship-moving mono">moving ${Number(s.speed_kn).toFixed(1)} kn</span>` : ""}
       ${interestMeta}
       <span class="mono ship-fresh ship-fresh-${s.freshness || "earlier"}">${(() => { const ago = agoLabel(s.last_signal_s); return !ago || ago.toLowerCase() === tierLabel.toLowerCase() ? tierLabel : `${tierLabel} · ${ago}`; })()}</span>
     </div>
-    <p class="ship-lead">${s.lead_sentence}</p>
-    <p class="muted ship-meta">${s.shiptype_label}${eta ? ` · ${eta}` : ""}</p>
+    <p class="ship-lead">${esc(lead)}</p>
+    <p class="muted ship-meta">${esc(typeLabel)}${eta ? ` · ${eta}` : ""}</p>
     <details class="ship-raw-details"><summary class="expand-cue" aria-expanded="false"><span class="cue-tri" aria-hidden="true"></span><span class="cue-more">More details</span><span class="cue-less">Less</span><span class="sr-only"> for ${esc(s.display_name)}: MMSI lookup</span></summary>
       ${mmsiLookupHtml(s)}
       <a class="mmsi-link" href="https://www.vesselfinder.com/?mmsi=${s.mmsi}" rel="noopener noreferrer" target="_blank">Look up MMSI on VesselFinder (external) ↗</a>
@@ -132,6 +136,20 @@ function shipCardHtml(s, selected) {
 
 function esc(v) {
   return String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+}
+
+function displayField(v, fallback = "unknown") {
+  if (v === null || v === undefined) return fallback;
+  const s = String(v).trim();
+  if (!s || s.toLowerCase() === "undefined" || s.toLowerCase() === "null") return fallback;
+  return s;
+}
+
+function interestHeardLine(s) {
+  if (s.interest_heard_label) return displayField(s.interest_heard_label, "Not heard yet");
+  const malta = s.interest_last_malta || (s.last_heard_utc ? formatMaltaTimeShort(s.last_heard_utc) : "");
+  if (!malta || malta === "—") return "Not heard yet";
+  return `Last heard ${malta}`;
 }
 
 function mmsiLookupHtml(s) {
