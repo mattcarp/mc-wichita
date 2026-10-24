@@ -800,7 +800,10 @@ async function pollLive() {
     renderPlanesPanel({ ...state.sky.adsb, aircraft: planesView });
     renderSatellitesPanel(state.sky.satellites);
     $("#planesPanel")?.querySelectorAll(".live-plane-card").forEach((li) => {
-      li.addEventListener("click", () => selectPlane(li.getAttribute("data-plane-id")));
+      li.addEventListener("click", (ev) => {
+        if (ev.target.closest("[data-air-interest-remove]")) return;
+        selectPlane(li.getAttribute("data-plane-id"));
+      });
     });
     state.map?.setReceiver({ ...data.receiver, label: data.receiver?.label });
     const replayShips = replayShipsForMap();
