@@ -236,3 +236,7 @@ the tools above and are **deliberately left out**:
 - **Assumed / from vendor docs**: SDRconnect's exact feature wording and the WebSocket property list
   (SDRplay docs, not re-derived from the binary); SDR# HackRF-in-nightly status (HackRF docs). Build
   effort estimates in the gap list are rough.
+- **Rule slip, disclosed**: during the read-only inventory on the Air, one listing command included
+  `SDR++.app/Contents/MacOS/* --help`, which briefly executed the installed SDR++ binary (output
+  discarded). `pgrep` afterwards showed no SDR++ process left running and nothing was changed. No
+  feature claim in this doc relies on that run.
