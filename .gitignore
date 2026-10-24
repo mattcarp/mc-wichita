@@ -32,6 +32,8 @@ rf_captures/
 *.mp3
 *.flac
 processing_report_*.json
+alerts.json
+dashboard/data/celestrak_tle_cache.json
 
 # Binaries that never belonged in git (added during cleanup)
 *.raw
