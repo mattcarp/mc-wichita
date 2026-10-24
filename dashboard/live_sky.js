@@ -31,6 +31,39 @@ export function planeSummaryLine(p) {
 
 const openPlaneDetails = new Set();
 
+function planeCardHtml(p) {
+  const emCls = p.is_emergency ? " plane-emergency" : "";
+  const interestCls = p.is_aircraft_of_interest ? " live-plane-interest" : "";
+  const sub = [p.registration, p.type].filter(Boolean).map(esc).join(" · ");
+  const interestMark = p.is_aircraft_of_interest
+    ? `<span class="boat-interest-pin" title="Aircraft of interest" aria-label="Aircraft of interest">★</span>`
+    : "";
+  const removeBtn = p.interest_id
+    ? `<button type="button" class="boat-interest-remove" data-air-interest-remove="${esc(p.interest_id)}" aria-label="Remove from aircraft watch list">×</button>`
+    : "";
+  const alertBadge = p.interest_alert
+    ? `<span class="interest-alert-badge" data-test-id="air-interest-alert-${esc(p.hex || p.id)}">${esc(p.interest_alert_label || "Alert")}</span>`
+    : "";
+  const heardMeta = p.is_aircraft_of_interest
+    ? `<span class="mono boat-interest-heard" data-test-id="air-interest-heard-${esc(p.hex || p.id)}">${esc(p.interest_heard_label || "Not in feed right now")}</span>`
+    : "";
+  const rangeTxt = p.range_nm != null ? ` · ${Number(p.range_nm).toFixed(1)} nmi` : "";
+  return `<li class="live-plane-card${emCls}${interestCls}" data-plane-id="${esc(p.id)}" data-test-id="plane-card-${esc(p.hex || p.id)}" role="button" tabindex="0">
+    <div class="live-plane-head">${interestMark}<strong>${esc(p.display_name)}</strong>${removeBtn}${alertBadge}${planeSourceBadge(p)}</div>
+    ${heardMeta}
+    ${sub ? `<span class="mono muted">${sub}</span>` : ""}
+    <span class="mono muted">${planeSummaryLine(p)}${rangeTxt}${p.squawk ? ` · squawk <span class="${p.is_emergency ? "plane-squawk-em" : ""}">${esc(p.squawk)}</span>` : ""}</span>
+    ${p.squawk_note ? `<p class="squawk-alert${p.is_emergency ? " squawk-red" : " calm"}">${esc(p.squawk_note)}</p>` : ""}
+    <details class="ship-raw-details plane-details"><summary class="expand-cue" aria-expanded="false"><span class="cue-tri" aria-hidden="true"></span><span class="cue-more">More details</span><span class="cue-less">Less</span><span class="sr-only"> for ${esc(p.display_name)}</span></summary>
+      <p class="mono muted">Callsign ${esc(p.callsign || "—")} · ICAO ${esc((p.hex || "").toUpperCase())}</p>
+      <p class="mono muted">Registration ${esc(p.registration || "—")} · type ${esc(p.type || "—")}${p.type_desc ? ` (${esc(p.type_desc)})` : ""}</p>
+      <p class="mono muted">Altitude ${p.altitude_ft != null ? `${Math.round(p.altitude_ft).toLocaleString("en")} ft` : "—"} · speed ${p.speed_kts != null ? `${Math.round(p.speed_kts)} kt` : "—"} · heading ${p.heading_deg != null ? `${Math.round(p.heading_deg)}°` : "—"}</p>
+      <p class="mono muted">Squawk ${esc(p.squawk || "—")} · emergency ${esc(p.emergency || "none")} · last seen ${agoShort(p.last_signal_s)}</p>
+      <p class="mono muted">Source: ${esc(p.source || "—")}</p>
+    </details>
+  </li>`;
+}
+
 export function renderPlanesPanel(adsb) {
   const el = $("#planesPanel");
   if (!el) return;
@@ -44,33 +77,28 @@ export function renderPlanesPanel(adsb) {
     return;
   }
   const planes = adsb.aircraft || [];
-  if (!planes.length) {
+  const byHex = new Map(planes.map((p) => [(p.hex || p.id || "").toLowerCase(), p]));
+  const pinned = (adsb.interest_aircraft || []).map((row) => {
+    const live = byHex.get((row.hex || row.id || "").toLowerCase());
+    return live ? { ...row, ...live, is_aircraft_of_interest: true, interest_id: row.interest_id } : row;
+  });
+  const watchHex = new Set(pinned.map((p) => (p.hex || p.id || "").toLowerCase()).filter(Boolean));
+  const rest = planes.filter((p) => !watchHex.has((p.hex || p.id || "").toLowerCase()));
+  const merged = [...pinned, ...rest];
+  if (!merged.length) {
     el.innerHTML = `${label}<p class="muted">No aircraft with position right now.</p>`;
     return;
   }
-  const em = planes.filter((p) => p.is_emergency).length;
-  el.innerHTML = `${label}<p class="mono counts">${plural(planes.length, "aircraft")} with position${em ? ` · <span class="plane-em-count">${plural(em, "emergency", "emergencies")}</span>` : ""}</p>
+  const em = merged.filter((p) => p.is_emergency).length;
+  const roster =
+    pinned.length
+      ? `<li class="ship-group-label ship-group-interest" data-test-id="aircraft-of-interest-roster">Aircraft of interest · ${pinned.length}</li>${pinned.map((p) => planeCardHtml(p)).join("")}`
+      : "";
+  const body = rest.length ? rest.map((p) => planeCardHtml(p)).join("") : "";
+  el.innerHTML = `${label}<p class="mono counts">${plural(merged.length, "aircraft")} with position${em ? ` · <span class="plane-em-count">${plural(em, "emergency", "emergencies")}</span>` : ""}</p>
     <p class="muted small observed-caveat">Observed ADS-B only — not ground truth.</p>
     <ul class="live-plane-list">
-      ${planes
-        .map((p) => {
-          const emCls = p.is_emergency ? " plane-emergency" : "";
-          const sub = [p.registration, p.type].filter(Boolean).map(esc).join(" · ");
-          return `<li class="live-plane-card${emCls}" data-plane-id="${esc(p.id)}" role="button" tabindex="0">
-            <div class="live-plane-head"><strong>${esc(p.display_name)}</strong>${planeSourceBadge(p)}</div>
-            ${sub ? `<span class="mono muted">${sub}</span>` : ""}
-            <span class="mono muted">${planeSummaryLine(p)}${p.squawk ? ` · squawk <span class="${p.is_emergency ? "plane-squawk-em" : ""}">${esc(p.squawk)}</span>` : ""}</span>
-            ${p.squawk_note ? `<p class="squawk-alert${p.is_emergency ? " squawk-red" : " calm"}">${esc(p.squawk_note)}</p>` : ""}
-            <details class="ship-raw-details plane-details"><summary class="expand-cue" aria-expanded="false"><span class="cue-tri" aria-hidden="true"></span><span class="cue-more">More details</span><span class="cue-less">Less</span><span class="sr-only"> for ${esc(p.display_name)}</span></summary>
-              <p class="mono muted">Callsign ${esc(p.callsign || "—")} · ICAO ${esc((p.hex || "").toUpperCase())}</p>
-              <p class="mono muted">Registration ${esc(p.registration || "—")} · type ${esc(p.type || "—")}${p.type_desc ? ` (${esc(p.type_desc)})` : ""}</p>
-              <p class="mono muted">Altitude ${p.altitude_ft != null ? `${Math.round(p.altitude_ft).toLocaleString("en")} ft` : "—"} · speed ${p.speed_kts != null ? `${Math.round(p.speed_kts)} kt` : "—"} · heading ${p.heading_deg != null ? `${Math.round(p.heading_deg)}°` : "—"}</p>
-              <p class="mono muted">Squawk ${esc(p.squawk || "—")} · emergency ${esc(p.emergency || "none")} · last seen ${agoShort(p.last_signal_s)}</p>
-              <p class="mono muted">Source: ${esc(p.source || "—")}</p>
-            </details>
-          </li>`;
-        })
-        .join("")}
+      ${roster}${body}
     </ul>`;
   el.querySelectorAll(".live-plane-card").forEach((li) => {
     const id = li.getAttribute("data-plane-id");

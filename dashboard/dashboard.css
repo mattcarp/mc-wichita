@@ -1592,6 +1592,32 @@ body.sheet-open .live-ship-list {
   line-height: 1;
   color: var(--mac-text-muted, #626261);
 }
+.planes-section-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: space-between;
+}
+.planes-section-head .boat-interest-add {
+  flex-shrink: 0;
+  min-width: 2rem;
+  padding-inline: 0.5rem;
+}
+.live-plane-interest {
+  border-color: var(--accent-warm, #f4a261);
+}
+.interest-alert-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.1rem 0.35rem;
+  margin-inline: 0.25rem;
+  border-radius: 3px;
+  background: rgba(214, 40, 40, 0.15);
+  color: #b42318;
+}
 .boat-interest-heard {
   display: block;
   font-size: 0.72rem;

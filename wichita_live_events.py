@@ -83,10 +83,19 @@ class LiveEventEngine:
     def _loop(self) -> None:
         import wichita_ais_live as wal
 
+        import wichita_adsb_live as wad
+
         while not self._stop.is_set():
             try:
                 bundle = wal.live_dashboard_bundle()
                 self.ingest_snapshot(bundle)
+                try:
+                    from wichita_aircraft_interest import enrich_adsb_snapshot, get_aircraft_interest_engine
+
+                    adsb = enrich_adsb_snapshot(wad.live_adsb_snapshot())
+                    get_aircraft_interest_engine(append_event).ingest_planes(adsb.get("aircraft") or [])
+                except Exception as exc:
+                    logger.debug("aircraft interest ingest skipped: %s", exc)
             except Exception as exc:
                 logger.warning("live events poll failed: %s", exc)
             self._stop.wait(POLL_SEC)

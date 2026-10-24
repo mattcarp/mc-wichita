@@ -644,7 +644,7 @@ export class HarbourMap {
       const hdg = (p.heading_deg ?? 0) * (Math.PI / 180);
       const sel = p.id === this.selectedPlaneId;
       const r = sel ? 8 : 6;
-      const col = p.is_emergency ? "#d62828" : "#c9a4ff";
+      const col = p.is_emergency ? "#d62828" : p.is_aircraft_of_interest || p.interest_alert ? "#f4a261" : "#c9a4ff";
       const tip = `${p.display_name || p.hex}${p.registration ? ` · ${p.registration}` : ""}${p.type ? ` · ${p.type}` : ""} · ${p.altitude_ft != null ? Math.round(p.altitude_ft) + " ft" : "—"} · ${p.speed_kts != null ? Math.round(p.speed_kts) + " kt" : "—"} · ${p.heading_deg != null ? Math.round(p.heading_deg) + "°" : "—"}${p.squawk ? ` · squawk ${p.squawk}` : ""} · ${p.source || ""}`.replace(/[<>&"]/g, "");
       const tipX = proj.x + Math.sin(hdg) * r;
       const tipY = proj.y - Math.cos(hdg) * r;
@@ -660,8 +660,13 @@ export class HarbourMap {
           </g>`,
         );
       } else {
+        const interestRing =
+          p.is_aircraft_of_interest || p.interest_alert
+            ? `<circle cx="${proj.x.toFixed(1)}" cy="${proj.y.toFixed(1)}" r="${sel ? 14 : 12}" class="map-ship-interest-ring" fill="none" pointer-events="none"/>`
+            : "";
         parts.push(
-          `<g class="map-plane${p.is_emergency ? " map-plane-emergency" : ""}" data-plane-id="${p.id}" role="button" tabindex="0">
+          `<g class="map-plane${p.is_emergency ? " map-plane-emergency" : ""}${p.is_aircraft_of_interest ? " map-plane-interest" : ""}" data-plane-id="${p.id}" role="button" tabindex="0">
+            ${interestRing}
             <polygon points="${tipX.toFixed(1)},${tipY.toFixed(1)} ${lx.toFixed(1)},${ly.toFixed(1)} ${rx.toFixed(1)},${ry.toFixed(1)}" fill="${col}" class="${sel ? "map-plane-selected" : ""}"/>
             <title>${tip}${estimated ? " · estimated position" : ""}</title>
           </g>`,

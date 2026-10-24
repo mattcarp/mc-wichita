@@ -8,6 +8,7 @@ import { initGroundVoice } from "./ground_voice.js?v=20261016-loading";
 import { initIncidentReplay, isIncidentReplayActive, incidentReplayFrameNow } from "./incident_replay.js?v=20261016-loading";
 import { initHarbourReplay, isReplayActive, replayShipsNow } from "./harbour_replay.js?v=20261016-loading";
 import { initBoatsOfInterest, setBoatsOfInterestRefresh } from "./boats_of_interest.js?v=20261021-interest";
+import { initAircraftOfInterest, setAircraftOfInterestRefresh } from "./aircraft_of_interest.js?v=20261024-interest";
 
 const GROUPS = [
   { key: "now", title: "Now" },
@@ -584,7 +585,7 @@ function timelineItemHtml(e) {
   const kind = e.kind || "";
   const cls = kind.startsWith("receiver")
     ? "timeline-receiver"
-    : kind === "boat_of_interest_heard"
+    : kind === "boat_of_interest_heard" || kind.startsWith("aircraft_")
       ? "timeline-interest"
     : kind.startsWith("pattern_")
       ? "timeline-pattern"
@@ -894,6 +895,27 @@ export function initLiveAis() {
   ensureMap();
   initBoatsOfInterest();
   setBoatsOfInterestRefresh(() => pollLive());
+  initAircraftOfInterest();
+  setAircraftOfInterestRefresh(async () => {
+    state.sky = await fetchSkySnapshots();
+    renderPlanesPanel(state.sky?.adsb);
+    $("#planesPanel")?.querySelectorAll(".live-plane-card").forEach((li) => {
+      li.addEventListener("click", (ev) => {
+        if (ev.target.closest("[data-air-interest-remove]")) return;
+        selectPlane(li.getAttribute("data-plane-id"));
+      });
+    });
+    state.map?.update({
+      ships: mergeShipsForMap(state.snapshot),
+      baseStations: state.snapshot?.base_stations,
+      paths: state.snapshot?.paths,
+      planes: state.sky?.adsb?.aircraft,
+      satelliteTracks: satelliteTracksForMap(state.sky?.satellites),
+      selectedMmsi: state.selectedMmsi,
+      selectedPlaneId: state.selectedPlaneId,
+      follow: state.follow,
+    });
+  });
   setupTimelinePaging();
   setupEntitySearch();
   initHarbourSheetDrag();

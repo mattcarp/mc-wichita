@@ -246,7 +246,27 @@
         </div>
       </div>
       <section class="planes-section" aria-labelledby="planes-heading">
-        <h3 id="planes-heading" class="eyebrow">Planes · ADS-B</h3>
+        <div class="planes-section-head">
+          <h3 id="planes-heading" class="eyebrow">Planes · ADS-B</h3>
+          <button type="button" id="airInterestAdd" class="timeline-more boat-interest-add" data-test-id="air-interest-add" title="Add aircraft of interest">+</button>
+        </div>
+        <dialog id="airInterestDialog" class="boat-interest-dialog" aria-labelledby="air-interest-dialog-title">
+          <form method="dialog" class="boat-interest-form">
+            <h3 id="air-interest-dialog-title" class="eyebrow">Add aircraft of interest</h3>
+            <label class="boat-interest-label" for="airInterestQuery">ICAO hex, call sign, or registration</label>
+            <input type="search" id="airInterestQuery" class="boat-interest-query" autocomplete="off" placeholder="e.g. 4caabc or RYR82LT" />
+            <div id="airInterestCandidates" class="boat-interest-candidates"></div>
+            <div id="airInterestConfirm" class="boat-interest-confirm" hidden>
+              <p class="muted small">Confirm this aircraft:</p>
+              <p><strong id="airInterestConfirmName"></strong> <span class="mono muted" id="airInterestConfirmMeta"></span></p>
+              <button type="button" id="airInterestSave" class="timeline-more" data-test-id="air-interest-save">Save to watch list</button>
+            </div>
+            <p id="airInterestStatus" class="muted small" role="status"></p>
+            <div class="boat-interest-actions">
+              <button type="button" class="timeline-more" data-interest-cancel>Cancel</button>
+            </div>
+          </form>
+        </dialog>
         <div id="planesPanel" class="planes-panel"></div>
       </section>
       <section class="sky-section" aria-labelledby="sat-heading">

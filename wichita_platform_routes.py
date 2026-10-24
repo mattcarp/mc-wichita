@@ -17,6 +17,7 @@ import wichita_malta_weather as wmw
 import wichita_receiver_health as wrh
 import wichita_watch_zones as wwz
 import wichita_interest as wi
+import wichita_aircraft_interest as wai
 import wichita_ais_live as wal
 
 router = APIRouter(tags=["platform"])
@@ -177,3 +178,73 @@ async def interests_boats_delete(boat_id: str):
     if not wi.remove_boat(boat_id):
         raise HTTPException(status_code=404, detail="not found")
     return {"deleted": boat_id}
+
+
+class InterestFlightBody(BaseModel):
+    hex: Optional[str] = Field(None, max_length=12)
+    callsign: Optional[str] = Field(None, max_length=32)
+    registration: Optional[str] = Field(None, max_length=32)
+    label: Optional[str] = Field(None, max_length=120)
+    note: Optional[str] = Field(None, max_length=500)
+
+
+@router.get("/api/interests")
+async def interests_summary():
+    """Things-of-interest summary for external consumers (e.g. Matt's World View)."""
+    return {
+        "schema_version": 1,
+        "boats": wi.list_boats(),
+        "flights": wi.list_flights(),
+        "aircraft_rules": wai.list_aircraft_rules(),
+        "station": {"lat": wai.STATION_LAT, "lon": wai.STATION_LON, "label": "Valletta station (50 Archbishop St)"},
+    }
+
+
+@router.get("/api/interests/flights")
+async def interests_flights_list():
+    return {"flights": wi.list_flights(), "aircraft_rules": wai.list_aircraft_rules(), "schema_version": 1}
+
+
+@router.post("/api/interests/flights/lookup")
+async def interests_flights_lookup(body: InterestLookupBody):
+    snap = wad.live_adsb_snapshot()
+    planes = snap.get("aircraft") or []
+    return {"candidates": wai.lookup_aircraft_candidates(body.query, planes)}
+
+
+@router.post("/api/interests/flights")
+async def interests_flights_add(body: InterestFlightBody):
+    try:
+        flight = wai.add_flight(
+            hex_id=body.hex,
+            callsign=body.callsign,
+            registration=body.registration,
+            label=body.label,
+            note=body.note,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    return flight
+
+
+@router.delete("/api/interests/flights/{flight_id}")
+async def interests_flights_delete(flight_id: str):
+    if not wai.remove_flight(flight_id):
+        raise HTTPException(status_code=404, detail="not found")
+    return {"deleted": flight_id}
+
+
+@router.get("/api/interests/aircraft/rules")
+async def interests_aircraft_rules_get():
+    return {"rules": wai.list_aircraft_rules()}
+
+
+class AircraftRulesBody(BaseModel):
+    rules: List[Dict[str, Any]]
+
+
+@router.put("/api/interests/aircraft/rules")
+async def interests_aircraft_rules_put(body: AircraftRulesBody):
+    if not body.rules:
+        raise HTTPException(status_code=400, detail="rules required")
+    return {"rules": wai.save_aircraft_rules(body.rules)}
