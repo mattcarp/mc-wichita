@@ -583,15 +583,19 @@ async function selectPlane(id) {
 function timelineItemHtml(e) {
   const t = e.ts_utc ? formatMaltaTimeShort(e.ts_utc) : "—";
   const kind = e.kind || "";
-  const cls = kind.startsWith("receiver")
-    ? "timeline-receiver"
-    : kind === "boat_of_interest_heard" || kind.startsWith("aircraft_")
-      ? "timeline-interest"
-    : kind.startsWith("pattern_")
-      ? "timeline-pattern"
-      : kind.includes("silent")
-        ? "timeline-quiet"
-        : "timeline-live";
+  const cls = kind.startsWith("marine_distress")
+    ? "timeline-distress"
+    : kind.startsWith("receiver")
+      ? "timeline-receiver"
+      : kind === "boat_of_interest_heard" || kind.startsWith("aircraft_")
+        ? "timeline-interest"
+        : kind.startsWith("marine_")
+          ? "timeline-distress"
+          : kind.startsWith("pattern_")
+            ? "timeline-pattern"
+            : kind.includes("silent")
+              ? "timeline-quiet"
+              : "timeline-live";
   const tsAttr = e.ts_utc ? ` data-ts="${e.ts_utc}"` : "";
   return `<li class="${cls}"${tsAttr}><span class="event-time mono">${t}</span> <span class="event-body">${e.sentence}</span></li>`;
 }

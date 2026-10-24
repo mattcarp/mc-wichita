@@ -6,6 +6,10 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
 EVENT_KIND_PRIORITY = {
+    "marine_distress_dsc": 0,
+    "marine_distress_406": 0,
+    "marine_urgency_dsc": 1,
+    "marine_safety_dsc": 1,
     "receiver_down": 0,
     "receiver_up": 1,
     "boat_of_interest_heard": 2,

@@ -1540,6 +1540,13 @@ body.sheet-open .live-ship-list {
   color: var(--blue, #10306a);
   font-weight: 600;
 }
+.timeline-distress .event-body {
+  color: var(--red, #8b1e1e);
+  font-weight: 700;
+}
+.timeline-distress .event-time {
+  color: var(--red, #8b1e1e);
+}
 .boats-interest-bar {
   display: flex;
   align-items: center;
