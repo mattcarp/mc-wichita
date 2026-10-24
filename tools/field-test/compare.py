@@ -84,11 +84,12 @@ def fmt(v, nd=1, sign=False):
     return ('%+.*f' if sign else '%.*f') % (nd, v)
 
 def main():
-    a = [x for x in sys.argv[1:] if not x.startswith('--')]
-    if len(a) != 2: print(__doc__); sys.exit(2)
-    base, new = [os.path.abspath(os.path.expanduser(x)) for x in a]
-    outp = os.path.join(new, 'COMPARE.md')
-    if '--out' in sys.argv: outp = sys.argv[sys.argv.index('--out') + 1]
+    args = sys.argv[1:]; outp = None
+    if '--out' in args:
+        i = args.index('--out'); outp = args[i + 1]; del args[i:i + 2]
+    if len(args) != 2: print(__doc__); sys.exit(2)
+    base, new = [os.path.abspath(os.path.expanduser(x)) for x in args]
+    outp = outp or os.path.join(new, 'COMPARE.md')
     L = []
     L.append('# Compare: %s vs baseline %s' % (os.path.basename(new), os.path.basename(base)))
     L.append('')

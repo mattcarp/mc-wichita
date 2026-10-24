@@ -110,15 +110,25 @@ kill $TICK 2>/dev/null; trap - INT
 echo "[$(date +%H:%M)] recording finished ($(du -sh "$D" | cut -f1)). Analysing..."
 
 # 3. analysis (same methods as the baseline) -> SUMMARY.md, then COMPARE.md
+PY=""
+for c in "$WICHITA_PY" python3 /usr/bin/python3 /opt/homebrew/bin/python3 "$HOME"/.venv/bin/python "$HOME"/venv/bin/python; do
+  [ -n "$c" ] && "$c" -c 'import numpy' >/dev/null 2>&1 && { PY="$c"; break; }; done
+[ -n "$WICHITA_NO_NUMPY" ] && PY=""   # testing hook
 {
   echo "# Wichita field test: $SITE ($(date +%F), $(head -1 "$LOG" | cut -d' ' -f2)-$(date +%H:%M) $(date +%Z))"
   echo; echo "HackRF on $(hostname -s). ${FS} sps, LNA $LNA, VGA $VGA, amp off. Narrowband recordings tuned 250 kHz above the target. Receive-only."
   echo; echo "## Sweeps (peak above the median floor)"; python3 "$HERE/peaks.py" "$D" 2>&1
-  echo; echo "## Channels (SNR within 8 kHz of target vs. nearby noise; active = share of frames over 6 dB)"
-  python3 "$HERE/chan.py" "$D" 2>&1
-  if ls "$D"/*_LORA868_*.cs8 >/dev/null 2>&1; then echo; echo "## LoRa 868 (centred 868.85)"; python3 "$HERE/lora.py" "$D" 2>&1; fi
 } > "$D/SUMMARY.md"
+if [ -n "$PY" ]; then
+  { echo; echo "## Channels (SNR within 8 kHz of target vs. nearby noise; active = share of frames over 6 dB)"
+    "$PY" "$HERE/chan.py" "$D" 2>&1 | grep -vE '^(LORA868|ISM433) '
+    if ls "$D"/*_LORA868_*.cs8 >/dev/null 2>&1; then echo; echo "## LoRa 868 (centred 868.85)"; "$PY" "$HERE/lora.py" "$D" 2>&1; fi
+  } >> "$D/SUMMARY.md"
+else
+  { echo; echo "## Channels"; echo "Pending: no numpy on this computer. Run: bash $HERE/analyze_on_mini.sh $D"; } >> "$D/SUMMARY.md"
+fi
 cat "$D/SUMMARY.md"
-if [ -d "$BASE" ]; then python3 "$HERE/compare.py" "$BASE" "$D" && echo "comparison written to $D/COMPARE.md"
+if [ -d "$BASE" ]; then python3 "$HERE/compare.py" "$BASE" "$D" >/dev/null && echo "comparison written to $D/COMPARE.md"
 else echo "baseline folder $BASE not found - run: python3 $HERE/compare.py <baseline-dir> $D"; fi
+[ -z "$PY" ] && echo ">>> Channel numbers need numpy. Back on the home network run:  bash $HERE/analyze_on_mini.sh $D"
 echo "DONE. Captures: $D"
