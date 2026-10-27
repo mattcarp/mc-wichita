@@ -9,7 +9,7 @@ Small, receive-only scheduler for time-sharing Wichita’s SDRs across monitorin
 - **Assigns** jobs to receivers that can legally tune the frequency and fit the bandwidth.
 - **Packs** multiple jobs into one wideband tune when they fit inside the receiver’s instantaneous bandwidth; otherwise **time-slices** sequential tune groups.
 - Gives **marine distress** (`marine-ch16`, `marine-ch70-dsc`) the highest priority; continuous distress work **pre-empts** lower-priority jobs on the same receiver in the planning API.
-- Rejects **forbidden** bands at parse time (TETRA 380–400 MHz, DECT, cellular 698 MHz–6 GHz). This is separate from the ground-voice Malta allowlist: the scheduler is meant for AIS, ADS-B, marine, airband, ISM, and field tests.
+- Rejects **forbidden** tune centers at parse time (TETRA 380–400 MHz, DECT, common GSM/LTE/5G service bands). ADS-B 1090 MHz and ISM bands remain valid. This is separate from the ground-voice Malta allowlist.
 - Exposes **pure logic** in `wichita_receiver_scheduler.py`; hardware implements `ReceiverDriver` (tune + receive dwell only — no transmit API).
 
 ## Config
