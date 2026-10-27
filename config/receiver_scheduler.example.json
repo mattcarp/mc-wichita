@@ -1,0 +1,104 @@
+{
+  "receivers": [
+    {
+      "id": "rspdx-r2",
+      "label": "SDRplay RSPdx-R2",
+      "min_freq_hz": 1000000,
+      "max_freq_hz": 2000000000,
+      "max_bandwidth_hz": 10000000
+    },
+    {
+      "id": "rtl-sdr",
+      "label": "RTL-SDR",
+      "min_freq_hz": 24000000,
+      "max_freq_hz": 1766000000,
+      "max_bandwidth_hz": 2400000
+    },
+    {
+      "id": "hackrf",
+      "label": "HackRF One",
+      "min_freq_hz": 1000000,
+      "max_freq_hz": 6000000000,
+      "max_bandwidth_hz": 20000000
+    }
+  ],
+  "jobs": [
+    {
+      "id": "marine-ch16",
+      "label": "Marine VHF CH16 distress/calling",
+      "center_freq_hz": 156800000,
+      "bandwidth_hz": 25000,
+      "dwell_sec": 1.0,
+      "priority": 1000,
+      "schedule": { "kind": "continuous" },
+      "preferred_receiver_id": "rspdx-r2"
+    },
+    {
+      "id": "marine-ch70-dsc",
+      "label": "Marine VHF CH70 DSC",
+      "center_freq_hz": 156525000,
+      "bandwidth_hz": 25000,
+      "dwell_sec": 1.0,
+      "priority": 1000,
+      "schedule": { "kind": "continuous" },
+      "preferred_receiver_id": "rspdx-r2"
+    },
+    {
+      "id": "ais",
+      "label": "AIS 161.975 / 162.025",
+      "center_freq_hz": 161975000,
+      "bandwidth_hz": 200000,
+      "dwell_sec": 2.0,
+      "priority": 500,
+      "schedule": { "kind": "continuous" },
+      "preferred_receiver_id": "rspdx-r2"
+    },
+    {
+      "id": "adsb-1090",
+      "label": "ADS-B 1090 MHz",
+      "center_freq_hz": 1090000000,
+      "bandwidth_hz": 2000000,
+      "dwell_sec": 2.0,
+      "priority": 500,
+      "schedule": { "kind": "continuous" },
+      "preferred_receiver_id": "rtl-sdr"
+    },
+    {
+      "id": "airband",
+      "label": "Airband 118-137 MHz (anchor tune)",
+      "center_freq_hz": 127500000,
+      "bandwidth_hz": 2000000,
+      "dwell_sec": 0.5,
+      "priority": 100,
+      "schedule": { "kind": "periodic", "period_sec": 30.0 },
+      "preferred_receiver_id": "hackrf"
+    },
+    {
+      "id": "fm-broadcast",
+      "label": "FM broadcast survey",
+      "center_freq_hz": 100000000,
+      "bandwidth_hz": 2000000,
+      "dwell_sec": 0.25,
+      "priority": 10,
+      "schedule": { "kind": "periodic", "period_sec": 120.0 }
+    },
+    {
+      "id": "sensor-433",
+      "label": "433 MHz ISM sensors",
+      "center_freq_hz": 433920000,
+      "bandwidth_hz": 500000,
+      "dwell_sec": 0.5,
+      "priority": 10,
+      "schedule": { "kind": "periodic", "period_sec": 45.0 }
+    },
+    {
+      "id": "meshtastic-869",
+      "label": "LoRa / Meshtastic 869.525 MHz",
+      "center_freq_hz": 869525000,
+      "bandwidth_hz": 250000,
+      "dwell_sec": 1.0,
+      "priority": 10,
+      "schedule": { "kind": "periodic", "period_sec": 60.0 }
+    }
+  ]
+}

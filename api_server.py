@@ -50,6 +50,7 @@ from wichita_clerk_auth import ClerkAuthMiddleware, clerk_public_config, require
 from wichita_capture_routes import router as capture_feed_router
 from wichita_ground_voice_routes import router as ground_voice_router
 from wichita_distress_routes import router as distress_router
+from wichita_receiver_scheduler_routes import router as receiver_scheduler_router
 from capture_provenance import ProvenanceImportError, import_capture
 from whisper_transcription import WhisperConfig, transcribe_audio_file
 from ai_analysis_pipeline import analyze_audio_file, extract_stress_features, score_stress
@@ -2143,6 +2144,7 @@ app.include_router(sky_router)
 app.include_router(platform_router)
 app.include_router(ground_voice_router)
 app.include_router(distress_router)
+app.include_router(receiver_scheduler_router)
 
 if __name__ == "__main__":
     import uvicorn
