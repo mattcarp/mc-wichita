@@ -1,7 +1,7 @@
 # Session 2026-11-10 — Xatt il-Lanca, Marsamxett
 
 One hour, tomorrow afternoon, on foot. Receive-only.
-Plate: kit-plate.png (numbers match this list).
+Plate: kit-plate.png (numbers match this list). Spectrum: spectrum-card.md.
 Spot: the Sally Port steps above the Sliema ferry landing, Xatt il-Lanca. Route down
 Triq San Nikola past Sally Port Pizzeria (102), across the ferry crossing.
 
@@ -36,9 +36,9 @@ on a railing or the stone, whip upright at ~45 cm, clear of the wall. Earbuds in
 on the SDRplay, ANT A: 156.800 FM, squelch just over the noise, recorder on.
 **10–30** Work the harbour. Every distinct vessel that appears on AIS: note the time, name,
 type. Every voice on 16: note time, who, what. Do not stop to edit anything.
-**30–40** PortaPack: spectrum sweep across 150–170, look at the AIS bursts and the ferry's traffic,
+**30–40** PortaPack: spectrum sweep 150–170, then 118–137 AM, against section B of the spectrum card so bursts are named not chased.
 then 118–137 AM for approach and tower. Note what is there, not what it says.
-**40–50** CH09 156.450, then CH12 156.600 on the SDRplay, still recording. UV-K5 to airband,
+**40–50** CH09 156.450, then CH12 156.600 on the SDRplay, still recording. UV-K5 to airband. Flipper on 433.92 with `./sea-watch.sh ism` on the RTL for ten minutes. Wio Tracker listening.
 slow scan. Flipper on 433.92, Read RAW, ten metres of the shore road and back. Wio Tracker listening.
 **50–60** Pack, note the totals, walk back up before the light goes.
 
