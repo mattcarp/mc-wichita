@@ -20,7 +20,7 @@ the pipeline, real AIS traffic to test the decoder against.
 | Power bank + **two** USB data cables (C and Micro) | RTL and SDRplay from the bank, laptop battery spared | Front pocket |
 | **SMA–BNC pigtail + SMA adapters only** | Mag mount is BNC; the radios are SMA | Front pocket, not the whole bag |
 | Flipper Zero | 433.92 sniff: gate fobs, TPMS, weather stations | Trouser pocket |
-| Wio Tracker L1 Pro, charged | Meshtastic RX 869.525, nodes and positions. Listen only | Trouser pocket, other side |
+| Wio Tracker, orange case, charged — **one only** | Meshtastic RX 869.525, nodes and positions. Listen only | Trouser pocket, other side |
 | Laptop + charger | Runs AIS and records; charged for the walk back | Bag |
 | Notepad + pen | Faster than typing, and survives | Top pocket |
 | Sit mat / jacket | The steps are stone and the hour is late | Bag |
