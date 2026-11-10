@@ -1,4 +1,4 @@
-# Plate legend — kit-plate.png
+# Legend — kit-plate.png (drawn in kit-plate.svg)
 
 Number for number. Correct any line that is wrong; 1, 3, 5 and 7 rest on a photograph only.
 

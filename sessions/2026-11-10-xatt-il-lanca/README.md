@@ -1,7 +1,7 @@
 # Session 2026-11-10 — Xatt il-Lanca, Marsamxett
 
 One hour, tomorrow afternoon, on foot. Receive-only.
-Plate: kit-plate.png (numbers match legend.md). Measure and front-load rule: docs/fun-per-minute.md. Spectrum: spectrum-card.md. Software wants: docs/notes/rf-software-wants.md.
+Sheet: kit-plate.png, drawn in kit-plate.svg (numbers match legend.md; rug photos archived in source/). Measure and front-load rule: docs/fun-per-minute.md. Spectrum: spectrum-card.md. Software wants: docs/notes/rf-software-wants.md.
 Spot: the Sally Port steps above the Sliema ferry landing, Xatt il-Lanca. Route down
 Triq San Nikola past Sally Port Pizzeria (102), across the ferry crossing.
 

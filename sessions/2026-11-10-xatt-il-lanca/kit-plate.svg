@@ -1,0 +1,252 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2160" height="2852" viewBox="0 0 2160 2852">
+<style>
+  .bg{fill:#0b0b0c}
+  .t{fill:#f4f4f4;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif}
+  .g{fill:#9a9a9a;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif}
+  .pk{fill:#ff3d7f}
+  .case{fill:#f2c200;stroke:#f4f4f4;stroke-width:3;stroke-linejoin:round}
+  .ln{fill:none;stroke:#f4f4f4;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+  .wire{fill:none;stroke:#ff3d7f;stroke-width:2.4;stroke-linecap:round}
+  .gold{fill:#d9b26a;stroke:#f4f4f4;stroke-width:2}
+  .dim{fill:none;stroke:#ff3d7f;stroke-width:2;stroke-dasharray:7 6}
+</style>
+<rect class="bg" width="2160" height="2852"/>
+
+<!-- header -->
+<text class="t" x="48" y="66" font-size="24" letter-spacing="6">SOTTO SOUND · WICHITA · RECEIVE ONLY</text>
+<text class="t" x="46" y="150" font-size="86" font-weight="700" letter-spacing="1">FIELD KIT — XATT IL-LANCA</text>
+<text class="g" x="48" y="200" font-size="26">10 November 2026 · one hour · Sally Port steps above the Sliema ferry landing, Marsamxett</text>
+<rect x="48" y="222" width="2064" height="4" fill="#f4f4f4"/>
+
+<!-- ============ 1 MAG MOUNT ============ -->
+<g transform="translate(0,300)">
+  <circle cx="46" cy="46" r="34" fill="#0b0b0c" stroke="#f2c200" stroke-width="3"/>
+  <text class="t" x="46" y="58" font-size="34" font-weight="700" text-anchor="middle">1</text>
+  <g transform="translate(20,26)">
+    <ellipse cx="230" cy="258" rx="90" ry="27" fill="#141414" stroke="#f4f4f4" stroke-width="2.4"/>
+    <ellipse class="case" cx="230" cy="252" rx="84" ry="24"/>
+    <ellipse class="ln" cx="230" cy="250" rx="54" ry="14"/>
+    <rect class="case" x="210" y="214" width="40" height="32" rx="4"/>
+    <path class="ln" d="M230 214 q-13 -9 0 -18 q13 -9 0 -18"/>
+    <path class="ln" stroke-width="4" d="M222 176 L168 52"/>
+    <path class="ln" stroke-width="4" d="M230 172 L230 30"/>
+    <path class="ln" stroke-width="4" d="M238 176 L292 58"/>
+    <rect class="gold" x="212" y="164" width="10" height="14"/>
+    <rect class="gold" x="238" y="164" width="10" height="14"/>
+    <rect class="gold" x="226" y="158" width="10" height="14"/>
+    
+    <circle class="gold" cx="230" cy="176" r="7"/>
+    <path class="wire" d="M304 268 C 396 280, 452 258, 508 230"/>
+    <rect class="case" x="502" y="210" width="44" height="30" rx="3" transform="rotate(-16 524 225)"/>
+    <circle class="gold" cx="552" cy="214" r="7"/>
+  </g>
+  <text class="t" x="30" y="404" font-size="34" font-weight="700">MAG MOUNT, 3 WHIPS</text>
+  <text class="g" x="30" y="438" font-size="23">Whip to 45 cm for 156–162 MHz.</text>
+  <text class="g" x="30" y="470" font-size="23">Base on steel or flat stone, never a wall.</text>
+</g>
+
+<!-- ============ 2 RTL-SDR ============ -->
+<g transform="translate(720,300)">
+  <circle cx="46" cy="46" r="34" fill="#0b0b0c" stroke="#f2c200" stroke-width="3"/>
+  <text class="t" x="46" y="58" font-size="34" font-weight="700" text-anchor="middle">2</text>
+  <g transform="translate(40,40)">
+    <rect class="case" x="70" y="106" width="300" height="118" rx="6"/>
+    <rect class="ln" x="96" y="126" width="150" height="78" rx="3"/>
+    <path class="ln" d="M112 148 h110 M112 168 h110 M112 188 h70"/>
+    <rect class="gold" x="370" y="132" width="70" height="66" rx="3"/>
+    <rect class="ln" x="380" y="142" width="40" height="46"/>
+    <circle class="ln" cx="60" cy="165" r="18"/>
+    <path class="ln" d="M42 165 h-14"/>
+    <circle class="ln" cx="256" cy="196" r="6"/>
+  </g>
+  <text class="t" x="30" y="404" font-size="34" font-weight="700">RTL-SDR</text>
+  <text class="g" x="30" y="438" font-size="23">AIS 161.975 / 162.025.</text>
+  <text class="g" x="30" y="470" font-size="23">Low power. The spine of the hour.</text>
+</g>
+
+<!-- ============ 3 SDRPLAY ============ -->
+<g transform="translate(1440,300)">
+  <circle cx="46" cy="46" r="34" fill="#0b0b0c" stroke="#f2c200" stroke-width="3"/>
+  <text class="t" x="46" y="58" font-size="34" font-weight="700" text-anchor="middle">3</text>
+  <g transform="translate(50,26)">
+    <rect class="case" x="110" y="96" width="330" height="180" rx="5"/>
+    <path class="ln" d="M300 150 l14 -22 l-6 22 l16 -18 l-8 20"/>
+    <rect class="ln" x="150" y="124" width="70" height="44" rx="2"/>
+    <path class="ln" d="M240 126 h44 M240 146 h30 M240 166 h44"/>
+    <rect class="gold" x="140" y="276" width="34" height="36"/>
+    <rect class="gold" x="214" y="276" width="34" height="36"/>
+    <rect class="gold" x="288" y="276" width="34" height="36"/>
+    <text class="t" x="157" y="338" font-size="17" text-anchor="middle">C</text>
+    <text class="t" x="231" y="338" font-size="17" text-anchor="middle">B</text>
+    <text class="t" x="305" y="338" font-size="17" text-anchor="middle">A</text>
+    <path class="wire" d="M110 140 C 74 140, 58 118, 34 112"/>
+    <rect class="gold" x="10" y="100" width="28" height="20" rx="3" transform="rotate(-22 24 110)"/>
+  </g>
+  <text class="t" x="30" y="404" font-size="34" font-weight="700">SDRPLAY RSPDX-R2</text>
+  <text class="g" x="30" y="438" font-size="23">ANT A only. CH16 156.800, then CH09.</text>
+  <text class="g" x="30" y="470" font-size="23">Best ears. Voice only, never two apps.</text>
+</g>
+
+<!-- ============ 4 PORTAPACK ============ -->
+<g transform="translate(0,820)">
+  <circle cx="46" cy="46" r="34" fill="#0b0b0c" stroke="#f2c200" stroke-width="3"/>
+  <text class="t" x="46" y="58" font-size="34" font-weight="700" text-anchor="middle">4</text>
+  <g transform="translate(28,34)">
+    <rect class="case" x="86" y="70" width="360" height="232" rx="8"/>
+    <rect x="110" y="96" width="176" height="150" fill="#0d1a3a" stroke="#f4f4f4" stroke-width="2.4"/>
+    <path class="wire" d="M124 172 h30 l12 -34 l16 68 l14 -44 l12 20 h60"/>
+    <circle class="ln" cx="372" cy="170" r="42"/>
+    <circle class="ln" cx="372" cy="170" r="26"/>
+    <circle class="ln" cx="316" cy="112" r="11"/>
+    <circle class="ln" cx="344" cy="112" r="11"/>
+    <circle class="ln" cx="372" cy="112" r="11"/>
+    <circle class="ln" cx="400" cy="112" r="11"/>
+    <rect class="gold" x="446" y="150" width="40" height="26"/>
+    <path class="wire" d="M486 163 h30"/>
+    <rect class="ln" x="110" y="262" width="90" height="18" rx="3"/>
+  </g>
+  <text class="t" x="30" y="404" font-size="34" font-weight="700">HACKRF / PORTAPACK</text>
+  <text class="g" x="30" y="438" font-size="23">Sweep 150–170, then 118–137 AM, ADS-B.</text>
+  <text class="g" x="30" y="470" font-size="23">Stands alone. Runs hot. Ten minutes only.</text>
+</g>
+
+<!-- ============ 5 UV-K5 ============ -->
+<g transform="translate(720,820)">
+  <circle cx="46" cy="46" r="34" fill="#0b0b0c" stroke="#f2c200" stroke-width="3"/>
+  <text class="t" x="46" y="58" font-size="34" font-weight="700" text-anchor="middle">5</text>
+  <g transform="translate(60,26)">
+    <rect class="case" x="146" y="52" width="196" height="272" rx="12"/>
+    <rect x="170" y="76" width="148" height="86" fill="#0d1a3a" stroke="#f4f4f4" stroke-width="2"/>
+    <path class="wire" d="M182 120 h124"/>
+    <circle class="gold" cx="244" cy="60" r="14"/>
+    <path class="ln" d="M244 46 L244 -8"/>
+    <rect class="ln" x="170" y="170" width="148" height="10" rx="2"/>
+    <g fill="#f4f4f4">
+      <rect x="176" y="196" width="34" height="26" rx="3"/>
+      <rect x="222" y="196" width="34" height="26" rx="3"/>
+      <rect x="268" y="196" width="34" height="26" rx="3"/>
+      <rect x="176" y="234" width="34" height="26" rx="3"/>
+      <rect x="222" y="234" width="34" height="26" rx="3"/>
+      <rect x="268" y="234" width="34" height="26" rx="3"/>
+      <rect x="176" y="272" width="34" height="26" rx="3"/>
+      <rect x="222" y="272" width="34" height="26" rx="3"/>
+      <rect x="268" y="272" width="34" height="26" rx="3"/>
+    </g>
+    <path class="ln" d="M342 92 q24 90 0 180"/>
+  </g>
+  <text class="t" x="30" y="404" font-size="34" font-weight="700">QUANSHENG UV-K5(8)</text>
+  <text class="g" x="30" y="438" font-size="23">Airband and 2 m in the hand, no setup.</text>
+  <text class="g" x="30" y="470" font-size="23">Receive only. Belt clip, earpiece on.</text>
+</g>
+
+<!-- ============ 6 ORANGE DEVICE ============ -->
+<g transform="translate(1440,820)">
+  <circle cx="46" cy="46" r="34" fill="#0b0b0c" stroke="#f2c200" stroke-width="3"/>
+  <text class="t" x="46" y="58" font-size="34" font-weight="700" text-anchor="middle">6</text>
+  <g transform="translate(120,54)">
+    <path class="dim" d="M-4 96 L86 12 L234 12 L324 96 L234 180 L86 180 Z" fill="none"/>
+    <path class="case" d="M14 96 L96 28 L224 28 L306 96 L224 164 L96 164 Z"/>
+    <rect x="66" y="74" width="96" height="30" fill="#1a1a1a" stroke="#f4f4f4" stroke-width="2"/>
+    <circle class="ln" cx="214" cy="96" r="20"/>
+    <circle class="ln" cx="254" cy="96" r="9"/>
+    <text class="pk" x="318" y="158" font-size="28" font-weight="700">?</text>
+  </g>
+  <text class="t" x="30" y="404" font-size="34" font-weight="700">ORANGE DEVICE</text>
+  <text class="g" x="30" y="438" font-size="23">Not a tracker. Unidentified.</text>
+  <text class="g" x="30" y="470" font-size="23">No radio job until it is named.</text>
+</g>
+
+<!-- ============ 7 MOUNT COAX PLUG ============ -->
+<g transform="translate(0,1340)">
+  <circle cx="46" cy="46" r="34" fill="#0b0b0c" stroke="#f2c200" stroke-width="3"/>
+  <text class="t" x="46" y="58" font-size="34" font-weight="700" text-anchor="middle">7</text>
+  <g transform="translate(30,80) scale(1.12)">
+    <path class="wire" d="M12 196 C 130 196, 206 150, 286 150"/>
+    <rect class="case" x="286" y="132" width="92" height="38" rx="6" transform="rotate(-6 332 151)"/>
+    <g class="ln" stroke-width="2">
+      <path d="M308 134 v34 M316 134 v34 M324 134 v34 M332 134 v34 M340 134 v34 M348 134 v34"/>
+    </g>
+    <rect class="gold" x="374" y="140" width="58" height="22" rx="4" transform="rotate(-6 403 151)"/>
+    <path class="ln" d="M430 140 l22 -12"/>
+    <text class="pk" x="286" y="110" font-size="19" letter-spacing="3">PART OF 1</text>
+  </g>
+  <text class="t" x="30" y="404" font-size="34" font-weight="700">MOUNT COAX PLUG</text>
+  <text class="g" x="30" y="438" font-size="23">Moulded onto the mount's own lead.</text>
+  <text class="g" x="30" y="470" font-size="23">Do not lose it, do not strain it.</text>
+</g>
+
+<!-- ============ 8 BNC PIGTAIL ============ -->
+<g transform="translate(720,1340)">
+  <circle cx="46" cy="46" r="34" fill="#0b0b0c" stroke="#f2c200" stroke-width="3"/>
+  <text class="t" x="46" y="58" font-size="34" font-weight="700" text-anchor="middle">8</text>
+  <g transform="translate(40,80) scale(1.12)">
+    <path class="wire" d="M10 186 C 80 186, 112 148, 170 148 C 240 148, 262 186, 330 186"/>
+    <rect class="case" x="112" y="120" width="70" height="40" rx="5" transform="rotate(-14 147 140)"/>
+    <g class="ln" stroke-width="2">
+      <path d="M126 126 v32 M134 124 v32 M142 122 v32 M150 120 v32 M158 118 v32"/>
+    </g>
+    <circle class="gold" cx="188" cy="126" r="10"/>
+    <rect class="gold" x="228" y="138" width="34" height="24" rx="3" transform="rotate(10 245 150)"/>
+    <path class="ln" d="M260 136 l16 20"/>
+  </g>
+  <text class="t" x="30" y="404" font-size="34" font-weight="700">SMA–BNC ADAPTER PAIR</text>
+  <text class="g" x="30" y="438" font-size="23">Couples the mount to a receiver.</text>
+  <text class="g" x="30" y="470" font-size="23">Two only. Check the pin before leaving.</text>
+</g>
+
+<!-- ============ 9 COIL + LEADS ============ -->
+<g transform="translate(1440,1340)">
+  <circle cx="46" cy="46" r="34" fill="#0b0b0c" stroke="#f2c200" stroke-width="3"/>
+  <text class="t" x="46" y="58" font-size="34" font-weight="700" text-anchor="middle">9</text>
+  <g transform="translate(50,80) scale(1.1)">
+    <path class="wire" d="M40 206 c0 -68 38 -68 38 0 c0 -68 38 -68 38 0 c0 -68 38 -68 38 0 c0 -68 38 -68 38 0"/>
+    <path class="wire" d="M40 206 C 22 246, 60 264, 106 246"/>
+    <rect class="gold" x="104" y="234" width="46" height="26" rx="3" transform="rotate(-8 127 247)"/>
+    <rect class="case" x="228" y="186" width="70" height="44" rx="5" transform="rotate(6 263 208)"/>
+    <path class="ln" d="M238 196 v24 M246 196 v24 M254 196 v24"/>
+    <path class="wire" d="M298 208 h40"/>
+  </g>
+  <text class="t" x="30" y="404" font-size="34" font-weight="700">COAX COIL, USB LEADS</text>
+  <text class="g" x="30" y="438" font-size="23">One to the radio, one to the power bank.</text>
+  <text class="g" x="30" y="470" font-size="23">Short runs. Coil tidy, nothing snagged.</text>
+</g>
+
+<rect x="48" y="1900" width="2064" height="2" fill="#3a3a3a"/>
+
+<!-- measure -->
+<text class="t" x="48" y="1976" font-size="34" font-weight="700" letter-spacing="1">THE MEASURE</text>
+<text class="g" x="48" y="2022" font-size="25">Fun is usable signal × usable information, per minute out there, minus the attention it takes. Value is what the hour</text>
+<text class="g" x="48" y="2058" font-size="25">leaves behind: real received voice, real AIS, a timestamped log. An item earns its place only if it raises one of those</text>
+<text class="g" x="48" y="2094" font-size="25">without lowering another — a bag you cannot carry, or a battery you flatten, lowers all three.</text>
+
+<text class="pk" x="48" y="2160" font-size="22" font-weight="700" letter-spacing="3">FRONT-LOADED ORDER</text>
+<text class="g" x="48" y="2200" font-size="24">5–30 AIS and CH16 · 30–40 sweep, bounded · 40–50 pocket toys on the walk · 50–60 out. Nothing starts after 40.</text>
+
+<!-- legend -->
+<rect x="48" y="2260" width="2064" height="2" fill="#3a3a3a"/>
+<g font-size="23">
+  <text class="t" x="48" y="2308" font-weight="700">1</text><text class="g" x="80" y="2308">Mag mount, 3 whips</text>
+  <text class="t" x="720" y="2308" font-weight="700">2</text><text class="g" x="752" y="2308">RTL-SDR — AIS</text>
+  <text class="t" x="1392" y="2308" font-weight="700">3</text><text class="g" x="1424" y="2308">SDRplay — voice</text>
+  <text class="t" x="48" y="2350" font-weight="700">4</text><text class="g" x="80" y="2350">HackRF / PortaPack</text>
+  <text class="t" x="720" y="2350" font-weight="700">5</text><text class="g" x="752" y="2350">UV-K5 — airband</text>
+  <text class="t" x="1392" y="2350" font-weight="700">6</text><text class="g" x="1424" y="2350">Orange device — open</text>
+  <text class="t" x="48" y="2392" font-weight="700">7</text><text class="g" x="80" y="2392">Mount coax plug — part of 1</text>
+  <text class="t" x="720" y="2392" font-weight="700">8</text><text class="g" x="752" y="2392">SMA–BNC pair</text>
+  <text class="t" x="1392" y="2392" font-weight="700">9</text><text class="g" x="1424" y="2392">Coax, USB leads</text>
+</g>
+
+<rect x="48" y="2440" width="2064" height="3" fill="#f2c200"/>
+<text class="t" x="48" y="2492" font-size="26">The black tracker travels; the orange one stays until it is named. Nothing in this bag transmits.</text>
+<text class="g" x="48" y="2530" font-size="22">All nine drawn from the floor photographs of 9 November. Ground: Mattie's floor, not a studio.</text>
+
+<rect x="48" y="2578" width="2064" height="2" fill="#3a3a3a"/>
+<text class="pk" x="48" y="2628" font-size="22" font-weight="700" letter-spacing="3">STAYS HOME</text>
+<text class="g" x="48" y="2668" font-size="23">The whole adapter bag · the spare black tracker · the PortaPack's own rubber duck · third whip · chargers not</text>
+<text class="g" x="48" y="2704" font-size="23">needed in the hour. If it is not on this plate it does not go in the bag.</text>
+
+<!-- footer -->
+<rect x="48" y="2772" width="2064" height="2" fill="#3a3a3a"/>
+<text class="g" x="48" y="2812" font-size="20">Wichita · mc-wichita/sessions/2026-11-10-xatt-il-lanca · sheet 1 of 1 · drawn 10 November 2026</text>
+<text class="g" x="48" y="2844" font-size="20">Receive only. Everything here listens; the UV-K5 is not keyed on the day.</text>
+</svg>
