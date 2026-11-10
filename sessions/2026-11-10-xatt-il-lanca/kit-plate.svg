@@ -139,7 +139,7 @@
   <text class="g" x="30" y="470" font-size="23">Receive only. Belt clip, earpiece on.</text>
 </g>
 
-<!-- ============ 6 ORANGE DEVICE ============ -->
+<!-- ============ 6 FLIPPER ZERO ============ -->
 <g transform="translate(1440,820)">
   <circle cx="46" cy="46" r="34" fill="#0b0b0c" stroke="#f2c200" stroke-width="3"/>
   <text class="t" x="46" y="58" font-size="34" font-weight="700" text-anchor="middle">6</text>
@@ -149,11 +149,10 @@
     <rect x="66" y="74" width="96" height="30" fill="#1a1a1a" stroke="#f4f4f4" stroke-width="2"/>
     <circle class="ln" cx="214" cy="96" r="20"/>
     <circle class="ln" cx="254" cy="96" r="9"/>
-    <text class="pk" x="318" y="158" font-size="28" font-weight="700">?</text>
   </g>
-  <text class="t" x="30" y="404" font-size="34" font-weight="700">ORANGE DEVICE</text>
-  <text class="g" x="30" y="438" font-size="23">Not a tracker. Unidentified.</text>
-  <text class="g" x="30" y="470" font-size="23">No radio job until it is named.</text>
+  <text class="t" x="30" y="404" font-size="34" font-weight="700">FLIPPER ZERO</text>
+  <text class="g" x="30" y="438" font-size="23">433.92 MHz Read RAW. Receive only.</text>
+  <text class="g" x="30" y="470" font-size="23">Minutes 40–50, on the walk.</text>
 </g>
 
 <!-- ============ 7 MOUNT COAX PLUG ============ -->
@@ -284,7 +283,7 @@
   <text class="t" x="1392" y="2308" font-weight="700">3</text><text class="g" x="1424" y="2308">SDRplay — voice</text>
   <text class="t" x="48" y="2350" font-weight="700">4</text><text class="g" x="80" y="2350">HackRF / PortaPack</text>
   <text class="t" x="720" y="2350" font-weight="700">5</text><text class="g" x="752" y="2350">UV-K5 — airband</text>
-  <text class="t" x="1392" y="2350" font-weight="700">6</text><text class="g" x="1424" y="2350">Orange device — open</text>
+  <text class="t" x="1392" y="2350" font-weight="700">6</text><text class="g" x="1424" y="2350">Flipper Zero — 433 sniff</text>
   <text class="t" x="48" y="2392" font-weight="700">7</text><text class="g" x="80" y="2392">Mount coax plug — part of 1</text>
   <text class="t" x="720" y="2392" font-weight="700">8</text><text class="g" x="752" y="2392">SMA–BNC pair</text>
   <text class="t" x="1392" y="2392" font-weight="700">9</text><text class="g" x="1424" y="2392">Coax, USB leads</text>
@@ -294,7 +293,7 @@
 </g>
 
 <rect x="48" y="2486" width="2064" height="3" fill="#f2c200"/>
-<text class="t" x="48" y="2538" font-size="26">The black tracker travels; the orange one stays until it is named. Nothing in this bag transmits.</text>
+<text class="t" x="48" y="2538" font-size="26">The black tracker and the Flipper Zero travel. Nothing in this bag transmits.</text>
 <text class="g" x="48" y="2576" font-size="22">All twelve drawn from the floor photographs of 9 November. Ground: Mattie's floor, not a studio.</text>
 
 <rect x="48" y="2624" width="2064" height="2" fill="#3a3a3a"/>

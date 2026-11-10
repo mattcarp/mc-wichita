@@ -9,7 +9,7 @@ Number for number. Correct any line that is wrong; 1, 3, 5 and 7 rest on a photo
 | 3 | SDRplay RSPdx-R2 | High — label legible | Marine voice, ANT A, CH16 then CH09/12 | Pack |
 | 4 | HackRF in a PortaPack | High — clear case, PortaPack screen | Spectrum sweep, 118–137 AM, ADS-B, standalone | Pack |
 | 5 | Quansheng UV-K5(8) | High — M / Quansheng buttons, keypad | Airband and 2 m by hand | Pack |
-| 6 | Orange device | Unknown — hexagon shell, single large button, no antenna stub | Nothing yet; not a tracker | Open, unnamed |
+| 6 | Flipper Zero | Set by Mattie 10 Nov | 433.92 MHz Read RAW, receive only, minutes 40–50 | Pack |
 | 7 | Mount coax plug | Set by Mattie 10 Nov — the plug moulded on the mount's own lead | Part of 1; leads to the receiver via 8 | Pack |
 | 8 | BNC–SMA pigtail | High — unmistakable | Couples mount to receiver | Pack |
 | 9 | Coax coil and USB leads | High | Feeds the receiver and the power bank | Pack |
@@ -18,9 +18,6 @@ Number for number. Correct any line that is wrong; 1, 3, 5 and 7 rest on a photo
 | 12 | Bag, sit mat | High | Laptop, mat, jacket | Pack |
 
 ## Not on the plate
-- **Black mesh tracker** — the only confirmed tracker (blue LCD, brass SMA, stub antenna). It travels; the orange device does not hold a radio job.
+- **Black mesh tracker** — the only confirmed tracker (blue LCD, brass SMA, stub antenna). It travels.
 - The full adapter bag — two adapters travel, the bag stays.
 - Nothing here transmits on the day.
-
-## Uncertain, needs Mattie
-- 6: the orange device is not a tracker. What is it? Until named it holds no place in the hour.
