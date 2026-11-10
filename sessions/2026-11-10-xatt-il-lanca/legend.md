@@ -13,6 +13,9 @@ Number for number. Correct any line that is wrong; 1, 3, 5 and 7 rest on a photo
 | 7 | Mount coax plug | Set by Mattie 10 Nov — the plug moulded on the mount's own lead | Part of 1; leads to the receiver via 8 | Pack |
 | 8 | BNC–SMA pigtail | High — unmistakable | Couples mount to receiver | Pack |
 | 9 | Coax coil and USB leads | High | Feeds the receiver and the power bank | Pack |
+| 10 | Headphones, wired | High | CH16 privately, no pairing, no drain | Pack |
+| 11 | Adapter wallet | High | SMA–BNC and barrels, kept together | Two pieces only |
+| 12 | Bag, sit mat | High | Laptop, mat, jacket | Pack |
 
 ## Not on the plate
 - **Black mesh tracker** — the only confirmed tracker (blue LCD, brass SMA, stub antenna). It travels; the orange device does not hold a radio job.

@@ -17,7 +17,7 @@ the pipeline, real AIS traffic to test the decoder against.
 | SDRplay RSPdx-R2, **ANT A** | Marine voice on CH16 / CH09. Best ears | Padded pouch, middle |
 | PortaPack + HackRF | Hands-on spectrum sweep of the harbour, airband, ADS-B on its own screen, no laptop | Padded pouch, with SD card cleared |
 | UV-K5, charged | Instant airband and 2 m in the hand | Belt clip |
-| Wired earbuds | CH16 through the noise, privately | Top pocket |
+| Headphones, wired | CH16 through the noise, privately | Top pocket |
 | Power bank + **two** USB data cables (C and Micro) | RTL and SDRplay from the bank, laptop battery spared | Front pocket |
 | **SMA–BNC pigtail + SMA adapters only** | Mag mount is BNC; the radios are SMA | Front pocket, not the whole bag |
 | Flipper Zero | 433.92 sniff: gate fobs, TPMS, weather stations | Trouser pocket |

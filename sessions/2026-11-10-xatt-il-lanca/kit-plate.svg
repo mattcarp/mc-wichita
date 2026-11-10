@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="2160" height="2852" viewBox="0 0 2160 2852">
+<svg xmlns="http://www.w3.org/2000/svg" width="2160" height="3430" viewBox="0 0 2160 3430">
 <style>
   .bg{fill:#0b0b0c}
   .t{fill:#f4f4f4;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif}
@@ -10,7 +10,7 @@
   .gold{fill:#d9b26a;stroke:#f4f4f4;stroke-width:2}
   .dim{fill:none;stroke:#ff3d7f;stroke-width:2;stroke-dasharray:7 6}
 </style>
-<rect class="bg" width="2160" height="2852"/>
+<rect class="bg" width="2160" height="3430"/>
 
 <!-- header -->
 <text class="t" x="48" y="66" font-size="24" letter-spacing="6">SOTTO SOUND · WICHITA · RECEIVE ONLY</text>
@@ -211,7 +211,61 @@
   <text class="g" x="30" y="470" font-size="23">Short runs. Coil tidy, nothing snagged.</text>
 </g>
 
-<rect x="48" y="1900" width="2064" height="2" fill="#3a3a3a"/>
+
+<!-- ============ 10 HEADPHONES ============ -->
+<g transform="translate(0,1860)">
+  <circle cx="46" cy="46" r="34" fill="#0b0b0c" stroke="#f2c200" stroke-width="3"/>
+  <text class="t" x="46" y="58" font-size="34" font-weight="700" text-anchor="middle">10</text>
+  <g transform="translate(90,26)">
+    <path class="ln" stroke-width="6" d="M46 156 C 40 52, 250 52, 246 156"/>
+    <rect class="case" x="30" y="146" width="60" height="86" rx="16"/>
+    <rect class="case" x="200" y="146" width="60" height="86" rx="16"/>
+    <rect x="44" y="164" width="32" height="50" rx="9" fill="#141414" stroke="#f4f4f4" stroke-width="2"/>
+    <rect x="214" y="164" width="32" height="50" rx="9" fill="#141414" stroke="#f4f4f4" stroke-width="2"/>
+    <path class="wire" d="M56 232 C 56 264, 150 254, 176 278"/>
+    <rect class="gold" x="170" y="276" width="15" height="28" rx="3" transform="rotate(14 177 290)"/>
+  </g>
+  <text class="t" x="30" y="404" font-size="34" font-weight="700">HEADPHONES, WIRED</text>
+  <text class="g" x="30" y="438" font-size="23">CH16 through the noise, privately.</text>
+  <text class="g" x="30" y="470" font-size="23">Wired, so no pairing delay and no drain.</text>
+</g>
+
+<!-- ============ 11 ADAPTER WALLET ============ -->
+<g transform="translate(720,1860)">
+  <circle cx="46" cy="46" r="34" fill="#0b0b0c" stroke="#f2c200" stroke-width="3"/>
+  <text class="t" x="46" y="58" font-size="34" font-weight="700" text-anchor="middle">11</text>
+  <g transform="translate(60,80)">
+    <rect x="30" y="60" width="270" height="150" rx="10" fill="#1a1a1a"/>
+    <rect class="ln" x="30" y="60" width="270" height="150" rx="10"/>
+    <path class="ln" stroke-dasharray="6 6" d="M50 60 v150"/>
+    <rect class="case" x="80" y="96" width="80" height="30" rx="3"/>
+    <circle class="gold" cx="172" cy="111" r="9"/>
+    <rect class="case" x="86" y="150" width="70" height="26" rx="3"/>
+    <rect class="gold" x="158" y="154" width="28" height="18" rx="3"/>
+    <text class="pk" x="80" y="44" font-size="19" letter-spacing="3">TWO ONLY</text>
+  </g>
+  <text class="t" x="30" y="404" font-size="34" font-weight="700">ADAPTER WALLET</text>
+  <text class="g" x="30" y="438" font-size="23">SMA–BNC and SMA barrels, kept together.</text>
+  <text class="g" x="30" y="470" font-size="23">The whole bag stays; two pieces travel.</text>
+</g>
+
+<!-- ============ 12 BAG ============ -->
+<g transform="translate(1440,1860)">
+  <circle cx="46" cy="46" r="34" fill="#0b0b0c" stroke="#f2c200" stroke-width="3"/>
+  <text class="t" x="46" y="58" font-size="34" font-weight="700" text-anchor="middle">12</text>
+  <g transform="translate(70,80)">
+    <path class="ln" stroke-width="5" d="M70 60 C 70 10, 190 10, 190 60"/>
+    <rect class="case" x="20" y="60" width="220" height="150" rx="18"/>
+    <path class="ln" d="M20 110 h220"/>
+    <rect class="gold" x="104" y="96" width="52" height="26" rx="4"/>
+    <path class="ln" d="M240 150 h44"/>
+  </g>
+  <text class="t" x="30" y="404" font-size="34" font-weight="700">BAG, SIT MAT</text>
+  <text class="g" x="30" y="438" font-size="23">Carries the laptop, the mat, the spare jacket.</text>
+  <text class="g" x="30" y="470" font-size="23">Stone steps, late sun: sit on something.</text>
+</g>
+
+<g transform="translate(0,540)"><rect x="48" y="1900" width="2064" height="2" fill="#3a3a3a"/>
 
 <!-- measure -->
 <text class="t" x="48" y="1976" font-size="34" font-weight="700" letter-spacing="1">THE MEASURE</text>
@@ -234,19 +288,22 @@
   <text class="t" x="48" y="2392" font-weight="700">7</text><text class="g" x="80" y="2392">Mount coax plug — part of 1</text>
   <text class="t" x="720" y="2392" font-weight="700">8</text><text class="g" x="752" y="2392">SMA–BNC pair</text>
   <text class="t" x="1392" y="2392" font-weight="700">9</text><text class="g" x="1424" y="2392">Coax, USB leads</text>
+  <text class="t" x="48" y="2434" font-weight="700">10</text><text class="g" x="80" y="2434">Headphones</text>
+  <text class="t" x="720" y="2434" font-weight="700">11</text><text class="g" x="752" y="2434">Adapter wallet — two only</text>
+  <text class="t" x="1392" y="2434" font-weight="700">12</text><text class="g" x="1424" y="2434">Bag, sit mat</text>
 </g>
 
-<rect x="48" y="2440" width="2064" height="3" fill="#f2c200"/>
-<text class="t" x="48" y="2492" font-size="26">The black tracker travels; the orange one stays until it is named. Nothing in this bag transmits.</text>
-<text class="g" x="48" y="2530" font-size="22">All nine drawn from the floor photographs of 9 November. Ground: Mattie's floor, not a studio.</text>
+<rect x="48" y="2486" width="2064" height="3" fill="#f2c200"/>
+<text class="t" x="48" y="2538" font-size="26">The black tracker travels; the orange one stays until it is named. Nothing in this bag transmits.</text>
+<text class="g" x="48" y="2576" font-size="22">All twelve drawn from the floor photographs of 9 November. Ground: Mattie's floor, not a studio.</text>
 
-<rect x="48" y="2578" width="2064" height="2" fill="#3a3a3a"/>
-<text class="pk" x="48" y="2628" font-size="22" font-weight="700" letter-spacing="3">STAYS HOME</text>
-<text class="g" x="48" y="2668" font-size="23">The whole adapter bag · the spare black tracker · the PortaPack's own rubber duck · third whip · chargers not</text>
-<text class="g" x="48" y="2704" font-size="23">needed in the hour. If it is not on this plate it does not go in the bag.</text>
+<rect x="48" y="2624" width="2064" height="2" fill="#3a3a3a"/>
+<text class="pk" x="48" y="2674" font-size="22" font-weight="700" letter-spacing="3">STAYS HOME</text>
+<text class="g" x="48" y="2714" font-size="23">The full adapter bag · the spare black tracker · the PortaPack's own rubber duck · third whip · chargers not</text>
+<text class="g" x="48" y="2750" font-size="23">needed in the hour. If it is not on this plate it does not go in the bag.</text>
 
 <!-- footer -->
-<rect x="48" y="2772" width="2064" height="2" fill="#3a3a3a"/>
-<text class="g" x="48" y="2812" font-size="20">Wichita · mc-wichita/sessions/2026-11-10-xatt-il-lanca · sheet 1 of 1 · drawn 10 November 2026</text>
-<text class="g" x="48" y="2844" font-size="20">Receive only. Everything here listens; the UV-K5 is not keyed on the day.</text>
+<rect x="48" y="2818" width="2064" height="2" fill="#3a3a3a"/>
+<text class="g" x="48" y="2858" font-size="20">Wichita · mc-wichita/sessions/2026-11-10-xatt-il-lanca · sheet 1 of 1 · drawn 10 November 2026</text>
+<text class="g" x="48" y="2890" font-size="20">Receive only. Everything here listens; the UV-K5 is not keyed on the day.</text></g>
 </svg>
