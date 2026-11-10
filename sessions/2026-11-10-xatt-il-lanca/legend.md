@@ -9,8 +9,8 @@ Number for number. Correct any line that is wrong; 3, 5 and 7 rest on a photogra
 | 3 | SDRplay RSPdx-R2 | High — label legible | Marine voice, ANT A, CH16 then CH09/12 | Pack |
 | 4 | HackRF in a PortaPack | High — clear case, PortaPack screen | Spectrum sweep, 118–137 AM, ADS-B, standalone | Pack |
 | 5 | Quansheng UV-K5(8) | High — M / Quansheng buttons, keypad | Airband and 2 m by hand | Pack |
-| 6 | Mesh tracker, orange case | Medium — same shell as the black one, screen and single button | Meshtastic RX on 869.525, listen only | One only |
-| 7 | Mount head with BNC | Medium — photographed beside the whip base | Where the whip screws in; two adapters from the bag | Take two adapters |
+| 6 | Mesh tracker, orange case | Low — different shell from the black one: hexagonal, single large button, no stub antenna | Meshtastic RX 869.525, listen only | One only |
+| 7 | Coax adapter / connector on a lead | Medium — gold pin, knurled coupling nut; the mount already carries its own hub and spring | Couples mount to receiver | Pack |
 | 8 | BNC–SMA pigtail | High — unmistakable | Couples mount to receiver | Pack |
 | 9 | Coax coil and USB leads | High | Feeds the receiver and the power bank | Pack |
 
@@ -20,5 +20,5 @@ Number for number. Correct any line that is wrong; 3, 5 and 7 rest on a photogra
 - Nothing here transmits on the day.
 
 ## Uncertain, needs Mattie
-- 6: is the orange device the same tracker as the black one, or something else?
-- 7: is that the mag-mount head, or a separate adaptor?
+- 6: the orange device is not the same shell as the black tracker — is it a second tracker of another model, or something else altogether?
+- 7: labelled a connector, not the mount head. Which adaptor is it, and does it match the pigtail at 8?
