@@ -110,6 +110,8 @@ function shipCardHtml(s, selected) {
   const fade = s.freshness === "earlier" ? " ship-card-fade" : s.freshness === "recent" ? " ship-card-recent" : "";
   const sel = s.mmsi === selected ? " selected" : "";
   const tierLabel = s.freshness_label || "Earlier";
+  const sigLabel = s.track_signal_label ? `<span class="track-signal track-signal-${s.track_signal_status || "unknown"}">${esc(s.track_signal_label)}</span>` : "";
+  const mmsiAdv = s.mmsi_advisory ? `<p class="mmsi-advisory calm">${esc(s.mmsi_advisory)}</p>` : "";
   const interestMeta = s.is_boat_of_interest
     ? `<span class="mono boat-interest-heard" data-test-id="boat-interest-heard-${s.mmsi}">${esc(interestHeardLine(s))}</span>`
     : "";
@@ -123,8 +125,10 @@ function shipCardHtml(s, selected) {
       ${interestMark}<strong>${esc(displayName)}</strong>${removeBtn}${s.speed_known !== false && (s.speed_kn ?? 0) >= 1 ? `<span class="ship-moving mono">moving ${Number(s.speed_kn).toFixed(1)} kn</span>` : ""}
       ${interestMeta}
       <span class="mono ship-fresh ship-fresh-${s.freshness || "earlier"}">${(() => { const ago = agoLabel(s.last_signal_s); return !ago || ago.toLowerCase() === tierLabel.toLowerCase() ? tierLabel : `${tierLabel} · ${ago}`; })()}</span>
+      ${sigLabel}
     </div>
     <p class="ship-lead">${esc(lead)}</p>
+    ${mmsiAdv}
     <p class="muted ship-meta">${esc(typeLabel)}${eta ? ` · ${eta}` : ""}</p>
     <details class="ship-raw-details"><summary class="expand-cue" aria-expanded="false"><span class="cue-tri" aria-hidden="true"></span><span class="cue-more">More details</span><span class="cue-less">Less</span><span class="sr-only"> for ${esc(s.display_name)}: MMSI lookup</span></summary>
       ${mmsiLookupHtml(s)}
@@ -695,6 +699,24 @@ function renderHeardAndHealth(snapshot, feedHealth) {
   }
 }
 
+function renderTrackAdvisories(snapshot) {
+  const host = $("#trackAdvisoryList");
+  if (!host) return;
+  const rows = snapshot?.track_advisories || [];
+  if (!rows.length) {
+    host.innerHTML = "";
+    host.hidden = true;
+    return;
+  }
+  host.hidden = false;
+  host.innerHTML = rows
+    .map(
+      (a) =>
+        `<li class="track-advisory" data-test-id="track-advisory-${esc(a.mmsi_display || a.mmsi)}"><strong>${esc(a.title)}</strong> <span class="muted small">${esc(a.detail)}</span></li>`,
+    )
+    .join("");
+}
+
 async function renderMaltaWeather() {
   const el = $("#maltaWeather");
   if (!el) return;
@@ -827,6 +849,7 @@ async function pollLive() {
     refreshSelectedShipPanels();
     renderSideList(data);
     renderStationLive(data);
+    renderTrackAdvisories(data);
     await renderLiveEvents();
   } catch (err) {
     renderHeader({ online: false, freshness_counts: { now: 0, today: 0 } });

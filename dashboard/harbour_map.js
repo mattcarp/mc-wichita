@@ -529,8 +529,9 @@ export class HarbourMap {
     for (const f of pathFeatures) {
       const mmsi = Number(f.properties?.mmsi || f.id || 0);
       const coords = f.geometry?.coordinates || [];
-      if (!coords.length) continue;
+      if (coords.length < 2) continue;
       const sel = mmsi === this.selectedMmsi;
+      const gapSeg = Number(f.properties?.track_segment || 0) > 0;
       const pts = coords
         .map(([lon, lat]) => {
           const p = this._project(lat, lon, w, h);
@@ -538,7 +539,7 @@ export class HarbourMap {
         })
         .join(" ");
       parts.push(
-        `<polyline points="${pts}" class="map-track${sel ? " map-track-selected" : ""}" data-mmsi="${mmsi}"/>`,
+        `<polyline points="${pts}" class="map-track${sel ? " map-track-selected" : ""}${gapSeg ? " map-track-gap-segment" : ""}" data-mmsi="${mmsi}"/>`,
       );
     }
     for (const s of this.bases) {
@@ -588,7 +589,9 @@ export class HarbourMap {
         parts.push(`<polyline points="${tpts}" class="map-follow-trail"/>`);
       }
       const proj = this._projectShip(lat, lon, w, h);
-      const stale = (s.last_signal_s || 0) > 600;
+      const sig = s.track_signal_status || "";
+      const stale = sig === "stale" || sig === "signal_lost" || (s.last_signal_s || 0) > 600;
+      const signalLost = sig === "signal_lost";
       const fresh = (s.freshness || "") === "now";
       const col = typeColor(s.shiptype_category);
       const sel = s.mmsi === this.selectedMmsi;
@@ -597,14 +600,14 @@ export class HarbourMap {
         const deg = (proj.angle * 180) / Math.PI;
         const r = sel ? 7 : 5;
         parts.push(
-          `<g class="map-ship-edge${stale ? " map-ship-stale" : ""}" data-mmsi="${s.mmsi}" role="button" tabindex="0" transform="translate(${proj.x.toFixed(1)},${proj.y.toFixed(1)}) rotate(${deg.toFixed(1)})">
+          `<g class="map-ship-edge${signalLost ? " map-ship-signal-lost" : stale ? " map-ship-stale" : ""}" data-mmsi="${s.mmsi}" role="button" tabindex="0" transform="translate(${proj.x.toFixed(1)},${proj.y.toFixed(1)}) rotate(${deg.toFixed(1)})">
             <polygon points="0,-${r} ${r + 3},0 0,${r} -${r + 3},0" fill="${col}" class="map-ship-arrow"/>
           </g>`,
         );
       } else {
         const interest = s.is_boat_of_interest ? " map-ship-interest" : "";
         parts.push(
-          `<circle cx="${proj.x.toFixed(1)}" cy="${proj.y.toFixed(1)}" r="${sel ? 7 : 5}" class="map-ship${stale ? " map-ship-stale" : ""}${pulse ? " map-ship-pulse" : ""}${interest}" fill="${col}" data-mmsi="${s.mmsi}" role="button" tabindex="0"/>`,
+          `<circle cx="${proj.x.toFixed(1)}" cy="${proj.y.toFixed(1)}" r="${sel ? 7 : 5}" class="map-ship${signalLost ? " map-ship-signal-lost" : stale ? " map-ship-stale" : ""}${pulse ? " map-ship-pulse" : ""}${interest}" fill="${col}" data-mmsi="${s.mmsi}" role="button" tabindex="0"/>`,
         );
         if (s.is_boat_of_interest) {
           parts.push(

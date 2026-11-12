@@ -27,6 +27,15 @@ from wichita_ais_nav import normalize_ais_course, normalize_ais_heading, normali
 from wichita_feed_urls import validated_feed_url
 from wichita_provenance import SOURCE_OUR_ANTENNA, provenance_fields
 from wichita_receiver_health import feed_health_payload, heard_last_60s_badge, count_heard_within
+from wichita_track_signal import (
+    AIS_PATH_GAP_SEC,
+    apply_track_signal_fields,
+    ais_ship_class,
+    feed_stalled,
+    process_paths_geojson,
+    thresholds_summary,
+)
+from wichita_ais_identity import get_mmsi_identity_tracker
 from wichita_captures import VALLETTA_AIS_BASE_MMSIS, mmsi_label
 import wichita_mmsi
 
@@ -291,6 +300,7 @@ def normalize_ship(raw: Dict[str, Any], now: Optional[datetime] = None) -> Dict[
         else None,
         "is_base_station": mmsi in VALLETTA_AIS_BASE_MMSIS,
         "nav_status": raw.get("status"),
+        "shipclass": raw.get("shipclass"),
     }
     tier = freshness_bucket(last_sig_s)
     ship["freshness"] = tier
@@ -474,8 +484,37 @@ def live_dashboard_bundle() -> Dict[str, Any]:
     for v in vessels:
         v["mmsi_info"] = wichita_mmsi.lookup(v["mmsi"], registry, shiptype_label)
     voice_busy = os.environ.get("WICHITA_VOICE_LIVE", "0").strip() not in ("1", "true", "yes")
-    summary_block = harbour_summary_bundle(vessels, online, voice_busy)
     rx_health = receiver_health(stat_raw, online, error=err, ships=vessels)
+    stall = feed_stalled(online=online, receiver_health=rx_health)
+    raw_by_mmsi: Dict[int, Dict[str, Any]] = {}
+    for raw in ships:
+        try:
+            raw_by_mmsi[int(raw.get("mmsi") or 0)] = raw
+        except (TypeError, ValueError):
+            continue
+    identity = get_mmsi_identity_tracker()
+    now_epoch = now.timestamp()
+    vessels = identity.ingest_vessels(vessels, now_epoch=now_epoch)
+    track_keys = identity.track_keys_for_paths()
+    for v in vessels:
+        ais_class = ais_ship_class(raw_by_mmsi.get(int(v["mmsi"])), v)
+        apply_track_signal_fields(v, kind="ais", ais_class=ais_class, feed_stalled=stall)
+    paths = process_paths_geojson(
+        paths,
+        gap_sec=AIS_PATH_GAP_SEC,
+        split_speed_jump=True,
+    )
+    for feat in paths.get("features") or []:
+        props = feat.get("properties") or {}
+        mmsi = props.get("mmsi")
+        if mmsi is not None:
+            try:
+                props["track_key"] = track_keys.get(int(mmsi), str(mmsi))
+            except (TypeError, ValueError):
+                props["track_key"] = str(mmsi)
+        feat["properties"] = props
+    track_advisories = identity.consume_advisories()
+    summary_block = harbour_summary_bundle(vessels, online, voice_busy)
     try:
         from wichita_interest import interest_vessels_for_bundle
 
@@ -509,6 +548,9 @@ def live_dashboard_bundle() -> Dict[str, Any]:
         else None,
         "interest_vessels": interest_vessels,
         "boats_of_interest_count": len(interest_vessels),
+        "track_advisories": track_advisories,
+        "track_signal_thresholds": thresholds_summary(),
+        "feed_stalled": stall,
     }
 
 

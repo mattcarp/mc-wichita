@@ -26,6 +26,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from wichita_feed_urls import validated_feed_url
 from wichita_provenance import SOURCE_OUR_ANTENNA, SOURCE_PUBLIC_FEED, provenance_fields
 from wichita_receiver_health import feed_health_payload
+from wichita_track_signal import apply_track_signal_fields, feed_stalled, thresholds_summary
 
 logger = logging.getLogger(__name__)
 
@@ -335,6 +336,9 @@ def live_adsb_snapshot() -> Dict[str, Any]:
         youngest_signal_s=youngest,
         entity_count=len(planes),
     )
+    stall = feed_stalled(online=online, receiver_health=health)
+    for p in planes:
+        apply_track_signal_fields(p, kind="adsb", feed_stalled=stall)
     try:
         from wichita_adsb_tracks import get_track_store
 
@@ -363,4 +367,6 @@ def live_adsb_snapshot() -> Dict[str, Any]:
         "server_time_utc": now.isoformat(),
         "coverage": health.get("coverage"),
         "coverage_label": health.get("coverage_label"),
+        "track_signal_thresholds": thresholds_summary(),
+        "feed_stalled": stall,
     }

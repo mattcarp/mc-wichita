@@ -113,6 +113,11 @@ class LiveEventEngine:
 
     def ingest_snapshot(self, bundle: Dict[str, Any]) -> None:
         online = bool(bundle.get("online"))
+        feed_stalled = bool(bundle.get("feed_stalled"))
+        if not feed_stalled:
+            rh = bundle.get("receiver_health") or {}
+            if rh.get("state") in ("stale", "unreachable", "invalid"):
+                feed_stalled = True
         ships = bundle.get("ships") or []
         now_mono = time.monotonic()
         with self._lock:
@@ -184,11 +189,16 @@ class LiveEventEngine:
                         )
                     self._last_nav[mmsi] = int(nav)
 
+                if feed_stalled:
+                    continue
                 if freshness_bucket(enriched.get("last_signal_s")) != "earlier":
                     continue
                 if mmsi in self._silent_logged:
                     continue
-                if enriched.get("last_signal_s", 0) < SILENCE_SEC:
+                silent = enriched.get("track_signal_status") == "signal_lost" or enriched.get(
+                    "last_signal_s", 0
+                ) >= SILENCE_SEC
+                if not silent:
                     continue
                 if not self._should_log_quiet(mmsi, enriched):
                     continue

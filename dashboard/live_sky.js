@@ -47,9 +47,12 @@ function planeCardHtml(p) {
   const heardMeta = p.is_aircraft_of_interest
     ? `<span class="mono boat-interest-heard" data-test-id="air-interest-heard-${esc(p.hex || p.id)}">${esc(p.interest_heard_label || "Not in feed right now")}</span>`
     : "";
+  const sigLine = p.track_signal_label
+    ? `<span class="track-signal track-signal-${esc(p.track_signal_status || "unknown")}">${esc(p.track_signal_label)}</span>`
+    : "";
   const rangeTxt = p.range_nm != null ? ` · ${Number(p.range_nm).toFixed(1)} nmi` : "";
   return `<li class="live-plane-card${emCls}${interestCls}" data-plane-id="${esc(p.id)}" data-test-id="plane-card-${esc(p.hex || p.id)}" role="button" tabindex="0">
-    <div class="live-plane-head">${interestMark}<strong>${esc(p.display_name)}</strong>${removeBtn}${alertBadge}${planeSourceBadge(p)}</div>
+    <div class="live-plane-head">${interestMark}<strong>${esc(p.display_name)}</strong>${removeBtn}${alertBadge}${planeSourceBadge(p)}${sigLine}</div>
     ${heardMeta}
     ${sub ? `<span class="mono muted">${sub}</span>` : ""}
     <span class="mono muted">${planeSummaryLine(p)}${rangeTxt}${p.squawk ? ` · squawk <span class="${p.is_emergency ? "plane-squawk-em" : ""}">${esc(p.squawk)}</span>` : ""}</span>
