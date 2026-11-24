@@ -386,6 +386,9 @@ def run_receiver_slice(
     clock: FakeClock,
 ) -> None:
     """Apply one tune instruction (used by tests and dry-run runners)."""
+    from wichita_audio_score_gate import register_retune
+
+    register_retune()
     driver.tune(instruction.center_freq_hz, instruction.bandwidth_hz)
     driver.receive_dwell(instruction.dwell_sec)
     if isinstance(clock, FakeClock):

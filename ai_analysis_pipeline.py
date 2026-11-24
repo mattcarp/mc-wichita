@@ -223,7 +223,16 @@ def score_stress(audio_features: StressFeatures | Dict[str, float]) -> int:
     return bounded
 
 
-def compute_stress_score(audio_file_path: str | Path) -> int:
+def compute_stress_score(
+    audio_file_path: str | Path,
+    *,
+    segment_meta: Optional[Dict[str, object]] = None,
+) -> int:
+    from wichita_audio_score_gate import score_skip_reason
+
+    reason = score_skip_reason(str(audio_file_path), segment_meta=segment_meta)
+    if reason:
+        raise ValueError(reason)
     features = extract_stress_features(audio_file_path)
     return score_stress(features)
 
@@ -268,6 +277,20 @@ def analyze_audio_file(
     path = Path(audio_file_path)
     transcript = transcribe_audio_file(path, whisper_config)
     transcript_text = str(transcript.get("text", "")).strip()
+    from wichita_audio_score_gate import score_skip_reason
+
+    skip_reason = score_skip_reason(str(path), segment_meta=None)
+    if skip_reason:
+        return {
+            "audio_file": str(path),
+            "transcript": transcript,
+            "stress_score": None,
+            "score_skipped": True,
+            "skip_reason": skip_reason,
+            "stress_features": None,
+            "keyword_matches": [],
+            "transmission_alert": analyze_transmission(transcript, frequency_hz=None),
+        }
     stress_features = extract_stress_features(path)
     stress_score = score_stress(stress_features)
     keyword_result = classify_threat_keywords(transcript_text, flagged_terms)

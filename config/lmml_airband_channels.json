@@ -1,0 +1,136 @@
+{
+  "airport_icao": "LMML",
+  "airport_name": "Malta International Airport (Luqa)",
+  "arp": {"lat": 35.8575, "lon": 14.4775, "note": "LMML ARP per Malta AIP; OurAirports lists 35.845932, 14.491546"},
+  "aip": {
+    "section": "AD 2 LMML § 2.18 ATS communication facilities",
+    "source_url": "https://applicationspubs.transportmalta.com/eadbasic/publication/2026-09-03/html/en/eAIP-LMML-AD-2.18-en-GB.html",
+    "index_page_url": "https://www.transport.gov.mt/aviation/air-navigation-services-aerodromes/aeronautical-information-publication-3764",
+    "airac_effective_date": "2026-09-03",
+    "retrieved_at_utc": "2026-11-24T08:28:00Z",
+    "retrieval_note": "Live fetch to applicationspubs.transportmalta.com (eAIP LMML AD 2.18) timed out (TLS handshake) from this environment. Transport Malta index page returned HTTP 403. Channel values match the published AD 2.18 table in Malta AIP AIRAC AMDT 064/2024 (18 APR 2024) and were cross-checked 2026-11-24 against IVAO Malta FIR documentation and OurAirports airport-frequencies.csv."
+  },
+  "cross_checks": {
+    "ourairports_frequencies_url": "https://davidmegginson.github.io/ourairports-data/airport-frequencies.csv",
+    "ourairports_retrieved_at_utc": "2026-11-24T08:24:00Z",
+    "ivao_malta_fir_url": "https://wiki.ivao.aero/en/home/atcoperations/malta-fir-documentation"
+  },
+  "channels": [
+    {
+      "id": "lmml-gnd",
+      "service": "Ground",
+      "callsign": "Luqa Ground",
+      "channel_mhz": 121.605,
+      "mode": "AM",
+      "hours": "H24",
+      "aip_verified": true,
+      "role": "primary"
+    },
+    {
+      "id": "lmml-gnd-backup",
+      "service": "Ground",
+      "callsign": "Luqa Ground",
+      "channel_mhz": 121.83,
+      "mode": "AM",
+      "hours": "H24",
+      "aip_verified": true,
+      "role": "backup",
+      "note": "Listed as 121.830 MHz in AIP AD 2.18"
+    },
+    {
+      "id": "lmml-twr",
+      "service": "Tower",
+      "callsign": "Luqa Tower",
+      "channel_mhz": 135.105,
+      "mode": "AM",
+      "hours": "H24",
+      "aip_verified": true,
+      "role": "primary"
+    },
+    {
+      "id": "lmml-twr-backup",
+      "service": "Tower",
+      "callsign": "Luqa Tower",
+      "channel_mhz": 133.905,
+      "mode": "AM",
+      "hours": "H24",
+      "aip_verified": true,
+      "role": "backup"
+    },
+    {
+      "id": "lmml-app",
+      "service": "Approach",
+      "callsign": "Luqa Radar",
+      "channel_mhz": 128.155,
+      "mode": "AM",
+      "hours": "H24",
+      "aip_verified": true,
+      "role": "primary"
+    },
+    {
+      "id": "lmml-app-backup",
+      "service": "Approach",
+      "callsign": "Luqa Radar",
+      "channel_mhz": 118.355,
+      "mode": "AM",
+      "hours": "H24",
+      "aip_verified": true,
+      "role": "backup"
+    },
+    {
+      "id": "lmml-atis-dep",
+      "service": "ATIS",
+      "callsign": "Luqa Information (departure)",
+      "channel_mhz": 127.005,
+      "mode": "AM",
+      "hours": "H24",
+      "aip_verified": true,
+      "role": "primary",
+      "note": "DEP ATIS in AD 2.18"
+    },
+    {
+      "id": "lmml-atis-arr",
+      "service": "ATIS",
+      "callsign": "Luqa Information (arrival)",
+      "channel_mhz": 127.405,
+      "mode": "AM",
+      "hours": "H24",
+      "aip_verified": true,
+      "role": "primary",
+      "note": "ARR ATIS in AD 2.18"
+    },
+    {
+      "id": "lmml-guard",
+      "service": "Emergency guard",
+      "callsign": "International aeronautical emergency",
+      "channel_mhz": 121.5,
+      "mode": "AM",
+      "hours": "H24",
+      "aip_verified": true,
+      "role": "guard",
+      "note": "AD 2.18 remark: 121.500 MHz monitored H24"
+    },
+    {
+      "id": "lmml-uhf-mil",
+      "service": "Military UHF",
+      "callsign": "Luqa (military aircraft without VHF)",
+      "channel_mhz": 284.5,
+      "mode": "AM",
+      "hours": "H24",
+      "aip_verified": true,
+      "role": "remark",
+      "note": "UHF per AD 2.18 remark (1); not VHF airband tuning"
+    },
+    {
+      "id": "lmml-info",
+      "service": "Information",
+      "callsign": "Malta Information",
+      "channel_mhz": 119.805,
+      "mode": "AM",
+      "hours": "NOTAM",
+      "aip_verified": false,
+      "role": "unverified",
+      "note": "Published elsewhere as NOTAM-activated; not listed in AD 2.18 voice table we could fetch live"
+    }
+  ]
+}

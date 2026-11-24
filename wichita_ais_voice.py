@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
+from wichita_airband_adsb import guess_payload
+
 
 def _recorded_tile(mode: str, quiet: bool, capture_label: str, capture_time: Optional[str]) -> Dict[str, Any]:
     return {
@@ -62,9 +64,20 @@ def voice_channel_tiles(
         (a for a in air.values() if isinstance(a, dict) and a.get("freq_mhz") and abs(a["freq_mhz"] - 123.1) < 0.05),
         None,
     )
+
+    def air_tile(channel_id: str, title: str, freq: str, watch_row: Optional[Dict[str, Any]], freq_mhz: float) -> Dict[str, Any]:
+        quiet = (watch_row or {}).get("quiet", True)
+        t = tile(channel_id, title, freq, quiet)
+        if not quiet:
+            guess = guess_payload(freq_mhz, event_time_utc=capture_time_utc)
+            t["likely_aircraft_sentence"] = guess["likely_aircraft_sentence"]
+            t["likely_aircraft_caveat"] = guess["caveat"]
+            t["detail"] = f"{t['detail']} {guess['likely_aircraft_sentence']}"
+        return t
+
     return [
         tile("ch16", "Channel 16", "156.800 MHz", (marine.get("ch16") or {}).get("quiet", True)),
         tile("ch09", "Channel 09", "156.450 MHz", (marine.get("ch09") or {}).get("quiet", True)),
-        tile("guard1215", "121.5 guard", "121.500 MHz", (air1215 or {}).get("quiet", True)),
-        tile("sar1231", "123.1 SAR", "123.100 MHz", (air1231 or {}).get("quiet", True)),
+        air_tile("guard1215", "121.5 guard", "121.500 MHz", air1215, 121.5),
+        air_tile("sar1231", "123.1 SAR", "123.100 MHz", air1231, 123.1),
     ]

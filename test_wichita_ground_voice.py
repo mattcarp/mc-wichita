@@ -75,13 +75,39 @@ def test_tickets_one_time_and_channel_bound():
 
 
 def test_pipeline_keeps_scores_drops_audio(tmp_path):
+    import wichita_audio_score_gate as ag
+
+    ag.clear_retune_state()
     wav = tmp_path / "a.wav"; wav.write_bytes(b"RIFF")
     ev = gv.submit_segment("marine-ch16", str(wav), time.time(), scorer=lambda p, f: 20, base=tmp_path / "gv")
     assert ev["clip"] is None and not wav.exists()
     assert not (tmp_path / "gv" / "clips").exists()
 
 
+def test_pipeline_skips_stress_during_retune(tmp_path):
+    wav = tmp_path / "a.wav"
+    import struct
+    import wave
+
+    with wave.open(str(wav), "wb") as w:
+        w.setnchannels(1)
+        w.setsampwidth(2)
+        w.setframerate(8000)
+        w.writeframes(struct.pack("<800h", *([0] * 800)))
+    import wichita_audio_score_gate as ag
+
+    ag.register_retune()
+    ev = gv.submit_segment("marine-ch16", str(wav), time.time(), scorer=lambda p, f: 90, base=tmp_path / "gv")
+    assert ev["score_skipped"] is True
+    assert ev["skip_reason"] == "not scored: retune"
+    assert ev["clip"] is None
+    ag.clear_retune_state()
+
+
 def test_pipeline_keeps_flagged_clip_72h(tmp_path):
+    import wichita_audio_score_gate as ag
+
+    ag.clear_retune_state()
     wav = tmp_path / "a.wav"; wav.write_bytes(b"RIFF")
     base = tmp_path / "gv"
     ev = gv.submit_segment("marine-ch16", str(wav), time.time(), scorer=lambda p, f: 90, base=base)

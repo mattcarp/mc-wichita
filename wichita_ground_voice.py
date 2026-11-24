@@ -255,7 +255,8 @@ def _events_dir() -> Path:
 
 def submit_segment(channel_id: str, wav_path: str, started_at: float,
                    scorer: Optional[Callable[[str, float], object]] = None,
-                   base: Optional[Path] = None) -> dict:
+                   base: Optional[Path] = None,
+                   segment_meta: Optional[Dict[str, object]] = None) -> dict:
     """Input point for the stress pipeline. Keeps metadata + scores; keeps the
     clip only when flagged as distress. The caller's wav is always deleted."""
     ch = get_channel(channel_id)
@@ -263,12 +264,27 @@ def submit_segment(channel_id: str, wav_path: str, started_at: float,
     base.mkdir(parents=True, exist_ok=True)
     if scorer is None:
         from stress_scorer import score_stress as scorer  # placeholder model
-    res = scorer(wav_path, ch.frequency_mhz * 1e6)
-    score = int(getattr(res, "score", res if isinstance(res, (int, float)) else 0))
-    flagged = score >= DISTRESS_THRESHOLD
-    ev = {"channel_id": ch.id, "frequency_mhz": ch.frequency_mhz, "started_at": started_at,
-          "stress_score": score, "model": "stress_scorer (placeholder)", "flagged": flagged,
-          "clip": None}
+    from wichita_audio_score_gate import gated_stress_result
+
+    gated = gated_stress_result(
+        wav_path,
+        ch.frequency_mhz * 1e6,
+        scorer,
+        segment_meta=dict(segment_meta or {}),
+    )
+    score = gated.get("stress_score")
+    flagged = bool(score is not None and score >= DISTRESS_THRESHOLD)
+    ev = {
+        "channel_id": ch.id,
+        "frequency_mhz": ch.frequency_mhz,
+        "started_at": started_at,
+        "stress_score": score,
+        "score_skipped": bool(gated.get("skipped")),
+        "skip_reason": gated.get("skip_reason"),
+        "model": "stress_scorer (placeholder)",
+        "flagged": flagged,
+        "clip": None,
+    }
     if flagged:
         clips = base / "clips"
         clips.mkdir(exist_ok=True)

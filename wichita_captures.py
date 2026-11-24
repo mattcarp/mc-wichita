@@ -774,19 +774,28 @@ def build_timeline(
         )
 
     if airband.get("available"):
+        from wichita_airband_adsb import enrich_airband_event
+
         for ch_key, tile in (airband.get("watch") or {}).items():
+            freq_mhz = tile.get("freq_mhz")
             for op in tile.get("openings") or []:
                 t_s = op.get("t_s") or op.get("start_s")
-                events.append(
-                    {
-                        "kind": "airband",
-                        "t_utc": (start.timestamp() + float(t_s)) if t_s is not None else None,
-                        "title": f"Airband activity ({ch_key})",
-                        "detail": "Possible transmission — not confirmed.",
-                        "caution": "Possible call for help, not confirmed.",
-                        "meta": {"channel": ch_key, **op},
-                    }
+                t_utc = (start.timestamp() + float(t_s)) if t_s is not None else None
+                time_utc = (
+                    datetime.fromtimestamp(t_utc, tz=timezone.utc).isoformat()
+                    if t_utc is not None
+                    else None
                 )
+                ev = {
+                    "kind": "airband",
+                    "t_utc": t_utc,
+                    "time_utc": time_utc,
+                    "title": f"Airband activity ({ch_key})",
+                    "detail": "Possible transmission — not confirmed.",
+                    "caution": "Possible call for help, not confirmed.",
+                    "meta": {"channel": ch_key, "freq_mhz": freq_mhz, **op},
+                }
+                events.append(enrich_airband_event(ev))
 
     events.sort(key=lambda e: e.get("t_utc") or 0)
     for e in events:

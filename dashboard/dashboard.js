@@ -607,6 +607,7 @@ async function renderVoiceTiles() {
           <p class="mono">${ch.freq}</p>
           <p class="voice-headline">${ch.headline}</p>
           <p class="muted">${ch.detail}</p>
+          ${ch.likely_aircraft_sentence ? `<p class="muted airband-guess">${ch.likely_aircraft_sentence}</p>` : ""}
         </article>`;
       })
       .join("");
@@ -626,7 +627,10 @@ function renderRecordedTimeline(events) {
     .map((e) => {
       const time = e.time_utc ? formatMalta(e.time_utc) : "—";
       const caution = e.caution ? `<p class="caution">${e.caution}</p>` : "";
-      return `<li class="timeline-recorded"><span class="badge badge-recorded">Recorded</span> <span class="mono event-time">${time}</span> <strong>${e.title}</strong> <span class="muted">${e.detail || ""}</span>${caution}</li>`;
+      const guess = e.likely_aircraft_sentence
+        ? `<p class="muted airband-guess">${e.likely_aircraft_sentence}</p>`
+        : "";
+      return `<li class="timeline-recorded"><span class="badge badge-recorded">Recorded</span> <span class="mono event-time">${time}</span> <strong>${e.title}</strong> <span class="muted">${e.detail || ""}</span>${guess}${caution}</li>`;
     })
     .join("");
 }
